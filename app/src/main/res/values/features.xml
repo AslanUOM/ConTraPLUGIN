@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="feature_names">
+        <item>Location</item>
+        <item>Contact</item>
+    </array>
+    <array name="feature_descriptions">
+        <item>ConTra tracks your location</item>
+        <item>ConTra collects your contacts</item>
+    </array>
+    <array name="feature_icons">
+        <item>@drawable/ic_gps_fixed_grey_800_36dp</item>
+        <item>@drawable/ic_people_grey_800_36dp</item>
+    </array>
+    <array name="feature_permissions">
+        <item>android.permission.ACCESS_COARSE_LOCATION,android.permission.ACCESS_FINE_LOCATION</item>
+        <item>android.permission.READ_CONTACTS</item>
+    </array>
+</resources>
