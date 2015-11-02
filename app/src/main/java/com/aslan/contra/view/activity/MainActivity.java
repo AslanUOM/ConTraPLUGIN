@@ -1,5 +1,6 @@
 package com.aslan.contra.view.activity;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
+import com.aslan.contra.util.Constants;
 import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
@@ -22,6 +24,9 @@ import com.aslan.contra.view.fragment.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+
+    private final HomeFragment HOME_FRAGMENT = new HomeFragment();
+    private final ProfileFragment PROFILE_FRAGMENT = new ProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        // Set the default fragment
+        Fragment defaultFragment = HOME_FRAGMENT;
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        if(extras != null) {
+            int command = extras.getInt(Constants.COMMAND);
+            if(command == Constants.SHOW_PROFILE) {
+                defaultFragment = PROFILE_FRAGMENT;
+            }
+        }
+        changeFragment(defaultFragment);
     }
 
     @Override
@@ -66,17 +83,21 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             fragment = ProfileFragment.newInstance();
         } else {
-            fragment = new HomeFragment();
+            fragment = HOME_FRAGMENT;
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content, fragment)
-                .commit();
+        changeFragment(fragment);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void changeFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content, fragment)
+                .commit();
     }
 
     private Feature[] getAllFeatures() {

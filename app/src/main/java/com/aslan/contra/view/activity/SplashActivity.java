@@ -22,13 +22,13 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 boolean firstRun = Utility.isFirstRun(getApplicationContext());
-                Class target = RegisterActivity.class;
+                Class target;
                 // TODO: Check first run and change the activity
-                //if (firstRun) {
-                //    target = RegisterActivity.class;
-                //} else {
-                //    target = MainActivity.class;
-                //}
+                if (firstRun) {
+                    target = RegisterActivity.class;
+                } else {
+                    target = MainActivity.class;
+                }
 
                 Intent intent = new Intent(getApplicationContext(), target);
                 // Wait for a while

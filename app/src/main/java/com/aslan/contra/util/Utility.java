@@ -4,10 +4,14 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -20,12 +24,9 @@ public class Utility {
     }
 
     public static boolean isFirstRun(Context ctx) {
-        SharedPreferences preferences = getSharedPreference(ctx);
-        boolean firstRun = preferences.getBoolean(Constants.FIRST_RUN, true);
-        if (firstRun) {
-            // Change the preference
-            //preferences.edit().putBoolean(Constants.FIRST_RUN, false).commit();
-        }
+        String userId = getUserId(ctx);
+        // If user-id is null, this is the first run
+        boolean firstRun = userId == null;
         return firstRun;
     }
 
@@ -40,5 +41,39 @@ public class Utility {
             }
         }
         return emails;
+    }
+
+    public static String getUserId(Context ctx) {
+        SharedPreferences preferences = getSharedPreference(ctx);
+        String userId = preferences.getString(Constants.USER_ID, null);
+        return userId;
+    }
+
+    public static void saveUserId(Context ctx, String userId) {
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putString(Constants.USER_ID, userId).commit();
+    }
+
+    public static String getDeviceName(Context ctx) {
+        String deviceName = "";
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            deviceName = model;
+        }
+        deviceName = manufacturer + "-" + model;
+        return deviceName;
+    }
+
+    /**
+     * A unique serial code of the device.
+     *
+     * @param ctx
+     * @return
+     */
+    public static String getDeviceSerial(Context ctx) {
+        String deviceId = Settings.Secure.getString(ctx.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        return deviceId;
     }
 }
