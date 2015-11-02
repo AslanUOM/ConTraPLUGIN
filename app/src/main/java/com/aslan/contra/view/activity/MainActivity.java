@@ -1,6 +1,5 @@
 package com.aslan.contra.view.activity;
 
-import android.Manifest;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -17,8 +16,9 @@ import android.view.MenuItem;
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
 import com.aslan.contra.view.fragment.HomeFragment;
-import com.aslan.contra.view.fragment.PermissionFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
+import com.aslan.contra.view.fragment.PermissionFragment;
+import com.aslan.contra.view.fragment.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_permission) {
             fragment = PermissionFragment.newInstance(getAllFeatures());
+        } else if (id == R.id.nav_profile) {
+            fragment = ProfileFragment.newInstance();
         } else {
             fragment = new HomeFragment();
         }
