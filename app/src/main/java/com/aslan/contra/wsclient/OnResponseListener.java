@@ -5,4 +5,6 @@ package com.aslan.contra.wsclient;
  */
 public interface OnResponseListener<T> {
     public void onResponseReceived(T result);
+
+    public Class getType();
 }

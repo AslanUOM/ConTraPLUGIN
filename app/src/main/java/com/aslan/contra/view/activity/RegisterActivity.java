@@ -70,4 +70,9 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
             Toast.makeText(this, "Unable to register the user", Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public Class getType() {
+        return String.class;
+    }
 }

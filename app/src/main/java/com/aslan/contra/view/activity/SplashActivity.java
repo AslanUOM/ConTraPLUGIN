@@ -22,6 +22,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 boolean firstRun = Utility.isFirstRun(getApplicationContext());
+                Log.i("Splash Activity", "" + firstRun);
                 Class target;
                 // TODO: Check first run and change the activity
                 if (firstRun) {

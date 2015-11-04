@@ -8,7 +8,11 @@ import android.Manifest;
 public class Constants {
     //public static final String FIRST_RUN = "first_run";
 
-    public static final String USER_ID = "user_id";
+    public static final String USER_ID = "userId";
+
+    public static final String NAME = "name";
+
+    public static final String EMAIL = "email";
 
     public static final String COMMAND = "command";
 

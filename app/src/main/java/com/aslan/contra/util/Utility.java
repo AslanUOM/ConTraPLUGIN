@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
  * Created by gobinath on 10/29/15.
  */
 public class Utility {
+    private static String userId;
+
     public static SharedPreferences getSharedPreference(Context ctx) {
         SharedPreferences preferences = ctx.getSharedPreferences("com.aslan.contra", Context.MODE_PRIVATE);
         return preferences;
@@ -44,8 +46,10 @@ public class Utility {
     }
 
     public static String getUserId(Context ctx) {
-        SharedPreferences preferences = getSharedPreference(ctx);
-        String userId = preferences.getString(Constants.USER_ID, null);
+        if(userId == null) {
+            SharedPreferences preferences = getSharedPreference(ctx);
+            userId = preferences.getString(Constants.USER_ID, null);
+        }
         return userId;
     }
 
