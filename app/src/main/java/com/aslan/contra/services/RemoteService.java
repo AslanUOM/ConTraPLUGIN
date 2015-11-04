@@ -8,9 +8,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.widget.Toast;
 
+import com.aslan.contra.util.Msg;
+import com.aslan.contra.util.RunningServices;
+
 public class RemoteService extends Service {
-    static final int SAY_HI = 0;
-    static final int SAY_HELLO = 1;
     Messenger mMessenger = new Messenger(new RemoteServiceHandler());
 
     @Override
@@ -26,11 +27,21 @@ public class RemoteService extends Service {
             // TODO Auto-generated method stub
             super.handleMessage(msg);
             switch (msg.what) {
-                case SAY_HI:
-                    Toast.makeText(getApplicationContext(), "Hi from APP @ PLUGIN", Toast.LENGTH_LONG).show();
+                case Msg.START_LOCATION_TRACKING:
+                    if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
+                        serviceIntent.addCategory(LocationTrackingService.TAG);
+                        startService(serviceIntent);
+                    }
+                    Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
-                case SAY_HELLO:
-                    Toast.makeText(getApplicationContext(), "Hello from APP @ PLUGIN", Toast.LENGTH_LONG).show();
+                case Msg.STOP_LOCATION_TRACKING:
+                    if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
+                        serviceIntent.addCategory(LocationTrackingService.TAG);
+                        stopService(serviceIntent);
+                    }
+                    Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
             }
         }

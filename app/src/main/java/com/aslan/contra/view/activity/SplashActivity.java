@@ -1,8 +1,8 @@
 package com.aslan.contra.view.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.aslan.contra.R;
@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity {
                     Log.e(TAG, "Sleep is interrupted", e);
                 }
                 startActivity(intent);
+                SplashActivity.this.finish();
             }
         }.start();
     }

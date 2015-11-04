@@ -1,5 +1,6 @@
 package com.aslan.contra.view.activity;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -16,7 +17,9 @@ import android.view.MenuItem;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
+import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.Constants;
+import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
@@ -58,6 +61,11 @@ public class MainActivity extends AppCompatActivity
             }
         }
         changeFragment(defaultFragment);
+        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
+            serviceIntent.addCategory(LocationTrackingService.TAG);
+            startService(serviceIntent);
+        }
     }
 
     @Override
@@ -130,5 +138,16 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Fragment fragment, String command) {
 
+    }
+
+
+    public boolean isLocationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.aslan.contra.services.LocationTrackingService".equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
