@@ -10,4 +10,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- Alert Messages-->
+    <string name="internet_request_msg">You need a network connection to use this application.\nPlease turn on mobile network or Wi-Fi in Settings</string>
+    <string name="internet_error_msg">Your internet connection is not working.\nCannot use the application without internet.\nCheck your internet connectivity</string>
 </resources>

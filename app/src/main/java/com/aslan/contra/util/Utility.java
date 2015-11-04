@@ -6,12 +6,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -19,6 +17,7 @@ import java.util.regex.Pattern;
  */
 public class Utility {
     private static String userId;
+    private static String deviceToken;
 
     public static SharedPreferences getSharedPreference(Context ctx) {
         SharedPreferences preferences = ctx.getSharedPreferences("com.aslan.contra", Context.MODE_PRIVATE);
@@ -79,5 +78,18 @@ public class Utility {
         String deviceId = Settings.Secure.getString(ctx.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return deviceId;
+    }
+
+    public static String getDeviceToken(Context ctx) {
+        if (deviceToken == null) {
+            SharedPreferences preferences = getSharedPreference(ctx);
+            deviceToken = preferences.getString(Constants.DEVICE_TOKEN, null);
+        }
+        return deviceToken;
+    }
+
+    public static void saveDeviceToken(Context ctx, String deviceToken) {
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putString(Constants.DEVICE_TOKEN, deviceToken).commit();
     }
 }

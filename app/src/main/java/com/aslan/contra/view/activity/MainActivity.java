@@ -1,6 +1,5 @@
 package com.aslan.contra.view.activity;
 
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -138,16 +137,5 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Fragment fragment, String command) {
 
-    }
-
-
-    public boolean isLocationServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if ("com.aslan.contra.services.LocationTrackingService".equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 }

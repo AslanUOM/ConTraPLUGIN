@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String USER_ID = "userId";
 
+    public static final String DEVICE_TOKEN = "deviceToken";
+
     public static final String NAME = "name";
 
     public static final String EMAIL = "email";
