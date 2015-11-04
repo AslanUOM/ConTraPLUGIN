@@ -30,6 +30,18 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".view.activity.RegisterActivity" >
         </activity>
+
+        <service
+            android:name=".services.RemoteService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":exported">
+            <intent-filter>
+                <action android:name="aslan.plugin.RemoteService" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".view.activity.MsgPassingActivity"></activity>
     </application>
 
 </manifest>
