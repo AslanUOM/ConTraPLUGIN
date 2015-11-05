@@ -8,10 +8,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.widget.Toast;
 
-import com.aslan.contra.util.Msg;
+import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.RunningServices;
+import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
-public class RemoteService extends Service {
+public class RemoteService extends Service implements OnResponseListener<String> {
     Messenger mMessenger = new Messenger(new RemoteServiceHandler());
 
     @Override
@@ -25,7 +27,7 @@ public class RemoteService extends Service {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case Msg.START_LOCATION_TRACKING:
+                case Constants.MessagePassingCommands.START_LOCATION_TRACKING:
                     if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
                         Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
                         serviceIntent.addCategory(LocationTrackingService.TAG);
@@ -33,7 +35,7 @@ public class RemoteService extends Service {
                     }
                     Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
-                case Msg.STOP_LOCATION_TRACKING:
+                case Constants.MessagePassingCommands.STOP_LOCATION_TRACKING:
                     if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
                         Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
                         serviceIntent.addCategory(LocationTrackingService.TAG);
@@ -41,8 +43,59 @@ public class RemoteService extends Service {
                     }
                     Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
+                case Constants.MessagePassingCommands.GET_ALL_CONTACTS:
+                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
+                    service.setOnResponseListener(RemoteService.this);
+                    service.sendContacts();
+                    break;
             }
         }
     }
 
+    @Override
+    public void onResponseReceived(String response) {
+        if (response != null) {
+            // TODO handle received response from server for location changed
+            Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(this, "Unable to register the user", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class RemoteServiceHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case Constants.MessagePassingCommands.START_LOCATION_TRACKING:
+                    if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
+                        serviceIntent.addCategory(LocationTrackingService.TAG);
+                        startService(serviceIntent);
+                    }
+                    Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
+                    break;
+                case Constants.MessagePassingCommands.STOP_LOCATION_TRACKING:
+                    if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
+                        serviceIntent.addCategory(LocationTrackingService.TAG);
+                        stopService(serviceIntent);
+                    }
+                    Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+                    break;
+                case Constants.MessagePassingCommands.GET_ALL_CONTACTS:
+                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
+                    service.setOnResponseListener(RemoteService.this);
+                    service.sendContacts();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public Class getType() {
+        return String.class;
+    }
 }

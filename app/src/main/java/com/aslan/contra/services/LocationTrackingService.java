@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.aslan.contra.listeners.OnLocationChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.sensor.WiFiSensor;
+import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
@@ -26,10 +27,6 @@ public class LocationTrackingService extends IntentService implements OnResponse
     public static final String TAG = "LocationTrackingService";
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
-    // The minimum distance to change location Updates in meters
-    private final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10L;
-    // The minimum time between location updates in milliseconds, here 30 minutes
-    private final long MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
     public Handler handler = null;
     //    private final long TIME_INTERVAL = 1800000L;
     private DatabaseHelper dbHelper;
@@ -68,7 +65,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
 //                wifiSensor.start();
                 Log.d("<<Tracking-onStart>>", "I am alive");
                 Toast.makeText(getApplicationContext(), "STARTED", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, MIN_TIME_BW_UPDATES);
+                handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
             }
         };
     }

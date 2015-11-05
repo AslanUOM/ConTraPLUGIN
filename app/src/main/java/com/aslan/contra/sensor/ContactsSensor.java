@@ -23,7 +23,7 @@ public class ContactsSensor {
         List<String> contacts = new ArrayList<>();
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-        Log.i("No of contacts", "" +cursor.getCount());
+        Log.i("No of contacts", "" + cursor.getCount());
         if (cursor.moveToFirst()) {
 
             do {

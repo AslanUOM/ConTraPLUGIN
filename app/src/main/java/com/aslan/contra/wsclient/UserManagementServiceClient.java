@@ -24,16 +24,7 @@ import java.io.IOException;
  * Created by gobinath on 10/30/15.
  */
 public class UserManagementServiceClient<T> extends ServiceClient<T> {
-    // URL of the service
-    private final String REGISTER_USER_SERVICE_URL = "http://10.0.2.2:8080/ConTra/user/register";
-    private final String RETRIEVE_USER_PROFILE_URL = "http://10.0.2.2:8080/ConTra/user/profile/{query}";
-    private final String UPDATE_USER_PROFILE_URL = "http://10.0.2.2:8080/ConTra/user/updateprofile";
     private final Context context;
-    /**
-     * Substitute you own sender ID here. This is the project number you got
-     * from the API Console, as described in "Getting Started."
-     */
-    private static final String SENDER_ID = "986180772600";
 
     public UserManagementServiceClient(Context context) {
         this.context = context;
@@ -62,12 +53,19 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
     private String deviceToken() throws IOException {
         String deviceToken = null;
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
-        deviceToken = gcm.register(SENDER_ID);
+        deviceToken = gcm.register(Constants.SENDER_ID);
         // Persist the regID - no need to register again.
         if (deviceToken != null) {
             Utility.saveDeviceToken(context, deviceToken);
         }
         return deviceToken;
+    }
+
+    private void sendResult(T result) {
+        OnResponseListener<T> listener = getOnResponseListener();
+        if (listener != null) {
+            listener.onResponseReceived(result);
+        }
     }
 
     /**
@@ -104,7 +102,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 RestTemplate restTemplate = new RestTemplate(true);
 
                 // Make the network request, posting the message, expecting a String in response from the server
-                ResponseEntity<T> response = restTemplate.exchange(REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
+                ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
                 if (response.getStatusCode().value() == 201) {
@@ -138,7 +136,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
                 // Make the HTTP GET request, marshaling the response to a String
-                ResponseEntity<T> response = restTemplate.getForEntity(RETRIEVE_USER_PROFILE_URL, getOnResponseListener().getType(), params[0]);
+                ResponseEntity<T> response = restTemplate.getForEntity(Constants.WebServiceUrls.RETRIEVE_USER_PROFILE_URL, getOnResponseListener().getType(), params[0]);
                 if (response.getStatusCode().value() == 201) {
                     // Return the response body to display to the user
                     return response.getBody();
@@ -183,7 +181,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 RestTemplate restTemplate = new RestTemplate(true);
 
                 // Make the network request, posting the message, expecting a String in response from the server
-                ResponseEntity<T> response = restTemplate.exchange(UPDATE_USER_PROFILE_URL, HttpMethod.POST, requestEntity,
+                ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.UPDATE_USER_PROFILE_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
                 if (response.getStatusCode().value() == 201) {
@@ -202,13 +200,6 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
             sendResult(result);
         }
 
-    }
-
-    private void sendResult(T result) {
-        OnResponseListener<T> listener = getOnResponseListener();
-        if (listener != null) {
-            listener.onResponseReceived(result);
-        }
     }
 
 }

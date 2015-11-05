@@ -15,9 +15,6 @@ import com.aslan.contra.util.Constants;
  * Created by Vishnuvathsasarma on 04-Nov-15.
  */
 public class LocationSensor {
-
-    // The maximum validity period of a location, here 30 minute
-    private static final int MAX_VALIDITY_PERIOD = 1000 * 60 * 2;
     private final Context mContext;
     // The minimum distance to change Updates in meters
     private final long MIN_DISTANCE_CHANGE_FOR_UPDATES;
@@ -157,8 +154,8 @@ public class LocationSensor {
 
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > MAX_VALIDITY_PERIOD;
-        boolean isSignificantlyOlder = timeDelta < -MAX_VALIDITY_PERIOD;
+        boolean isSignificantlyNewer = timeDelta > Constants.LocationTracking.MAX_VALIDITY_PERIOD;
+        boolean isSignificantlyOlder = timeDelta < -Constants.LocationTracking.MAX_VALIDITY_PERIOD;
         boolean isNewer = timeDelta > 0;
 
         // If it's been more than two minutes since the current location, use the new location
