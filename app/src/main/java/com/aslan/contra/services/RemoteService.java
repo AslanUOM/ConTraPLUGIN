@@ -21,37 +21,6 @@ public class RemoteService extends Service implements OnResponseListener<String>
         return mMessenger.getBinder();
     }
 
-    private class RemoteServiceHandler extends Handler {
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case Constants.MessagePassingCommands.START_LOCATION_TRACKING:
-                    if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
-                        serviceIntent.addCategory(LocationTrackingService.TAG);
-                        startService(serviceIntent);
-                    }
-                    Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
-                    break;
-                case Constants.MessagePassingCommands.STOP_LOCATION_TRACKING:
-                    if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-                        Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
-                        serviceIntent.addCategory(LocationTrackingService.TAG);
-                        stopService(serviceIntent);
-                    }
-                    Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
-                    break;
-                case Constants.MessagePassingCommands.GET_ALL_CONTACTS:
-                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
-                    service.setOnResponseListener(RemoteService.this);
-                    service.sendContacts();
-                    break;
-            }
-        }
-    }
-
     @Override
     public void onResponseReceived(String response) {
         if (response != null) {
@@ -63,6 +32,11 @@ public class RemoteService extends Service implements OnResponseListener<String>
         }
     }
 
+    @Override
+    public Class getType() {
+        return String.class;
+    }
+
     private class RemoteServiceHandler extends Handler {
 
         @Override
@@ -92,10 +66,5 @@ public class RemoteService extends Service implements OnResponseListener<String>
                     break;
             }
         }
-    }
-
-    @Override
-    public Class getType() {
-        return String.class;
     }
 }
