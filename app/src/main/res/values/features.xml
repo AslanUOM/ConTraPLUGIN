@@ -3,17 +3,21 @@
     <array name="feature_names">
         <item>Location</item>
         <item>Contact</item>
+        <item>Phone State</item>
     </array>
     <array name="feature_descriptions">
         <item>ConTra tracks your location</item>
         <item>ConTra collects your contacts</item>
+        <item>Reads the device id and other states.</item>
     </array>
     <array name="feature_icons">
         <item>@drawable/ic_gps_fixed_grey_800_36dp</item>
         <item>@drawable/ic_people_grey_800_36dp</item>
+        <item>@drawable/ic_people_grey_800_36dp</item>
     </array>
     <array name="feature_permissions">
         <item>android.permission.ACCESS_COARSE_LOCATION,android.permission.ACCESS_FINE_LOCATION</item>
-        <item>android.permission.READ_CONTACTS</item>
+        <item>android.permission.READ_CONTACTS,android.permission.GET_ACCOUNTS</item>
+        <item>android.permission.READ_PHONE_STATE</item>
     </array>
 </resources>

@@ -1,9 +1,12 @@
 package com.aslan.contra.wsclient;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.aslan.contra.util.Constants;
+import com.aslan.contra.util.Utility;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +18,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
+
 /**
  * Created by gobinath on 10/30/15.
  */
@@ -23,7 +28,16 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
     private final String REGISTER_USER_SERVICE_URL = "http://10.0.2.2:8080/ConTra/user/register";
     private final String RETRIEVE_USER_PROFILE_URL = "http://10.0.2.2:8080/ConTra/user/profile/{query}";
     private final String UPDATE_USER_PROFILE_URL = "http://10.0.2.2:8080/ConTra/user/updateprofile";
+    private final Context context;
+    /**
+     * Substitute you own sender ID here. This is the project number you got
+     * from the API Console, as described in "Getting Started."
+     */
+    private static final String SENDER_ID = "986180772600";
 
+    public UserManagementServiceClient(Context context) {
+        this.context = context;
+    }
 
     public void registerUser(String country, String phoneNumber, String deviceName, String deviceSerial) {
         UserRegistrationTask task = new UserRegistrationTask();
@@ -41,13 +55,30 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
     }
 
     /**
+     * Register this device and return the device token. This method must be invoked inside an AsyncTask.
+     *
+     * @return
+     */
+    private String deviceToken() throws IOException {
+        String deviceToken = null;
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+        deviceToken = gcm.register(SENDER_ID);
+        // Persist the regID - no need to register again.
+        if (deviceToken != null) {
+            Utility.saveDeviceToken(context, deviceToken);
+        }
+        return deviceToken;
+    }
+
+    /**
      * AsyncTask to register the user.
      */
     private class UserRegistrationTask extends AsyncTask<String, Void, T> {
         @Override
         protected T doInBackground(String... params) {
             try {
-                // TODO: Derive the GCM token here
+                // Get the device token
+                String deviceToken = deviceToken();
 
                 // Create HttpHeaders
                 HttpHeaders requestHeaders = new HttpHeaders();
@@ -62,7 +93,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 formData.add("deviceName", params[2]);
                 formData.add("deviceSerial", params[3]);
                 // TODO: Update the GCM token here
-                formData.add("deviceToken", "");
+                formData.add("deviceToken", deviceToken);
 
 
                 // Populate the MultiValueMap being serialized and headers in an HttpEntity object to use for the request

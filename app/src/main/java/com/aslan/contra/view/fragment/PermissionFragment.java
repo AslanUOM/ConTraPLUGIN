@@ -2,54 +2,36 @@ package com.aslan.contra.view.fragment;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
+import com.aslan.contra.util.Constants;
+import com.aslan.contra.util.Utility;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
 
 
 public class PermissionFragment extends Fragment {
-    private static final String ARG_PARAM = "features";
-    private Feature[] features;
     private OnFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
     private Button btnGrantPermissions;
     private Context context;
     private final int PERMISSION_REQUEST_CODE = 100;
 
-    public static PermissionFragment newInstance(Feature[] features) {
-        PermissionFragment fragment = new PermissionFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PARAM, features);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public PermissionFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            features = (Feature[]) getArguments().getSerializable(ARG_PARAM);
-        }
     }
 
     @Override
@@ -65,26 +47,16 @@ public class PermissionFragment extends Fragment {
         this.recyclerView = (RecyclerView) view.findViewById(R.id.recyclerFeatures);
         this.btnGrantPermissions = (Button) view.findViewById(R.id.btnGrantPermissions);
 
-        final List<String> permissions = new ArrayList<String>();
-        // Check for the runtime permissions
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Android 6.0 or latest
-            for (Feature feature : features) {
-                for (String permission : feature.getPermissions()) {
-                    if (context.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-                        permissions.add(permission);
-                    }
-                }
-            }
-        }
+        // Get all the features
+        Feature[] features = Utility.getAllFeatures(getContext());
+        final String[] nonGrantedPermissions = Utility.nonGrantedPermissions(getContext());
 
-        if (!permissions.isEmpty()) {
+        if (nonGrantedPermissions.length != 0) {
             btnGrantPermissions.setVisibility(View.VISIBLE);
             btnGrantPermissions.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String[] array = permissions.toArray(new String[0]);
-                    requestPermissions(array, PERMISSION_REQUEST_CODE);
+                    requestPermissions(nonGrantedPermissions, PERMISSION_REQUEST_CODE);
                 }
             });
         } else {
@@ -110,6 +82,7 @@ public class PermissionFragment extends Fragment {
             }
             if (allPermissionsGranted) {
                 btnGrantPermissions.setVisibility(View.GONE);
+                mListener.onFragmentInteraction(this, Constants.ALL_PERMISSIONS_GRANTED);
             }
         }
     }

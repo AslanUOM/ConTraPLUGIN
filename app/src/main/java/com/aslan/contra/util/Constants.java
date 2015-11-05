@@ -18,6 +18,8 @@ public class Constants {
 
     public static final String COMMAND = "command";
 
+    public static final String ALL_PERMISSIONS_GRANTED = "granted";
+
     public static final int SHOW_PROFILE = 0x1000;
 
     public static final long SPLASH_VISIBLE_TIME = 1000;

@@ -69,7 +69,7 @@ public class ProfileFragment extends Fragment {
      */
     private void loadProfile() {
         // UserManagementServiceClient
-        final UserManagementServiceClient<Map<String, String>> retrieveServiceClient = new UserManagementServiceClient<>();
+        final UserManagementServiceClient<Map<String, String>> retrieveServiceClient = new UserManagementServiceClient<>(getContext());
 
         // Show progress dialog while retrieving information from server
         this.progressDialog = ProgressDialog.show(getContext(), "", "Loading...");
@@ -103,7 +103,7 @@ public class ProfileFragment extends Fragment {
         // Show progress bar during update
         progressDialog = ProgressDialog.show(getContext(), "", "Updating...");
 
-        final UserManagementServiceClient<String> updateServiceClient = new UserManagementServiceClient<>();
+        final UserManagementServiceClient<String> updateServiceClient = new UserManagementServiceClient<>(getContext());
         String name = etName.getText().toString();
         String email = etEmail.getText().toString();
 
