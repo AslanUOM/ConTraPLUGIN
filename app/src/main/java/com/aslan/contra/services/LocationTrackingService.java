@@ -3,37 +3,30 @@ package com.aslan.contra.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
-import android.net.wifi.ScanResult;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.aslan.contra.listeners.OnLocationChangedListener;
-import com.aslan.contra.listeners.OnWifiScanResultChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.sensor.WiFiSensor;
+import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
-
-import java.sql.Timestamp;
-import java.util.List;
+import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
+ * <p/>
  * helper methods.
  */
-public class LocationTrackingService extends IntentService {
+public class LocationTrackingService extends IntentService implements OnResponseListener<String> {
 
     public static final String TAG = "LocationTrackingService";
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
-    // The minimum distance to change location Updates in meters
-    private final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10L;
-    // The minimum time between location updates in milliseconds, here 30 minutes
-    private final long MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
     public Handler handler = null;
     //    private final long TIME_INTERVAL = 1800000L;
     private DatabaseHelper dbHelper;
@@ -50,7 +43,6 @@ public class LocationTrackingService extends IntentService {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -61,17 +53,19 @@ public class LocationTrackingService extends IntentService {
         dbHelper = new DatabaseHelper(this);
 
         initialiseLocationTracker();
-        initialiseWifiTracker();
+        //TODO uncomment WiFi tracking when implemented in server side
+//        initialiseWifiTracker();
 
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
                 onHandleIntent(LocationTrackingService.this.intent);
                 locationSensor.start();
-                wifiSensor.start();
+                //TODO uncomment WiFi tracking when implemented in server side
+//                wifiSensor.start();
                 Log.d("<<Tracking-onStart>>", "I am alive");
                 Toast.makeText(getApplicationContext(), "STARTED", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, MIN_TIME_BW_UPDATES);
+                handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
             }
         };
     }
@@ -110,6 +104,22 @@ public class LocationTrackingService extends IntentService {
         this.intent = intent;
     }
 
+    @Override
+    public void onResponseReceived(String response) {
+        if (response != null) {
+            // TODO handle received response from server for location changed
+            Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(this, "Unable to register the user", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public Class getType() {
+        return String.class;
+    }
+
     private void initialiseLocationTracker() {
         locationSensor = new LocationSensor(this, 0, 0);
         locationSensor.setOnLocationChangedListener(new OnLocationChangedListener() {
@@ -123,11 +133,21 @@ public class LocationTrackingService extends IntentService {
                         counter++;
                         if (counter == 5) {
                             counter = 0;
-                            if (dbHelper.insertLocation(currentBestLocation)) {
-                                String loc = currentBestLocation.toString();
-                                Log.d("LOCATION", loc);
-                                Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_SHORT).show();
-                                locationSensor.stop();
+                            Location previousLocation = dbHelper.getLastLocation();
+                            //TODO location data is not stored in SQLite if the change is not significant
+                            //less than 100m according to Constants.MIN_DISTANCE_FOR_LOCATION_CHANGE
+                            if (locationSensor.isLocationChangedSignificantly(currentBestLocation, previousLocation)) {
+                                if (dbHelper.insertLocation(currentBestLocation)) {
+                                    String loc = currentBestLocation.toString();
+                                    Log.d("LOCATION", loc);
+                                    Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_SHORT).show();
+
+                                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
+                                    service.setOnResponseListener(LocationTrackingService.this);
+                                    service.sendLocation(currentBestLocation);
+
+                                    locationSensor.stop();
+                                }
                             }
                         }
                     }
@@ -136,21 +156,22 @@ public class LocationTrackingService extends IntentService {
         });
     }
 
-    private void initialiseWifiTracker() {
-        wifiSensor = new WiFiSensor(this);
-        wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
-            @Override
-            public void onWifiScanResultsChanged(List<ScanResult> wifiList) {
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                Log.e("TIME", timestamp.toString());
-                for (ScanResult wifi : wifiList) {
-                    if (dbHelper.insertWifi(wifi, timestamp.toString())) {
-                        Log.d("WIFI", wifi.toString());
-                        Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                wifiSensor.stop();
-            }
-        });
-    }
+    //TODO uncomment WiFi tracking when implemented in server side
+//    private void initialiseWifiTracker() {
+//        wifiSensor = new WiFiSensor(this);
+//        wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
+//            @Override
+//            public void onWifiScanResultsChanged(List<ScanResult> wifiList) {
+//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//                Log.e("TIME", timestamp.toString());
+//                for (ScanResult wifi : wifiList) {
+//                    if (dbHelper.insertWifi(wifi, timestamp.toString())) {
+//                        Log.d("WIFI", wifi.toString());
+//                        Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//                wifiSensor.stop();
+//            }
+//        });
+//    }
 }
