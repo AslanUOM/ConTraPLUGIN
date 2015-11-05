@@ -82,46 +82,54 @@ public class LocationSensor {
             } else {
                 this.canGetLocation = true;
                 // First get location from Network Provider
-                if (isNetworkEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                    Log.d("Network", "Network");
-                    if (locationManager != null && listener != null) {
-                        Location location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            listener.onLocationChanged(location);
+                try {
+                    if (isNetworkEnabled) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.NETWORK_PROVIDER,
+                                MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        Log.d("Network", "Network");
+                        if (locationManager != null && listener != null) {
+                            Location location = locationManager
+                                    .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                listener.onLocationChanged(location);
+                            }
+
+                        }
+                    }
+                    // if GPS Enabled get lat/long using GPS Services
+                    if (isGPSEnabled) {
+                        locationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
+                                MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+                        Log.d("GPS Enabled", "GPS Enabled");
+                        if (locationManager != null && listener != null) {
+                            Location location = locationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                listener.onLocationChanged(location);
+                            }
                         }
 
                     }
-                }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-                    Log.d("GPS Enabled", "GPS Enabled");
-                    if (locationManager != null && listener != null) {
-                        Location location = locationManager
-                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        if (location != null) {
-                            listener.onLocationChanged(location);
-                        }
-                    }
-
+                } catch (SecurityException e) {
+                    Log.e(LocationSensor.class.getName(), e.getMessage(), e);
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(LocationSensor.class.getName(), e.getMessage(), e);
         }
     }
 
     public void stop() {
         if (locationManager != null) {
-            locationManager.removeUpdates(locationListener);
+            try {
+                locationManager.removeUpdates(locationListener);
+            } catch (SecurityException e) {
+                Log.e(LocationSensor.class.getName(), e.getMessage(), e);
+            }
         }
     }
 

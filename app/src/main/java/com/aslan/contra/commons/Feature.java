@@ -1,6 +1,13 @@
 package com.aslan.contra.commons;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+
+import com.aslan.contra.R;
 
 import java.io.Serializable;
 
@@ -43,5 +50,18 @@ public class Feature implements Serializable {
 
     public void setPermissions(String[] permissions) {
         this.permissions = permissions;
+    }
+
+    public boolean isPermissionGranted(Context ctx) {
+        boolean allGranted = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (String permission : permissions) {
+                if (ctx.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+        }
+        return true;
     }
 }
