@@ -24,6 +24,8 @@ public class Constants {
 
     public static final long SPLASH_VISIBLE_TIME = 1000;
 
+    public static final double MIN_DISTANCE_FOR_LOCATION_CHANGE = 100;     //in meters
+
     public static final String CONTRA_SERVICE_URL = "http://10.0.2.2:8080/ConTra";
 
     public static final String[] PERMISSIONS = {

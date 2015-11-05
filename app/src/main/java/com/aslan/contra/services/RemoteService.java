@@ -16,7 +16,6 @@ public class RemoteService extends Service {
 
     @Override
     public IBinder onBind(Intent arg0) {
-        // TODO Auto-generated method stub
         return mMessenger.getBinder();
     }
 
@@ -24,7 +23,6 @@ public class RemoteService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
-            // TODO Auto-generated method stub
             super.handleMessage(msg);
             switch (msg.what) {
                 case Msg.START_LOCATION_TRACKING:

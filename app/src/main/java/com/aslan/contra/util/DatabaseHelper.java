@@ -169,8 +169,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                new String[] { Integer.toString(id) });
 //    }
 
-    public List<String> getRecentLocations(int length) {
-        List<String> array_list = new ArrayList<>();
+    public Location getLastLocation() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + LOCATION_TABLE_NAME
+                + " ORDER BY " + LOCATION_COLUMN_TIME
+                + " DESC LIMIT 1", null);
+        res.moveToFirst();
+
+        Location loc = new Location("");
+        loc.setProvider(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER)));
+        loc.setLatitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LATITUDE)));
+        loc.setLongitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE)));
+        loc.setTime(res.getLong(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
+        return loc;
+    }
+
+    public List<Location> getRecentLocations(int length) {
+        List<Location> array_list = new ArrayList<>();
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM " + LOCATION_TABLE_NAME
@@ -178,10 +194,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " DESC LIMIT " + length, null);
         res.moveToFirst();
         while (!res.isAfterLast()) {
-            array_list.add(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LATITUDE))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
+            Location loc = new Location("");
+            loc.setProvider(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER)));
+            loc.setLatitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LATITUDE)));
+            loc.setLongitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE)));
+            loc.setTime(res.getLong(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
+            array_list.add(loc);
+
+//            array_list.add(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LATITUDE))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_TIME)));
             res.moveToNext();
         }
         res.close();
@@ -206,17 +231,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return array_list;
     }
 
-    public List<String> getAllLocations() {
-        List<String> array_list = new ArrayList<>();
+    public List<Location> getAllLocations() {
+        List<Location> array_list = new ArrayList<>();
         //hp = new HashMap();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM " + LOCATION_TABLE_NAME, null);
         res.moveToFirst();
         while (!res.isAfterLast()) {
-            array_list.add(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LATITUDE))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE))
-                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
+            Location loc = new Location("");
+            loc.setProvider(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER)));
+            loc.setLatitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LATITUDE)));
+            loc.setLongitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE)));
+            loc.setTime(res.getLong(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
+            array_list.add(loc);
+
+
+//            array_list.add(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LATITUDE))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE))
+//                    + ", " + res.getString(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+
             res.moveToNext();
         }
         res.close();

@@ -24,14 +24,12 @@ public class MsgPassingActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            // TODO Auto-generated method stub
             mIsBinded = false;
             mServiceConnection = null;
         }
 
         @Override
         public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-            // TODO Auto-generated method stub
             mIsBinded = true;
             mMessenger = new Messenger(arg1);
         }
@@ -49,12 +47,10 @@ public class MsgPassingActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                // TODO Auto-generated method stub
                 Message msg = Message.obtain(null, SAY_BYE, 0, 0);
                 try {
                     mMessenger.send(msg);
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -65,12 +61,10 @@ public class MsgPassingActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                // TODO Auto-generated method stub
                 Message msg = Message.obtain(null, SAY_SEE_YOU, 0, 0);
                 try {
                     mMessenger.send(msg);
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.aslan.contra.listeners.OnLocationChangedListener;
+import com.aslan.contra.util.Constants;
 
 /**
  * Created by Vishnuvathsasarma on 04-Nov-15.
@@ -198,5 +199,9 @@ public class LocationSensor {
             return provider2 == null;
         }
         return provider1.equals(provider2);
+    }
+
+    public boolean isLocationChangedSignificantly(Location currentlocation, Location previoousLocation) {
+        return currentlocation.distanceTo(previoousLocation) > Constants.MIN_DISTANCE_FOR_LOCATION_CHANGE;
     }
 }
