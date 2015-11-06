@@ -1,8 +1,6 @@
 package com.aslan.contra.view.activity;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -13,28 +11,21 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.aslan.contra.R;
-import com.aslan.contra.commons.Feature;
-import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.Constants;
-import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.util.Utility;
 import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
 import com.aslan.contra.view.fragment.ProfileFragment;
 
-import java.util.Arrays;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+    private final HomeFragment HOME_FRAGMENT = new HomeFragment();
     // UI components
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
-
-    private final HomeFragment HOME_FRAGMENT = new HomeFragment();
     private boolean showProfile;
 
     @Override
@@ -84,11 +75,12 @@ public class MainActivity extends AppCompatActivity
      * Start the snesors to collect the data.
      */
     private void startSensors() {
-        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
-            serviceIntent.addCategory(LocationTrackingService.TAG);
-            startService(serviceIntent);
-        }
+        //TODO uncomment when you want to auto start the tracking service at app start
+//        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+//            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
+//            serviceIntent.addCategory(LocationTrackingService.TAG);
+//            startService(serviceIntent);
+//        }
     }
 
     /**
