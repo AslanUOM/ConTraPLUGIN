@@ -174,15 +174,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("SELECT * FROM " + LOCATION_TABLE_NAME
                 + " ORDER BY " + LOCATION_COLUMN_TIME
                 + " DESC LIMIT 1", null);
-        res.moveToFirst();
-
-        Location loc = new Location("");
-        loc.setProvider(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER)));
-        loc.setLatitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LATITUDE)));
-        loc.setLongitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE)));
-        loc.setTime(res.getLong(res.getColumnIndex(LOCATION_COLUMN_TIME)));
-
-        return loc;
+        if (res.getCount() > 0) {
+            res.moveToFirst();
+            Location loc = new Location("");
+            loc.setProvider(res.getString(res.getColumnIndex(LOCATION_COLUMN_PROVIDER)));
+            loc.setLatitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LATITUDE)));
+            loc.setLongitude(res.getDouble(res.getColumnIndex(LOCATION_COLUMN_LONGITUDE)));
+            loc.setTime(res.getLong(res.getColumnIndex(LOCATION_COLUMN_TIME)));
+            return loc;
+        } else {
+            return null;
+        }
     }
 
     public List<Location> getRecentLocations(int length) {

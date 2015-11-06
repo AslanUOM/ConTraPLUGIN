@@ -198,7 +198,7 @@ public class LocationSensor {
         return provider1.equals(provider2);
     }
 
-    public boolean isLocationChangedSignificantly(Location currentlocation, Location previoousLocation) {
-        return currentlocation.distanceTo(previoousLocation) > Constants.MIN_DISTANCE_FOR_LOCATION_CHANGE;
+    public boolean isLocationChangedSignificantly(Location currentlocation, Location previousLocation) {
+        return previousLocation == null ? true : currentlocation.distanceTo(previousLocation) > Constants.MIN_DISTANCE_FOR_LOCATION_CHANGE;
     }
 }

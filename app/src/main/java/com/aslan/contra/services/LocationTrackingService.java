@@ -14,7 +14,6 @@ import com.aslan.contra.sensor.WiFiSensor;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.wsclient.OnResponseListener;
-import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -142,9 +141,10 @@ public class LocationTrackingService extends IntentService implements OnResponse
                                     Log.d("LOCATION", loc);
                                     Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_SHORT).show();
 
-                                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
-                                    service.setOnResponseListener(LocationTrackingService.this);
-                                    service.sendLocation(currentBestLocation);
+                                    //TODO uncomment when you want to send the data to server in real time
+//                                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
+//                                    service.setOnResponseListener(LocationTrackingService.this);
+//                                    service.sendLocation(currentBestLocation);
 
                                     locationSensor.stop();
                                 }

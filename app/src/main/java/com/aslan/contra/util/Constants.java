@@ -61,7 +61,7 @@ public class Constants {
         /**
          * URL for ConTra service(server).
          */
-        public static final String CONTRA_SERVICE_URL = "http://10.0.2.2:8080/ConTra";
+        public static final String CONTRA_SERVICE_URL = "http://contra.projects.mrt.ac.lk:8080/ConTra";
 
         /**
          * URL Sensor Data.
@@ -89,5 +89,8 @@ public class Constants {
         public static final int START_LOCATION_TRACKING = 0;
         public static final int STOP_LOCATION_TRACKING = 1;
         public static final int GET_ALL_CONTACTS = 2;
+        public static final int EXPORT_LOCATION_DATA_TO_SD_CARD = 3;
+        public static final int TURN_ON_SENDING_LOCATION_DATA_TO_SERVER = 4;
+        public static final int TURN_OFF_SENDING_LOCATION_DATA_TO_SERVER = 5;
     }
 }
