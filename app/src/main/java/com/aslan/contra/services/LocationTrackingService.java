@@ -1,10 +1,16 @@
 package com.aslan.contra.services;
 
 import android.app.IntentService;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,7 +19,9 @@ import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.sensor.WiFiSensor;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
+import com.aslan.contra.util.IntentCreator;
 import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -27,13 +35,28 @@ public class LocationTrackingService extends IntentService implements OnResponse
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
     public Handler handler = null;
+    boolean mIsBinded;
+    Messenger mMessenger;
+    ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mIsBinded = false;
+            mServiceConnection = null;
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+            mIsBinded = true;
+            mMessenger = new Messenger(arg1);
+        }
+    };
     //    private final long TIME_INTERVAL = 1800000L;
     private DatabaseHelper dbHelper;
     private LocationSensor locationSensor;
     private Location currentBestLocation;
     private int counter = 0;
     private WiFiSensor wifiSensor;
-
     private Intent intent;
 
     public LocationTrackingService() {
@@ -49,7 +72,12 @@ public class LocationTrackingService extends IntentService implements OnResponse
     public void onCreate() {
         super.onCreate();
 
-        dbHelper = new DatabaseHelper(this);
+        Intent mIntent = new Intent();
+        mIntent.setAction("aslan.app.RemoteService"); //TODO change the actual action name logical
+        mIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), mIntent); //solution for failure above android 5.0
+        bindService(mIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        dbHelper = new DatabaseHelper(getApplicationContext());
 
         initialiseLocationTracker();
         //TODO uncomment WiFi tracking when implemented in server side
@@ -108,9 +136,19 @@ public class LocationTrackingService extends IntentService implements OnResponse
         if (response != null) {
             // TODO handle received response from server for location changed
             Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+            Log.d(TAG, response);
+            Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.NEARBY_FRIENDS, response);
+            msg.obj = bundle;
+            try {
+                mMessenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         } else {
             // TODO: Replace by AlertDialog
-            Toast.makeText(this, "Unable to register the user", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No nearby friends", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -141,14 +179,13 @@ public class LocationTrackingService extends IntentService implements OnResponse
                                     Log.d("LOCATION", loc);
                                     Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_SHORT).show();
 
-                                    //TODO uncomment when you want to send the data to server in real time
-//                                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
-//                                    service.setOnResponseListener(LocationTrackingService.this);
-//                                    service.sendLocation(currentBestLocation);
+                                    SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
+                                    service.setOnResponseListener(LocationTrackingService.this);
+                                    service.sendLocation(currentBestLocation);
 
-                                    locationSensor.stop();
                                 }
                             }
+                            locationSensor.stop();
                         }
                     }
                 }

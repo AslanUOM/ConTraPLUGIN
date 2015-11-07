@@ -43,7 +43,7 @@ public class RemoteService extends Service implements OnResponseListener<String>
         private DatabaseHelper dbHelper;
 
         private RemoteServiceHandler() {
-            dbHelper = new DatabaseHelper(RemoteService.this);
+            dbHelper = new DatabaseHelper(getApplicationContext());
         }
 
         @Override

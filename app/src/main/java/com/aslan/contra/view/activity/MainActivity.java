@@ -13,7 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.aslan.contra.R;
+import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.Constants;
+import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.util.Utility;
 import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
@@ -75,12 +77,12 @@ public class MainActivity extends AppCompatActivity
      * Start the snesors to collect the data.
      */
     private void startSensors() {
-        //TODO uncomment when you want to auto start the tracking service at app start
-//        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-//            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
-//            serviceIntent.addCategory(LocationTrackingService.TAG);
-//            startService(serviceIntent);
-//        }
+        //TODO comment when you don't want to auto start the tracking service at app start
+        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
+            serviceIntent.addCategory(LocationTrackingService.TAG);
+            startService(serviceIntent);
+        }
     }
 
     /**

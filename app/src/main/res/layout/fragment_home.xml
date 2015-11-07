@@ -4,7 +4,43 @@
     tools:context="com.aslan.contra.view.fragment.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <!--<TextView android:layout_width="match_parent" android:layout_height="match_parent"-->
+    <!--android:text="@string/hello_blank_fragment" />-->
+
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnStop"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="left|top"
+        android:text="Start Location Tracking" />
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="left|center_vertical"
+        android:text="Stop Location Tracking" />
+
+    <Button
+        android:id="@+id/btnContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnExport"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="right|bottom"
+        android:text="Get All Contacts" />
+
+    <Button
+        android:id="@+id/btnExport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnStop"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="left|bottom"
+        android:text="Export to SD card" />
 
 </FrameLayout>
