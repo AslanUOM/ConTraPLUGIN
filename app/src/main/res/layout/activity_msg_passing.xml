@@ -10,19 +10,19 @@
     tools:context="com.aslan.contra.view.activity.MsgPassingActivity">
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/btnStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button2"
+        android:layout_above="@+id/btnStop"
         android:layout_centerHorizontal="true"
         android:text="Say Bye" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnStop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button1"
-        android:layout_alignStart="@+id/button1"
+        android:layout_alignLeft="@+id/btnStart"
+        android:layout_alignStart="@+id/btnStart"
         android:layout_centerVertical="true"
         android:text="Say See You" />
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.Manifest;
 public class Constants {
     public static final String USER_ID = "userId";
     public static final String DEVICE_TOKEN = "deviceToken";
+    public static final String NEARBY_FRIENDS = "nearby friends";
     /**
      * GCM service project number
      * Substitute you own sender ID here. This is the project number you got
@@ -61,7 +62,7 @@ public class Constants {
         /**
          * URL for ConTra service(server).
          */
-        public static final String CONTRA_SERVICE_URL = "http://10.0.2.2:8080/ConTra";
+        public static final String CONTRA_SERVICE_URL = "http://contra.projects.mrt.ac.lk:8080/ConTra";
 
         /**
          * URL Sensor Data.
@@ -89,5 +90,7 @@ public class Constants {
         public static final int START_LOCATION_TRACKING = 0;
         public static final int STOP_LOCATION_TRACKING = 1;
         public static final int GET_ALL_CONTACTS = 2;
+        public static final int EXPORT_LOCATION_DATA_TO_SD_CARD = 3;
+        public static final int NEARBY_FRIENDS_RECEIVED = 4;
     }
 }

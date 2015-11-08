@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.aslan.contra.R;
+import com.aslan.contra.util.IntentCreator;
 
 public class MsgPassingActivity extends AppCompatActivity {
 
@@ -41,8 +42,9 @@ public class MsgPassingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_msg_passing);
         Intent mIntent = new Intent();
         mIntent.setAction("aslan.app.RemoteService");
+        mIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), mIntent); //solution for failure above android 5.0
         bindService(mIntent, mServiceConnection, BIND_AUTO_CREATE);
-        Button mButton = (Button) findViewById(R.id.button1);
+        Button mButton = (Button) findViewById(R.id.btnStart);
         mButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -56,7 +58,7 @@ public class MsgPassingActivity extends AppCompatActivity {
             }
         });
 
-        Button mButton2 = (Button) findViewById(R.id.button2);
+        Button mButton2 = (Button) findViewById(R.id.btnStop);
         mButton2.setOnClickListener(new View.OnClickListener() {
 
             @Override

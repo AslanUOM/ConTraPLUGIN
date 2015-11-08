@@ -1,17 +1,23 @@
 package com.aslan.contra.view.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.aslan.contra.R;
+import com.aslan.contra.services.LocationTrackingService;
+import com.aslan.contra.util.DatabaseHelper;
+import com.aslan.contra.util.RunningServices;
+import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements OnResponseListener<String> {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -22,6 +28,10 @@ public class HomeFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    public HomeFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -41,8 +51,21 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    public HomeFragment() {
-        // Required empty public constructor
+    //From OnResponseListener
+    @Override
+    public void onResponseReceived(String response) {
+        if (response != null) {
+            // TODO handle received response from server for location changed
+            Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public Class getType() {
+        return String.class;
     }
 
     @Override
@@ -61,6 +84,65 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
+
+        Button mButton = (Button) view.findViewById(R.id.btnStart);
+        mButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if (!RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
+                    serviceIntent.addCategory(LocationTrackingService.TAG);
+                    getContext().startService(serviceIntent);
+                    Toast.makeText(getContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Tracking service is already running", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        Button mButton2 = (Button) view.findViewById(R.id.btnStop);
+        mButton2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if (RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
+                    serviceIntent.addCategory(LocationTrackingService.TAG);
+                    getContext().stopService(serviceIntent);
+                    Toast.makeText(getContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "Tracking service is not running", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        Button mButton3 = (Button) view.findViewById(R.id.btnContacts);
+        mButton3.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getContext());
+                service.setOnResponseListener(HomeFragment.this);
+                service.sendContacts();
+            }
+        });
+        Button mButton4 = (Button) view.findViewById(R.id.btnExport);
+        mButton4.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if (!RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+                    dbHelper.exportToSdCard(getContext());
+                } else {
+                    Toast.makeText(getContext(), "Stop Tracking service first and try again", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     @Override
     public void onAttach(Context context) {

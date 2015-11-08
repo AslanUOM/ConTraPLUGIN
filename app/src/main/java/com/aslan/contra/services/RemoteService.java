@@ -9,6 +9,7 @@ import android.os.Messenger;
 import android.widget.Toast;
 
 import com.aslan.contra.util.Constants;
+import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
@@ -39,6 +40,12 @@ public class RemoteService extends Service implements OnResponseListener<String>
 
     private class RemoteServiceHandler extends Handler {
 
+        private DatabaseHelper dbHelper;
+
+        private RemoteServiceHandler() {
+            dbHelper = new DatabaseHelper(getApplicationContext());
+        }
+
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -48,21 +55,32 @@ public class RemoteService extends Service implements OnResponseListener<String>
                         Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
                         serviceIntent.addCategory(LocationTrackingService.TAG);
                         startService(serviceIntent);
+                        Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Tracking service is already running", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(getApplicationContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MessagePassingCommands.STOP_LOCATION_TRACKING:
                     if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
                         Intent serviceIntent = new Intent(RemoteService.this, LocationTrackingService.class);
                         serviceIntent.addCategory(LocationTrackingService.TAG);
                         stopService(serviceIntent);
+                        Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Tracking service is not running", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(getApplicationContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
                     break;
                 case Constants.MessagePassingCommands.GET_ALL_CONTACTS:
                     SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
                     service.setOnResponseListener(RemoteService.this);
                     service.sendContacts();
+                    break;
+                case Constants.MessagePassingCommands.EXPORT_LOCATION_DATA_TO_SD_CARD:
+                    if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+                        dbHelper.exportToSdCard(getApplicationContext());
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Stop Tracking service first and try again", Toast.LENGTH_SHORT).show();
+                    }
                     break;
             }
         }
