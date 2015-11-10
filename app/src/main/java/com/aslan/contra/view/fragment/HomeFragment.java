@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment implements OnResponseListener<String>
             Toast.makeText(getContext(), response, Toast.LENGTH_LONG).show();
         } else {
             // TODO: Replace by AlertDialog
-            Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Unable to send location to server", Toast.LENGTH_LONG).show();
         }
     }
 

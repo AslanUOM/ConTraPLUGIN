@@ -50,25 +50,8 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
     }
 
     public void sendContacts() {
-        ContactsSensor contactsSensor = new ContactsSensor(context);
-        List<String> contacts = contactsSensor.collect();
-        Toast.makeText(context, "Contacts requested @ PLUGIN\nFound " + contacts.size() + " contacts", Toast.LENGTH_LONG).show();
-        //TODO send contacts to server
-//                    for (int i = 0; i < 10; i++) {
-//                        Log.d("Contact", contacts.get(i));
-//                        Toast.makeText(getApplicationContext(), contacts.get(i), Toast.LENGTH_SHORT).show();
-//                    }
-        SensorResponse response = new SensorResponse();
-        SensorData contactData = new SensorData();
-        contactData.setType(Constants.Type.CONTACTS);
-        contactData.setTime(new Date().getTime());
-        contactData.setData(contacts.toArray(new String[0]));
-
-        response.addSensorData(contactData);
-        response.setUserID(Utility.getUserId(context));
-
-        SensorDataSendingTask task = new SensorDataSendingTask();
-        task.execute(response);
+        ContactCollectionAsyncTask task = new ContactCollectionAsyncTask();
+        task.execute();
     }
 
     private void sendResult(T result) {
@@ -79,7 +62,37 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
     }
 
     /**
-     * AsyncTask to register the user.
+     * AsyncTask to collect contacts from user.
+     */
+    private class ContactCollectionAsyncTask extends AsyncTask<Void, Void, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(Void... params) {
+            ContactsSensor contactsSensor = new ContactsSensor(context);
+            List<String> contacts = contactsSensor.collect();
+            return contacts;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> contacts) {
+            super.onPostExecute(contacts);
+            Toast.makeText(context, "Contacts requested @ PLUGIN\nFound " + contacts.size() + " contacts", Toast.LENGTH_LONG).show();
+            SensorResponse response = new SensorResponse();
+            SensorData contactData = new SensorData();
+            contactData.setType(Constants.Type.CONTACTS);
+            contactData.setTime(new Date().getTime());
+            contactData.setData(contacts.toArray(new String[0]));
+
+            response.addSensorData(contactData);
+            response.setUserID(Utility.getUserId(context));
+
+            SensorDataSendingTask task = new SensorDataSendingTask();
+            task.execute(response);
+        }
+    }
+
+    /**
+     * AsyncTask to send the sensor data to server.
      */
     private class SensorDataSendingTask extends AsyncTask<SensorResponse, Void, T> {
         @Override
