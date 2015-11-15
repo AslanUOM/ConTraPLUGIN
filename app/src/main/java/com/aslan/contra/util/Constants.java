@@ -9,6 +9,9 @@ public class Constants {
     public static final String USER_ID = "userId";
     public static final String DEVICE_TOKEN = "deviceToken";
     public static final String NEARBY_FRIENDS = "nearby friends";
+
+    public static final int HTTP_OK = 200;
+
     /**
      * GCM service project number
      * Substitute you own sender ID here. This is the project number you got

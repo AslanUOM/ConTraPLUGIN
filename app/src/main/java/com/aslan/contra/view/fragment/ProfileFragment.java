@@ -91,7 +91,6 @@ public class ProfileFragment extends Fragment {
                 return Map.class;
             }
         });
-
         // Execute the task
         retrieveServiceClient.retrieveUserProfile(Utility.getUserId(getContext()));
     }

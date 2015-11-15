@@ -15,6 +15,7 @@ import com.aslan.contra.util.Utility;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -115,7 +116,7 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.SEND_SENSOR_DATA_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
-                if (response.getStatusCode().value() == 201) {
+                if (response.getStatusCode().value() == Constants.HTTP_OK) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }

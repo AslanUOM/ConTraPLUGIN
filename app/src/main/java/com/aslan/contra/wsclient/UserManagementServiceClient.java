@@ -11,6 +11,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -24,6 +25,8 @@ import java.io.IOException;
  * Created by gobinath on 10/30/15.
  */
 public class UserManagementServiceClient<T> extends ServiceClient<T> {
+    private final String TAG = UserManagementServiceClient.class.getName();
+
     private final Context context;
 
     public UserManagementServiceClient(Context context) {
@@ -105,7 +108,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
-                if (response.getStatusCode().value() == 201) {
+                if (response.getStatusCode().value() == Constants.HTTP_OK) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
@@ -137,7 +140,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
 
                 // Make the HTTP GET request, marshaling the response to a String
                 ResponseEntity<T> response = restTemplate.getForEntity(Constants.WebServiceUrls.RETRIEVE_USER_PROFILE_URL, getOnResponseListener().getType(), params[0]);
-                if (response.getStatusCode().value() == 201) {
+                if (response.getStatusCode().value() == Constants.HTTP_OK) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
@@ -184,7 +187,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.UPDATE_USER_PROFILE_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
-                if (response.getStatusCode().value() == 201) {
+                if (response.getStatusCode().value() == Constants.HTTP_OK) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
