@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
@@ -90,38 +92,59 @@ public class HomeFragment extends Fragment implements OnResponseListener<String>
 
         final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
 
-        Button mButton = (Button) view.findViewById(R.id.btnStart);
-        mButton.setOnClickListener(new View.OnClickListener() {
-
+        SwitchCompat swLocTrackEnable = (SwitchCompat) view.findViewById(R.id.swLocTrack);
+        swLocTrackEnable.setChecked(RunningServices.getInstance().isLocationServiceRunning(getContext()));
+        swLocTrackEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View arg0) {
-                if (!RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
                     Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
                     serviceIntent.addCategory(LocationTrackingService.TAG);
                     getContext().startService(serviceIntent);
                     Toast.makeText(getContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getContext(), "Tracking service is already running", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        Button mButton2 = (Button) view.findViewById(R.id.btnStop);
-        mButton2.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                if (RunningServices.getInstance().isLocationServiceRunning(getContext())) {
                     Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
                     serviceIntent.addCategory(LocationTrackingService.TAG);
                     getContext().stopService(serviceIntent);
                     Toast.makeText(getContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), "Tracking service is not running", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        Button mButton3 = (Button) view.findViewById(R.id.btnContacts);
-        mButton3.setOnClickListener(new View.OnClickListener() {
+
+        //TODO remove commented code when switch is working fine
+//        Button mButton = (Button) view.findViewById(R.id.btnStart);
+//        mButton.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                if (!RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+//                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
+//                    serviceIntent.addCategory(LocationTrackingService.TAG);
+//                    getContext().startService(serviceIntent);
+//                    Toast.makeText(getContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(getContext(), "Tracking service is already running", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//        Button mButton2 = (Button) view.findViewById(R.id.btnStop);
+//        mButton2.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                if (RunningServices.getInstance().isLocationServiceRunning(getContext())) {
+//                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
+//                    serviceIntent.addCategory(LocationTrackingService.TAG);
+//                    getContext().stopService(serviceIntent);
+//                    Toast.makeText(getContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(getContext(), "Tracking service is not running", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+
+        Button btnGetContacts = (Button) view.findViewById(R.id.btnContacts);
+        btnGetContacts.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -130,8 +153,9 @@ public class HomeFragment extends Fragment implements OnResponseListener<String>
                 service.sendContacts();
             }
         });
-        Button mButton4 = (Button) view.findViewById(R.id.btnExport);
-        mButton4.setOnClickListener(new View.OnClickListener() {
+        btnGetContacts.performClick();
+        Button btnExportToSD = (Button) view.findViewById(R.id.btnExport);
+        btnExportToSD.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {

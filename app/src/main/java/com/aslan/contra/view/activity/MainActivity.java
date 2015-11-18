@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
             boolean nonGrantedPermissionsExists = checkNonGrantedPermissions();
             if (!nonGrantedPermissionsExists) {
                 changeFragment(HOME_FRAGMENT);
+                navigationView.setCheckedItem(R.id.nav_manage);//TODO set setting item checked. remove later
                 startSensors();
             }
         }
