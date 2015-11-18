@@ -10,7 +10,15 @@ public class Constants {
     public static final String DEVICE_TOKEN = "deviceToken";
     public static final String NEARBY_FRIENDS = "nearby friends";
 
+    /**
+     * HTTP Status-Code 200: OK.
+     */
     public static final int HTTP_OK = 200;
+
+    /**
+     * HTTP Status-Code 201: Created.
+     */
+    public static final int HTTP_CREATED = 201;
 
     /**
      * GCM service project number

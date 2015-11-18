@@ -108,7 +108,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
-                if (response.getStatusCode().value() == Constants.HTTP_OK) {
+                if (response.getStatusCode().value() == Constants.HTTP_CREATED) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
