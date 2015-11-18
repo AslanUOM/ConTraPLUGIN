@@ -116,7 +116,8 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.SEND_SENSOR_DATA_URL, HttpMethod.POST, requestEntity,
                         getOnResponseListener().getType());
 
-                if (response.getStatusCode().value() == Constants.HTTP_OK) {
+                // TODO: After updating in server compare the status with Constants.HTTP_OK
+                if (response.getStatusCode().value() == 201) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
