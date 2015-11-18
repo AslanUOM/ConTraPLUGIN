@@ -37,6 +37,9 @@ public class Constants {
             Manifest.permission.READ_CONTACTS
     };
 
+    public static final String FRIEND_FINDER_APP_ACTION_NAME = "aslan.app.RemoteMessagingService";
+    public static final String BUNDLE_TYPE = "bundle data type";
+
     //public static final String FIRST_RUN = "first_run";
     private Constants() {
     }
@@ -67,6 +70,7 @@ public class Constants {
          * Type CONTACTS.
          */
         public static final String CONTACTS = "contacts";
+        public static final String NEARBY_FRIENDS = "nearby friends";
     }
 
     public static final class WebServiceUrls {
@@ -76,7 +80,12 @@ public class Constants {
         public static final String CONTRA_SERVICE_URL = "http://contra.projects.mrt.ac.lk:8080/ConTra";
 
         /**
-         * URL Sensor Data.
+         * URL Get Nearby friends Data.
+         */
+        public static final String GET_NEARBY_FRIENDS_DATA_URL = CONTRA_SERVICE_URL + "/contextprovider/nearbyfriends/{query}";
+
+        /**
+         * URL Post Sensor Data.
          */
         public static final String SEND_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/sensordatareceiver/save";
 
@@ -103,5 +112,6 @@ public class Constants {
         public static final int GET_ALL_CONTACTS = 2;
         public static final int EXPORT_LOCATION_DATA_TO_SD_CARD = 3;
         public static final int NEARBY_FRIENDS_RECEIVED = 4;
+        public static final int GET_NEARBY_FRIENDS = 5;
     }
 }
