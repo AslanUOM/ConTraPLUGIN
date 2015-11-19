@@ -21,34 +21,12 @@ import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataRetrievingServiceClient;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
-import java.util.List;
-
-public class RemoteMessagingService extends Service implements OnResponseListener<String> {
+public class RemoteMessagingService extends Service implements ServiceConnection {
     private static final String TAG = "RemoteMessagingService";
 
     private Messenger receiver;
     private Messenger sender;
-    private boolean senderIsBinded;
-
-
-    private ServiceConnection messengerServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.d("RemoteService", "onServiceConnected");
-            Log.d("RemoteService", name.toString());
-            Log.d("RemoteService", service.toString());
-            sender = new Messenger(service);
-            senderIsBinded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.d("RemoteService", "onServiceConnected");
-            Log.d("RemoteService", name.toString());
-            sender = null;
-            senderIsBinded = false;
-        }
-    };
+    private Intent intent;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -58,6 +36,45 @@ public class RemoteMessagingService extends Service implements OnResponseListene
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            this.intent = intent;
+
+            Intent bindingIntent = new Intent();
+            bindingIntent.setAction(Constants.FRIEND_FINDER_APP_ACTION_NAME); //TODO change the actual action name logical
+            bindingIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), bindingIntent); //solution for failure above android 5.0
+            bindService(bindingIntent, this, BIND_AUTO_CREATE);
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        unbindService(this);
+        super.onDestroy();
+    }
+
+    public void sendNearbyFriends(String response) {
+        Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.Type.NEARBY_FRIENDS, response);
+        msg.setData(bundle);
+        try {
+            sender.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.d("RemoteService", "onServiceConnected");
+        Log.d("RemoteService", name.toString());
+        Log.d("RemoteService", service.toString());
+        sender = new Messenger(service);
+
+        // Extract the information
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             switch (bundle.getString(Constants.BUNDLE_TYPE)) {
@@ -66,27 +83,13 @@ public class RemoteMessagingService extends Service implements OnResponseListene
                     break;
             }
         }
-        return super.onStartCommand(intent, flags, startId);
     }
 
-    public void sendNearbyFriends(String response) {
-        Intent mIntent = new Intent();
-        mIntent.setAction(Constants.FRIEND_FINDER_APP_ACTION_NAME); //TODO change the actual action name logical
-        mIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), mIntent); //solution for failure above android 5.0
-        bindService(mIntent, messengerServiceConnection, BIND_AUTO_CREATE);
-
-        Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.Type.NEARBY_FRIENDS, response);
-        msg.setData(bundle);
-        try {
-            if (senderIsBinded)
-                sender.send(msg);
-            else
-                Log.d("RemoteService", "sender messenger is NULL");
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        Log.d("RemoteService", "onServiceConnected");
+        Log.d("RemoteService", name.toString());
+        sender = null;
     }
 
     private class IncomingMessageHandler extends Handler {
@@ -127,7 +130,23 @@ public class RemoteMessagingService extends Service implements OnResponseListene
                     break;
                 case Constants.MessagePassingCommands.GET_ALL_CONTACTS:
                     SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
-                    service.setOnResponseListener(RemoteMessagingService.this);
+                    service.setOnResponseListener(new OnResponseListener<String>() {
+                        @Override
+                        public void onResponseReceived(String response) {
+                            if (response != null) {
+                                // TODO handle received response from server for location changed
+                                Toast.makeText(RemoteMessagingService.this, response, Toast.LENGTH_LONG).show();
+                            } else {
+                                // TODO: Replace by AlertDialog
+                                Toast.makeText(RemoteMessagingService.this, "No nearby friends", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public Class getType() {
+                            return String.class;
+                        }
+                    });
                     service.sendContacts();
                     break;
                 case Constants.MessagePassingCommands.EXPORT_LOCATION_DATA_TO_SD_CARD:
@@ -168,22 +187,5 @@ public class RemoteMessagingService extends Service implements OnResponseListene
                     break;
             }
         }
-    }
-
-
-    @Override
-    public void onResponseReceived(String response) {
-        if (response != null) {
-            // TODO handle received response from server for location changed
-            Toast.makeText(this, response, Toast.LENGTH_LONG).show();
-        } else {
-            // TODO: Replace by AlertDialog
-            Toast.makeText(this, "No nearby friends", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public Class getType() {
-        return String.class;
     }
 }
