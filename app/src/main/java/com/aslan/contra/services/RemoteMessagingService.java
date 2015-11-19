@@ -49,22 +49,7 @@ public class RemoteMessagingService extends Service implements ServiceConnection
 
     @Override
     public void onDestroy() {
-        unbindService(this);
         super.onDestroy();
-    }
-
-    public void sendNearbyFriends(String response) {
-        Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.Type.NEARBY_FRIENDS, response);
-        msg.setData(bundle);
-        try {
-            sender.send(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -90,6 +75,21 @@ public class RemoteMessagingService extends Service implements ServiceConnection
         Log.d("RemoteService", "onServiceConnected");
         Log.d("RemoteService", name.toString());
         sender = null;
+    }
+
+
+    public void sendNearbyFriends(String response) {
+        Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.Type.NEARBY_FRIENDS, response);
+        msg.setData(bundle);
+        try {
+            sender.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private class IncomingMessageHandler extends Handler {
