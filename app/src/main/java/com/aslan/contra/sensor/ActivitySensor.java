@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ public class ActivitySensor implements ResultCallback<Status> {
     private static ActivitySensor instance;
 
     private boolean running;
+
+
 
     private ActivitySensor(Context context) {
         this.context = context;
@@ -166,6 +169,7 @@ public class ActivitySensor implements ResultCallback<Status> {
     }
 
     public static class ActivityRecognitionService extends IntentService {
+        private Handler handler = new Handler();
 
         public ActivityRecognitionService() {
             super("ActivityRecognitionService");
@@ -187,9 +191,14 @@ public class ActivitySensor implements ResultCallback<Status> {
                 // TODO: Send the type directly to the server and do the convertion in server
                 String strType = convertToString(type);
                 int confidence = da.getConfidence();
-                String msg = strType + " - " + type + " with confidence: " + confidence + "%";
+                final String msg = strType + " - " + type + " with confidence: " + confidence + "%";
                 Log.i(TAG, msg);
-                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             // Broadcast the list of detected activities.
@@ -203,20 +212,28 @@ public class ActivitySensor implements ResultCallback<Status> {
             switch (type) {
                 case DetectedActivity.IN_VEHICLE:
                     strType = "IN_VEHICLE";
+                    break;
                 case DetectedActivity.ON_BICYCLE:
                     strType = "ON_BICYCLE";
+                    break;
                 case DetectedActivity.ON_FOOT:
                     strType = "ON_FOOT";
+                    break;
                 case DetectedActivity.RUNNING:
                     strType = "RUNNING";
+                    break;
                 case DetectedActivity.STILL:
                     strType = "STILL";
+                    break;
                 case DetectedActivity.TILTING:
                     strType = "TILTING";
+                    break;
                 case DetectedActivity.UNKNOWN:
                     strType = "UNKNOWN";
+                    break;
                 case DetectedActivity.WALKING:
                     strType = "WALKING";
+                    break;
                 default:
                     strType = "UNABLE TO DEFINE";
             }
