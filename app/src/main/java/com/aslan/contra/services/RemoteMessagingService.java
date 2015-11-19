@@ -24,9 +24,13 @@ import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 import java.util.List;
 
 public class RemoteMessagingService extends Service implements OnResponseListener<String> {
+    private static final String TAG = "RemoteMessagingService";
+
     private Messenger receiver;
     private Messenger sender;
     private boolean senderIsBinded;
+
+
     private ServiceConnection messengerServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -89,13 +93,17 @@ public class RemoteMessagingService extends Service implements OnResponseListene
 
         private DatabaseHelper dbHelper;
 
+        private Messenger resultSender;
+
         private IncomingMessageHandler() {
             dbHelper = new DatabaseHelper(getApplicationContext());
         }
 
         @Override
         public void handleMessage(final Message msg) {
-            super.handleMessage(msg);
+            this.resultSender = msg.replyTo;
+
+            // super.handleMessage(msg);
             switch (msg.what) {
                 case Constants.MessagePassingCommands.START_LOCATION_TRACKING:
                     if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
@@ -130,24 +138,25 @@ public class RemoteMessagingService extends Service implements OnResponseListene
                     }
                     break;
                 case Constants.MessagePassingCommands.GET_NEARBY_FRIENDS:
-                    Log.d("remote service req", msg.toString());
+
                     SensorDataRetrievingServiceClient retrievalService = new SensorDataRetrievingServiceClient(getApplicationContext());
                     retrievalService.setOnResponseListener(new OnResponseListener<String>() {
                         @Override
                         public void onResponseReceived(String result) {
+                            Log.i(TAG, "Result: " + result);
+
                             Message mes = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED);
                             Bundle bundle = new Bundle();
                             bundle.putString(Constants.Type.NEARBY_FRIENDS, result);
                             mes.setData(bundle);
                             try {
-                                msg.replyTo.send(mes);
+                                resultSender.send(mes);
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             }
 //                            Intent resultIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage("com.aslan.friendsfinder");
 //                            startActivity(resultIntent);
 //                            Log.d("remote service", resultIntent.toString());
-                            Log.d("remote service", result);
                         }
 
                         @Override

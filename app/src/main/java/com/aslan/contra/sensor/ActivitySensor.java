@@ -24,6 +24,9 @@ import java.util.Timer;
  * Created by gobinath on 11/19/15.
  */
 public class ActivitySensor implements ResultCallback<Status> {
+    /**
+     * Tag to log the events.
+     */
     private static final String TAG = "ActivitySensor";
 
     /**
@@ -32,16 +35,21 @@ public class ActivitySensor implements ResultCallback<Status> {
      * fastest possible rate. Getting frequent updates negatively impact battery life and a real
      * app may prefer to request less frequent updates.
      */
-    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 0;
+    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 100;
 
+    /**
+     * Google API client to track the activity. Create only one instance of this client.
+     */
     private GoogleApiClient googleApiClient;
 
+    /**
+     * Application context.
+     */
     private Context context;
 
     private static ActivitySensor instance;
 
     private boolean running;
-
 
 
     private ActivitySensor(Context context) {
@@ -132,11 +140,6 @@ public class ActivitySensor implements ResultCallback<Status> {
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }
-    }
-
-    public void destroy() {
-        stop();
-
     }
 
     /**
