@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
-            android:title="Import" />
+        <item android:id="@+id/nav_home" android:icon="@drawable/ic_home_grey_600_24dp"
+            android:title="Home" />
         <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
             android:title="Gallery" />
         <item
@@ -13,7 +13,7 @@
         <item android:id="@+id/nav_permission" android:icon="@drawable/ic_permission_grey_600_24dp"
             android:title="Permission" />
 
-        <item android:id="@+id/nav_manage" android:icon="@drawable/ic_settings_grey_600_24dp"
+        <item android:id="@+id/nav_settings" android:icon="@drawable/ic_settings_grey_600_24dp"
             android:title="Settings" />
     </group>
 
