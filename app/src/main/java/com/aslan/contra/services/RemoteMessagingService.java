@@ -152,7 +152,7 @@ public class RemoteMessagingService extends Service implements OnResponseListene
 
                         @Override
                         public Class getType() {
-                            return List.class;
+                            return String.class;
                         }
                     });
                     retrievalService.getNearbyFriends();
