@@ -50,6 +50,21 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
         task.execute(response);
     }
 
+    public void sendActivity(int activity, int confidence) {
+        SensorResponse response = new SensorResponse();
+        SensorData locData = new SensorData();
+        locData.setType(Constants.Type.ACTIVITY);
+        locData.setSource("Google Play Services");
+        locData.setTime(System.currentTimeMillis());
+        locData.setAccuracy(confidence);
+        locData.setData(new String[]{Integer.toString(activity)});
+        response.addSensorData(locData);
+        response.setUserID(Utility.getUserId(context));
+
+        SensorDataSendingTask task = new SensorDataSendingTask();
+        task.execute(response);
+    }
+
     public void sendContacts() {
         ContactCollectionAsyncTask task = new ContactCollectionAsyncTask();
         task.execute();
