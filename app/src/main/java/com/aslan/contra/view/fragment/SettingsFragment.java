@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
+import com.aslan.contra.sensor.ActivitySensor;
 import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.util.RunningServices;
@@ -28,6 +29,8 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
     private SwitchCompat swActivityTrack;
 
     private OnFragmentInteractionListener mListener;
+
+    private ActivitySensor activitySensor;
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
@@ -62,6 +65,7 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
         this.btnExportToSD = (Button) view.findViewById(R.id.btnExport);
         this.swLocTrackEnable = (SwitchCompat) view.findViewById(R.id.swLocTrack);
         this.swActivityTrack = (SwitchCompat) view.findViewById(R.id.swActivityTrack);
+        this.activitySensor = ActivitySensor.getInstance(getContext());
 
         final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
 
@@ -83,6 +87,19 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             }
         });
 
+        swActivityTrack.setChecked(RunningServices.getInstance().isLocationServiceRunning(getContext()));
+        swActivityTrack.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Start service
+                    activitySensor.start();
+                } else {
+                    // Stop service
+                    activitySensor.stop();
+                }
+            }
+        });
         //TODO remove commented code when switch is working fine
 //        Button mButton = (Button) view.findViewById(R.id.btnStart);
 //        mButton.setOnClickListener(new View.OnClickListener() {

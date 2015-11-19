@@ -70,6 +70,12 @@ public class Constants {
          * Type CONTACTS.
          */
         public static final String CONTACTS = "contacts";
+
+        /**
+         * Type CONTACTS.
+         */
+        public static final String ACTIVITY = "activity";
+
         public static final String NEARBY_FRIENDS = "nearby friends";
     }
 

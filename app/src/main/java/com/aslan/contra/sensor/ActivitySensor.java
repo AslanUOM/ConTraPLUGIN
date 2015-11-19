@@ -5,10 +5,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -18,12 +18,14 @@ import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
-import java.util.Timer;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * Created by gobinath on 11/19/15.
  */
-public class ActivitySensor implements ResultCallback<Status> {
+public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
     /**
      * Tag to log the events.
      */
@@ -35,7 +37,7 @@ public class ActivitySensor implements ResultCallback<Status> {
      * fastest possible rate. Getting frequent updates negatively impact battery life and a real
      * app may prefer to request less frequent updates.
      */
-    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 100;
+    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 300000;   // 5 minutes
 
     /**
      * Google API client to track the activity. Create only one instance of this client.
@@ -57,35 +59,8 @@ public class ActivitySensor implements ResultCallback<Status> {
 
         // Create Google API client
         googleApiClient = new GoogleApiClient.Builder(context)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(Bundle bundle) {
-                        Log.i(TAG, "Connected to GoogleApiClient");
-
-                        Log.i(TAG, "Registering for activity events.");
-                        if (running) {
-                            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-                                    googleApiClient,
-                                    DETECTION_INTERVAL_IN_MILLISECONDS,
-                                    getActivityDetectionPendingIntent()
-                            ).setResultCallback(ActivitySensor.this);
-                        }
-                    }
-
-                    @Override
-                    public void onConnectionSuspended(int i) {
-                        // The connection to Google Play services was lost for some reason. We call connect() to
-                        // attempt to re-establish the connection.
-                        Log.i(TAG, "Connection suspended");
-                        googleApiClient.connect();
-                    }
-                })
-                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(ConnectionResult result) {
-                        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-                    }
-                })
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
                 .addApi(ActivityRecognition.API)
                 .build();
 
@@ -110,26 +85,12 @@ public class ActivitySensor implements ResultCallback<Status> {
         if (!googleApiClient.isConnected()) {
             googleApiClient.connect();
         }
-//
-////        if (!googleApiClient.isConnected()) {
-////            Log.w(TAG, "Google API client is not connected.");
-////            return;
-////        }
-//        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-//                googleApiClient,
-//                DETECTION_INTERVAL_IN_MILLISECONDS,
-//                getActivityDetectionPendingIntent()
-//        ).setResultCallback(this);
     }
 
     public void stop() {
         Log.i(TAG, "Stopping activity tracker.");
         this.running = false;
 
-//        if (!googleApiClient.isConnected()) {
-//            Log.w(TAG, "Google API client is not connected.");
-//            return;
-//        }
         // Remove all activity updates for the PendingIntent that was used to request activity
         // updates.
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
@@ -140,6 +101,10 @@ public class ActivitySensor implements ResultCallback<Status> {
         if (googleApiClient.isConnected()) {
             googleApiClient.disconnect();
         }
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     /**
@@ -171,77 +136,99 @@ public class ActivitySensor implements ResultCallback<Status> {
         }
     }
 
+    /**
+     * Called when the Google client is connected. It starts the tracking.
+     *
+     * @param bundle
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, "Connected to GoogleApiClient");
+
+        if (running) {
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                    googleApiClient,
+                    DETECTION_INTERVAL_IN_MILLISECONDS,
+                    getActivityDetectionPendingIntent()
+            ).setResultCallback(ActivitySensor.this);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        googleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.w(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
     public static class ActivityRecognitionService extends IntentService {
-        private Handler handler = new Handler();
+
+        private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
+        private final DescendingConfidenceComparator DESC_CONF_COMPARATOR;
 
         public ActivityRecognitionService() {
             super("ActivityRecognitionService");
+            this.DESC_CONF_COMPARATOR = new DescendingConfidenceComparator();
+        }
+
+        @Override
+        public void onCreate() {
+            super.onCreate();
+            this.sensorDataSendingServiceClient = new SensorDataSendingServiceClient<>(getApplicationContext());
+            this.sensorDataSendingServiceClient.setOnResponseListener(new OnResponseListener<Object>() {
+                @Override
+                public void onResponseReceived(Object result) {
+                    // Do nothing
+                }
+
+                @Override
+                public Class getType() {
+                    return Object.class;
+                }
+            });
         }
 
         @Override
         protected void onHandleIntent(Intent intent) {
+            Log.i(TAG, "Activities detected");
+
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 
             // Get the list of the probable activities associated with the current state of the
             // device. Each activity is associated with a confidence level, which is an int between
             // 0 and 100.
             ArrayList<DetectedActivity> detectedActivities = (ArrayList) result.getProbableActivities();
+            if (detectedActivities.size() > 0) {
+                Collections.sort(detectedActivities, DESC_CONF_COMPARATOR);
 
-            // Log each activity.
-            Log.i(TAG, "Activities detected");
-            for (DetectedActivity da : detectedActivities) {
-                int type = da.getType();
-                // TODO: Send the type directly to the server and do the convertion in server
-                String strType = convertToString(type);
-                int confidence = da.getConfidence();
-                final String msg = strType + " - " + type + " with confidence: " + confidence + "%";
-                Log.i(TAG, msg);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                    }
-                });
+                DetectedActivity highConfActivity = detectedActivities.get(0);
+                int type = highConfActivity.getType();
+                int confidence = highConfActivity.getConfidence();
+                Log.i(TAG, "Type: " + type + " with confidence: " + confidence + "%");
+
+                // Send the data to the server
+                sensorDataSendingServiceClient.sendActivity(type, confidence);
             }
 
-            // Broadcast the list of detected activities.
-            //Intent localIntent = new Intent(Constants.BROADCAST_ACTION);
-            //localIntent.putExtra(Constants.ACTIVITY_EXTRA, detectedActivities);
-            //LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
         }
 
-        private String convertToString(int type) {
-            String strType;
-            switch (type) {
-                case DetectedActivity.IN_VEHICLE:
-                    strType = "IN_VEHICLE";
-                    break;
-                case DetectedActivity.ON_BICYCLE:
-                    strType = "ON_BICYCLE";
-                    break;
-                case DetectedActivity.ON_FOOT:
-                    strType = "ON_FOOT";
-                    break;
-                case DetectedActivity.RUNNING:
-                    strType = "RUNNING";
-                    break;
-                case DetectedActivity.STILL:
-                    strType = "STILL";
-                    break;
-                case DetectedActivity.TILTING:
-                    strType = "TILTING";
-                    break;
-                case DetectedActivity.UNKNOWN:
-                    strType = "UNKNOWN";
-                    break;
-                case DetectedActivity.WALKING:
-                    strType = "WALKING";
-                    break;
-                default:
-                    strType = "UNABLE TO DEFINE";
+        private class DescendingConfidenceComparator implements Comparator<DetectedActivity> {
+
+            @Override
+            public int compare(DetectedActivity lhs, DetectedActivity rhs) {
+                int confLhs = lhs.getConfidence();
+                int confRhs = rhs.getConfidence();
+                // Compare in the reverse order
+                return confLhs - confRhs;
             }
-            return strType;
         }
+
     }
 
 
