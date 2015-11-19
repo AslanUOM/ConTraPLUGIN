@@ -1,6 +1,7 @@
 package com.aslan.contra.view.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,9 +31,11 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
     private static final String TAG = "<<<<<< Context >>>>>>";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
     // UI components
     private Button btnSignIn;
     private EditText etPhoneNumber;
+    private ProgressDialog progressDialog;
 
 
     private AtomicInteger msgId = new AtomicInteger();
@@ -62,6 +65,9 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
     private void onSignInClicked() {
         if (Utility.isNetworkAvailable(getApplicationContext())) {
             if (checkPlayServices()) {
+                // Show progress dialog while retrieving information from server
+                this.progressDialog = ProgressDialog.show(this, "", "Please wait...");
+
                 // Read the phone number
                 String phoneNumber = etPhoneNumber.getText().toString();
                 String deviceName = Utility.getDeviceName(getApplicationContext());
@@ -97,6 +103,9 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
 
     @Override
     public void onResponseReceived(String userID) {
+        // Hide the progress dialog
+        progressDialog.dismiss();
+        
         if (userID != null) {
             // Save the user-id
             Utility.saveUserId(getApplicationContext(), userID);

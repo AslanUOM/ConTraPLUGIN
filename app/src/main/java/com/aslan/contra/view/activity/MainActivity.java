@@ -21,10 +21,14 @@ import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
 import com.aslan.contra.view.fragment.ProfileFragment;
+import com.aslan.contra.view.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private final HomeFragment HOME_FRAGMENT = new HomeFragment();
+
+    private final SettingsFragment SETTINGS_FRAGMENT = new SettingsFragment();
+
     // UI components
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity
             boolean nonGrantedPermissionsExists = checkNonGrantedPermissions();
             if (!nonGrantedPermissionsExists) {
                 changeFragment(HOME_FRAGMENT);
-                navigationView.setCheckedItem(R.id.nav_manage);//TODO set setting item checked. remove later
+                navigationView.setCheckedItem(R.id.nav_home);
                 startSensors();
             }
         }
@@ -129,6 +133,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new PermissionFragment();
         } else if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
+        } else if (id == R.id.nav_settings) {
+            fragment = SETTINGS_FRAGMENT;
         } else {
             fragment = HOME_FRAGMENT;
         }

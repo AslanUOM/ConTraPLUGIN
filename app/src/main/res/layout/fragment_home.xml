@@ -1,99 +1,13 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="100"
     tools:context="com.aslan.contra.view.fragment.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <!--<TextView android:layout_width="match_parent" android:layout_height="match_parent"-->
-    <!--android:text="@string/hello_blank_fragment" />-->
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:layout_weight="90">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
-
-            <!--<Switch-->
-            <!--android:id="@+id/swLocTrack"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Enable Location Tracking" />-->
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:drawableLeft="@drawable/ic_gps_fixed_grey_800_36dp"
-                    android:drawablePadding="15dp"
-                    android:gravity="center_vertical"
-                    android:text="Location Tracking"
-                    android:textSize="20dp" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/swLocTrack"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp" />
-            </RelativeLayout>
-
-
-            <!-- TODO remove commented code when switch is working fine-->
-            <!--<Button-->
-            <!--android:id="@+id/btnStart"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Start Location Tracking" />-->
-
-            <!--<Button-->
-            <!--android:id="@+id/btnStop"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Stop Location Tracking" />-->
-
-
-        </LinearLayout>
-    </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:layout_weight="10"
-        android:orientation="horizontal"
-        android:weightSum="100">
-
-        <Button
-            android:id="@+id/btnContacts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="50"
-            android:background="@drawable/rounded_button_background"
-            android:text="Get All Contacts"
-            android:textColor="@color/colorLightText" />
-
-        <Button
-            android:id="@+id/btnExport"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="50"
-            android:background="@drawable/rounded_button_background"
-            android:text="Export to SD card"
-            android:textColor="@color/colorLightText" />
-    </LinearLayout>
-</LinearLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/img_logo" />
+</RelativeLayout>
