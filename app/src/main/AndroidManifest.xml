@@ -60,12 +60,12 @@
             android:noHistory="true"></activity>
 
         <service
-            android:name=".services.RemoteService"
+            android:name=".services.RemoteMessagingService"
             android:enabled="true"
             android:exported="true"
             android:process=":exported">
             <intent-filter>
-                <action android:name="aslan.plugin.RemoteService" />
+                <action android:name="aslan.plugin.RemoteMessagingService" />
             </intent-filter>
         </service>
 

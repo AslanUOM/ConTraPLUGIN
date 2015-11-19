@@ -60,7 +60,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
     private Intent intent;
 
     public LocationTrackingService() {
-        super("LocationTrackingService");
+        super(TAG);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
         super.onCreate();
 
         Intent mIntent = new Intent();
-        mIntent.setAction("aslan.app.RemoteService"); //TODO change the actual action name logical
+        mIntent.setAction(Constants.FRIEND_FINDER_APP_ACTION_NAME); //TODO change the actual action name logical
         mIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), mIntent); //solution for failure above android 5.0
         bindService(mIntent, mServiceConnection, BIND_AUTO_CREATE);
 

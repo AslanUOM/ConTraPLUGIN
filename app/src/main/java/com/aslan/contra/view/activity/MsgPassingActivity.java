@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.aslan.contra.R;
+import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.IntentCreator;
 
 public class MsgPassingActivity extends AppCompatActivity {
@@ -41,7 +42,7 @@ public class MsgPassingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_msg_passing);
         Intent mIntent = new Intent();
-        mIntent.setAction("aslan.app.RemoteService");
+        mIntent.setAction(Constants.FRIEND_FINDER_APP_ACTION_NAME);
         mIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), mIntent); //solution for failure above android 5.0
         bindService(mIntent, mServiceConnection, BIND_AUTO_CREATE);
         Button mButton = (Button) findViewById(R.id.btnStart);
