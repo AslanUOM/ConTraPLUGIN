@@ -16,6 +16,9 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
+    <!-- Permission to collect the activities of the user -->
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
     <permission
         android:name="com.aslan.contra.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />

@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.aslan.contra.R;
@@ -22,9 +23,15 @@ import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
 import com.aslan.contra.view.fragment.ProfileFragment;
 import com.aslan.contra.view.fragment.SettingsFragment;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+
+    private static final String TAG = "MainActivity";
+
     private final HomeFragment HOME_FRAGMENT = new HomeFragment();
 
     private final SettingsFragment SETTINGS_FRAGMENT = new SettingsFragment();
@@ -33,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private boolean showProfile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +87,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Start the snesors to collect the data.
+     * Start the sensors to collect the data.
      */
     private void startSensors() {
         //TODO comment when you don't want to auto start the tracking service at app start
@@ -87,8 +95,10 @@ public class MainActivity extends AppCompatActivity
             Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
             serviceIntent.addCategory(LocationTrackingService.TAG);
             startService(serviceIntent);
+
         }
     }
+
 
     /**
      * Check for the non granted permissions and if there are any, move to the PermissionFramgment.
