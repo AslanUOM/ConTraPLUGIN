@@ -8,6 +8,7 @@ import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.Utility;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -43,7 +44,7 @@ public class SensorDataRetrievingServiceClient<T> extends ServiceClient<T> {
                 RestTemplate restTemplate = new RestTemplate();
 
                 // Add the String message converter
-//                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
                 // Make the HTTP GET request, marshaling the response to a String
                 ResponseEntity<T> response = restTemplate.getForEntity(Constants.WebServiceUrls.GET_NEARBY_FRIENDS_DATA_URL, getOnResponseListener().getType(), params[0]);
