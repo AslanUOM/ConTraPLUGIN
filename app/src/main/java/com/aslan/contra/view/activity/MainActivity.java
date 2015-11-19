@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.aslan.contra.R;
+import com.aslan.contra.sensor.ActivitySensor;
 import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.RunningServices;
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private boolean showProfile;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity
             Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
             serviceIntent.addCategory(LocationTrackingService.TAG);
             startService(serviceIntent);
-
         }
     }
 

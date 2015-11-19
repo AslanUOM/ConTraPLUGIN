@@ -77,6 +77,8 @@
         <service
             android:name=".services.LocationTrackingService"
             android:exported="false"></service>
+
+        <service android:name=".sensor.ActivitySensor$ActivityRecognitionService"/>
     </application>
 
 </manifest>
