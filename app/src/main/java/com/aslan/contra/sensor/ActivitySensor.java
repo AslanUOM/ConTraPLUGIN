@@ -1,12 +1,17 @@
 package com.aslan.contra.sensor;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.aslan.contra.R;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 import com.google.android.gms.common.ConnectionResult;
@@ -37,7 +42,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
      * fastest possible rate. Getting frequent updates negatively impact battery life and a real
      * app may prefer to request less frequent updates.
      */
-    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 300000;   // 5 minutes
+    private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 180000;   // 3 minutes
 
     /**
      * Google API client to track the activity. Create only one instance of this client.
@@ -49,11 +54,26 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
      */
     private Context context;
 
+    /**
+     * Singleton instance.
+     */
     private static ActivitySensor instance;
 
+    /**
+     * Flag indicating whether the sensor is running or not.
+     */
     private boolean running;
 
+    /**
+     * Service PendingIntent used to receive the events.
+     */
+    private PendingIntent pendingIntent;
 
+    /**
+     * Private constructor to enforce the singleton behaviour.
+     *
+     * @param context
+     */
     private ActivitySensor(Context context) {
         this.context = context;
 
@@ -66,6 +86,12 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
 
     }
 
+    /**
+     * Singleton factor method.
+     *
+     * @param context
+     * @return
+     */
     public static ActivitySensor getInstance(Context context) {
         if (instance == null) {
             synchronized (ActivitySensor.class) {
@@ -78,16 +104,29 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         return instance;
     }
 
+    /**
+     * Start tracking activities.
+     */
     public void start() {
+        if (this.running) {
+            // Already running
+            return;
+        }
         Log.i(TAG, "Starting activity tracker.");
         this.running = true;
-
         if (!googleApiClient.isConnected()) {
             googleApiClient.connect();
         }
     }
 
+    /**
+     * Stop tracking activities.
+     */
     public void stop() {
+        if (!this.running) {
+            // Already stopped
+            return;
+        }
         Log.i(TAG, "Stopping activity tracker.");
         this.running = false;
 
@@ -95,7 +134,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         // updates.
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(
                 googleApiClient,
-                getActivityDetectionPendingIntent()
+                pendingIntent
         ).setResultCallback(this);
 
         if (googleApiClient.isConnected()) {
@@ -103,6 +142,11 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         }
     }
 
+    /**
+     * Indicate whether this senosr is up and running.
+     *
+     * @return
+     */
     public boolean isRunning() {
         return running;
     }
@@ -146,10 +190,11 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         Log.i(TAG, "Connected to GoogleApiClient");
 
         if (running) {
+            this.pendingIntent = getActivityDetectionPendingIntent();
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
                     googleApiClient,
                     DETECTION_INTERVAL_IN_MILLISECONDS,
-                    getActivityDetectionPendingIntent()
+                    pendingIntent
             ).setResultCallback(ActivitySensor.this);
         }
     }
@@ -167,6 +212,9 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         Log.w(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
+    /**
+     * Define this service in Manifest.
+     */
     public static class ActivityRecognitionService extends IntentService {
 
         private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
@@ -210,14 +258,20 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
                 DetectedActivity highConfActivity = detectedActivities.get(0);
                 int type = highConfActivity.getType();
                 int confidence = highConfActivity.getConfidence();
-                Log.i(TAG, "Type: " + type + " with confidence: " + confidence + "%");
+                final String msg = "Type: " + getActivityName(type) + " with confidence: " + confidence + "%";
+                Log.i(TAG, msg);
 
+                // Show a notification
+                generateNotification(getApplicationContext(),msg);
                 // Send the data to the server
                 sensorDataSendingServiceClient.sendActivity(type, confidence);
             }
 
         }
 
+        /**
+         * Comparator to sort the DetectedActivities based on their confidence.
+         */
         private class DescendingConfidenceComparator implements Comparator<DetectedActivity> {
 
             @Override
@@ -229,7 +283,72 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
             }
         }
 
+        //Get the activity name
+        private String getActivityName(int type) {
+            switch (type) {
+                case DetectedActivity.IN_VEHICLE:
+                    return "In Vehicle";
+                case DetectedActivity.ON_BICYCLE:
+                    return "On Bicycle";
+                case DetectedActivity.ON_FOOT:
+                    return "On Foot";
+                case DetectedActivity.WALKING:
+                    return "Walking";
+                case DetectedActivity.STILL:
+                    return "Still";
+                case DetectedActivity.TILTING:
+                    return "Tilting";
+                case DetectedActivity.RUNNING:
+                    return "Running";
+                case DetectedActivity.UNKNOWN:
+                    return "Unknown";
+            }
+            return "N/A";
+        }
+
     }
 
 
+    /**
+     * Issues a notification to inform the user that server has sent a message.
+     */
+    private static void generateNotification(Context context, String message) {
+//        int icon = R.mipmap.ic_launcher;
+//        long when = System.currentTimeMillis();
+//        NotificationManager notificationManager = (NotificationManager)
+//                context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification notification = new Notification(icon, message, when);
+        String title = context.getString(R.string.app_name);
+//        Intent notificationIntent = new Intent(context, MainActivity.class);
+//        // set intent so it does not start a new activity
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+//                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        PendingIntent intent =
+//                PendingIntent.getActivity(context, 0, notificationIntent, 0);
+//
+//        //TODO resolve deprecated method call
+////        notification.setLatestEventInfo(context, title, message, intent);
+//
+//        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+//        notificationManager.notify(0, notification);
+
+
+// Because clicking the notification opens a new ("special") activity, there's
+// no need to create an artificial back stack.
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentText(message);
+        mBuilder.setAutoCancel(true);
+
+        // Sets an ID for the notification
+        int mNotificationId = 001;
+// Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+    }
 }

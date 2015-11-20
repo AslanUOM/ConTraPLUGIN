@@ -87,7 +87,7 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             }
         });
 
-        swActivityTrack.setChecked(RunningServices.getInstance().isLocationServiceRunning(getContext()));
+        swActivityTrack.setChecked(activitySensor.isRunning());
         swActivityTrack.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

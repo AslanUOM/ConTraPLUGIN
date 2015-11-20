@@ -71,12 +71,13 @@ public class MainActivity extends AppCompatActivity
 
         if (showProfile) {
             changeFragment(new ProfileFragment());
+            // Start sensors for the first time run.
+            startSensors();
         } else {
             boolean nonGrantedPermissionsExists = checkNonGrantedPermissions();
             if (!nonGrantedPermissionsExists) {
                 changeFragment(HOME_FRAGMENT);
                 navigationView.setCheckedItem(R.id.nav_home);
-                startSensors();
             }
         }
     }

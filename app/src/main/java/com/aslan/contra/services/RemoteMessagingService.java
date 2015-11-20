@@ -62,9 +62,9 @@ public class RemoteMessagingService extends Service implements ServiceConnection
         // Extract the information
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            switch (bundle.getString(Constants.BUNDLE_TYPE)) {
-                case Constants.Type.NEARBY_FRIENDS:
-                    sendNearbyFriends(bundle.getString(Constants.Type.NEARBY_FRIENDS));
+            switch (bundle.getString(Constants.BundleType.BUNDLE_TYPE)) {
+                case Constants.BundleType.NEARBY_FRIENDS:
+                    sendNearbyFriends(bundle.getString(Constants.BundleType.NEARBY_FRIENDS));
                     break;
             }
         }
@@ -81,7 +81,7 @@ public class RemoteMessagingService extends Service implements ServiceConnection
     public void sendNearbyFriends(String response) {
         Message msg = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED, 0, 0);
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.Type.NEARBY_FRIENDS, response);
+        bundle.putString(Constants.BundleType.NEARBY_FRIENDS, response);
         msg.setData(bundle);
         try {
             sender.send(msg);
@@ -166,7 +166,7 @@ public class RemoteMessagingService extends Service implements ServiceConnection
 
                             Message mes = Message.obtain(null, Constants.MessagePassingCommands.NEARBY_FRIENDS_RECEIVED);
                             Bundle bundle = new Bundle();
-                            bundle.putString(Constants.Type.NEARBY_FRIENDS, result);
+                            bundle.putString(Constants.BundleType.NEARBY_FRIENDS, result);
                             mes.setData(bundle);
                             try {
                                 resultSender.send(mes);

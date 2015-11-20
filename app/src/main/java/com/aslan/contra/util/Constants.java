@@ -8,7 +8,6 @@ import android.Manifest;
 public class Constants {
     public static final String USER_ID = "userId";
     public static final String DEVICE_TOKEN = "deviceToken";
-    public static final String NEARBY_FRIENDS = "nearby friends";
 
     /**
      * HTTP Status-Code 200: OK.
@@ -38,7 +37,7 @@ public class Constants {
     };
 
     public static final String FRIEND_FINDER_APP_ACTION_NAME = "aslan.app.RemoteMessagingService";
-    public static final String BUNDLE_TYPE = "bundle data type";
+
 
     //public static final String FIRST_RUN = "first_run";
     private Constants() {
@@ -72,11 +71,15 @@ public class Constants {
         public static final String CONTACTS = "contacts";
 
         /**
-         * Type CONTACTS.
+         * Type ACTIVITY.
          */
         public static final String ACTIVITY = "activity";
+    }
 
-        public static final String NEARBY_FRIENDS = "nearby friends";
+    public static final class BundleType {
+        public static final String BUNDLE_TYPE = "bundle_data_type";
+
+        public static final String NEARBY_FRIENDS = "nearby_friends";
     }
 
     public static final class WebServiceUrls {

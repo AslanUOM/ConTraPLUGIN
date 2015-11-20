@@ -112,8 +112,8 @@ public class LocationTrackingService extends IntentService implements OnResponse
             Log.d(TAG, response);
             Intent serviceIntent = new Intent(this, RemoteMessagingService.class);
             Bundle bundle = new Bundle();
-            bundle.putString(Constants.BUNDLE_TYPE, Constants.NEARBY_FRIENDS);
-            bundle.putString(Constants.NEARBY_FRIENDS, response);
+            bundle.putString(Constants.BundleType.BUNDLE_TYPE, Constants.BundleType.NEARBY_FRIENDS);
+            bundle.putString(Constants.BundleType.NEARBY_FRIENDS, response);
             serviceIntent.putExtras(bundle);
             startService(serviceIntent);
 
