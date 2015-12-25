@@ -2,6 +2,7 @@ package com.aslan.contra.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.aslan.contra.R;
 import com.aslan.contra.sensor.ActivitySensor;
+import com.aslan.contra.services.EnvironmentMonitorService;
 import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.util.RunningServices;
@@ -27,20 +29,21 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
 
     private SwitchCompat swLocTrackEnable;
     private SwitchCompat swActivityTrack;
+    private SwitchCompat swEnvironmentMonitor;
 
     private OnFragmentInteractionListener mListener;
 
     private ActivitySensor activitySensor;
+
+    public SettingsFragment() {
+        // Required empty public constructor
+    }
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public SettingsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -63,9 +66,13 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
         // Find the user interface components
         this.btnGetContacts = (Button) view.findViewById(R.id.btnContacts);
         this.btnExportToSD = (Button) view.findViewById(R.id.btnExport);
+
         this.swLocTrackEnable = (SwitchCompat) view.findViewById(R.id.swLocTrack);
+
         this.swActivityTrack = (SwitchCompat) view.findViewById(R.id.swActivityTrack);
         this.activitySensor = ActivitySensor.getInstance(getContext());
+
+        this.swEnvironmentMonitor = (SwitchCompat) view.findViewById(R.id.swEnvironmentMonitor);
 
         final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
 
@@ -93,44 +100,37 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // Start service
-                    activitySensor.start();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+
+                            activitySensor.start();
+                            return null;
+                        }
+                    }.execute();
+//                    activitySensor.start();
                 } else {
                     // Stop service
                     activitySensor.stop();
                 }
             }
         });
-        //TODO remove commented code when switch is working fine
-//        Button mButton = (Button) view.findViewById(R.id.btnStart);
-//        mButton.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                if (!RunningServices.getInstance().isLocationServiceRunning(getContext())) {
-//                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
-//                    serviceIntent.addCategory(LocationTrackingService.TAG);
-//                    getContext().startService(serviceIntent);
-//                    Toast.makeText(getContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(getContext(), "Tracking service is already running", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//        Button mButton2 = (Button) view.findViewById(R.id.btnStop);
-//        mButton2.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                if (RunningServices.getInstance().isLocationServiceRunning(getContext())) {
-//                    Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
-//                    serviceIntent.addCategory(LocationTrackingService.TAG);
-//                    getContext().stopService(serviceIntent);
-//                    Toast.makeText(getContext(), "Location Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(getContext(), "Tracking service is not running", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+        swEnvironmentMonitor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent serviceIntent = new Intent(getContext(), EnvironmentMonitorService.class);
+                    serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+                    getContext().startService(serviceIntent);
+                    Toast.makeText(getContext(), "Environment Monitoring Started @ PLUGIN", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent serviceIntent = new Intent(getContext(), EnvironmentMonitorService.class);
+                    serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+                    getContext().stopService(serviceIntent);
+                    Toast.makeText(getContext(), "Environment Monitoring Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
 
         btnGetContacts.setOnClickListener(new View.OnClickListener() {

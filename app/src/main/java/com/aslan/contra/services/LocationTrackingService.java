@@ -3,6 +3,7 @@ package com.aslan.contra.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
+import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -10,12 +11,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.aslan.contra.listeners.OnLocationChangedListener;
+import com.aslan.contra.listeners.OnWifiScanResultChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.sensor.WiFiSensor;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
+
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -54,7 +59,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
 
         initialiseLocationTracker();
         //TODO uncomment WiFi tracking when implemented in server side
-//        initialiseWifiTracker();
+        initialiseWifiTracker();
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -62,7 +67,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
                 onHandleIntent(LocationTrackingService.this.intent);
                 locationSensor.start();
                 //TODO uncomment WiFi tracking when implemented in server side
-//                wifiSensor.start();
+                wifiSensor.start();
                 Log.d("<<Tracking-onStart>>", "I am alive");
                 Toast.makeText(getApplicationContext(), "STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
@@ -88,9 +93,10 @@ public class LocationTrackingService extends IntentService implements OnResponse
         isIntentServiceRunning = false;
         handler.removeCallbacks(runnable);
         locationSensor.stop();
+//        no need to stop separately as it stops itself on scanned result
 //        wifiSensor.stop();
         stopSelf();
-        Log.e("<<Tracking-onDestroy>>", "I am DESTROYED");
+        Log.d("<<Tracking-onDestroy>>", "I am DESTROYED");
         Toast.makeText(getApplicationContext(), "DESTROYED", Toast.LENGTH_SHORT).show();
 
         super.onDestroy();
@@ -165,21 +171,21 @@ public class LocationTrackingService extends IntentService implements OnResponse
     }
 
     //TODO uncomment WiFi tracking when implemented in server side
-//    private void initialiseWifiTracker() {
-//        wifiSensor = new WiFiSensor(this);
-//        wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
-//            @Override
-//            public void onWifiScanResultsChanged(List<ScanResult> wifiList) {
-//                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-//                Log.e("TIME", timestamp.toString());
-//                for (ScanResult wifi : wifiList) {
-//                    if (dbHelper.insertWifi(wifi, timestamp.toString())) {
-//                        Log.d("WIFI", wifi.toString());
-//                        Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//                wifiSensor.stop();
-//            }
-//        });
-//    }
+    private void initialiseWifiTracker() {
+        wifiSensor = new WiFiSensor(this);
+        wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
+            @Override
+            public void onWifiScanResultsChanged(List<ScanResult> wifiList) {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                Log.e("TIME", timestamp.toString());
+                for (ScanResult wifi : wifiList) {
+                    if (dbHelper.insertWifi(wifi, timestamp.toString())) {
+                        Log.d("WIFI", wifi.toString());
+                        Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                wifiSensor.stop();
+            }
+        });
+    }
 }

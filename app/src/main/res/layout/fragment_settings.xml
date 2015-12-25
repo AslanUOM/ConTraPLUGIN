@@ -73,21 +73,29 @@
                     android:layout_margin="5dp" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp">
 
-            <!-- TODO remove commented code when switch is working fine-->
-            <!--<Button-->
-            <!--android:id="@+id/btnStart"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Start Location Tracking" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:drawableLeft="@drawable/ic_directions_walk_grey_800_36dp"
+                    android:drawablePadding="15dp"
+                    android:gravity="center_vertical"
+                    android:text="Environment Monitoring"
+                    android:textSize="20dp" />
 
-            <!--<Button-->
-            <!--android:id="@+id/btnStop"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Stop Location Tracking" />-->
-
-
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/swEnvironmentMonitor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp" />
+            </RelativeLayout>
         </LinearLayout>
     </ScrollView>
 

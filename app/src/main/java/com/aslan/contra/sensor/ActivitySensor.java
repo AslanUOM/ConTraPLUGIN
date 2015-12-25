@@ -6,10 +6,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.aslan.contra.R;
 import com.aslan.contra.wsclient.OnResponseListener;
@@ -25,7 +23,6 @@ import com.google.android.gms.location.DetectedActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 
 /**
  * Created by gobinath on 11/19/15.
@@ -43,22 +40,18 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
      * app may prefer to request less frequent updates.
      */
     private static final long DETECTION_INTERVAL_IN_MILLISECONDS = 180000;   // 3 minutes
-
-    /**
-     * Google API client to track the activity. Create only one instance of this client.
-     */
-    private GoogleApiClient googleApiClient;
-
-    /**
-     * Application context.
-     */
-    private Context context;
-
     /**
      * Singleton instance.
      */
     private static ActivitySensor instance;
-
+    /**
+     * Google API client to track the activity. Create only one instance of this client.
+     */
+    private GoogleApiClient googleApiClient;
+    /**
+     * Application context.
+     */
+    private Context context;
     /**
      * Flag indicating whether the sensor is running or not.
      */
@@ -105,6 +98,49 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
     }
 
     /**
+     * Issues a notification to inform the user that server has sent a message.
+     */
+    private static void generateNotification(Context context, String message) {
+//        int icon = R.mipmap.ic_launcher;
+//        long when = System.currentTimeMillis();
+//        NotificationManager notificationManager = (NotificationManager)
+//                context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        Notification notification = new Notification(icon, message, when);
+        String title = context.getString(R.string.app_name);
+//        Intent notificationIntent = new Intent(context, MainActivity.class);
+//        // set intent so it does not start a new activity
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+//                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//        PendingIntent intent =
+//                PendingIntent.getActivity(context, 0, notificationIntent, 0);
+//
+//        //TODO resolve deprecated method call
+////        notification.setLatestEventInfo(context, title, message, intent);
+//
+//        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+//        notificationManager.notify(0, notification);
+
+
+// Because clicking the notification opens a new ("special") activity, there's
+// no need to create an artificial back stack.
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(title)
+                        .setContentText(message);
+        mBuilder.setAutoCancel(true);
+
+        // Sets an ID for the notification
+        int mNotificationId = 001;
+// Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+    }
+
+    /**
      * Start tracking activities.
      */
     public void start() {
@@ -115,7 +151,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         Log.i(TAG, "Starting activity tracker.");
         this.running = true;
         if (!googleApiClient.isConnected()) {
-            googleApiClient.connect();
+            googleApiClient.blockingConnect();
         }
     }
 
@@ -217,8 +253,8 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
      */
     public static class ActivityRecognitionService extends IntentService {
 
-        private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
         private final DescendingConfidenceComparator DESC_CONF_COMPARATOR;
+        private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
 
         public ActivityRecognitionService() {
             super("ActivityRecognitionService");
@@ -269,20 +305,6 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
 
         }
 
-        /**
-         * Comparator to sort the DetectedActivities based on their confidence.
-         */
-        private class DescendingConfidenceComparator implements Comparator<DetectedActivity> {
-
-            @Override
-            public int compare(DetectedActivity lhs, DetectedActivity rhs) {
-                int confLhs = lhs.getConfidence();
-                int confRhs = rhs.getConfidence();
-                // Compare in the reverse order
-                return confLhs - confRhs;
-            }
-        }
-
         //Get the activity name
         private String getActivityName(int type) {
             switch (type) {
@@ -306,49 +328,19 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
             return "N/A";
         }
 
-    }
+        /**
+         * Comparator to sort the DetectedActivities based on their confidence.
+         */
+        private class DescendingConfidenceComparator implements Comparator<DetectedActivity> {
 
+            @Override
+            public int compare(DetectedActivity lhs, DetectedActivity rhs) {
+                int confLhs = lhs.getConfidence();
+                int confRhs = rhs.getConfidence();
+                // Compare in the reverse order
+                return confLhs - confRhs;
+            }
+        }
 
-    /**
-     * Issues a notification to inform the user that server has sent a message.
-     */
-    private static void generateNotification(Context context, String message) {
-//        int icon = R.mipmap.ic_launcher;
-//        long when = System.currentTimeMillis();
-//        NotificationManager notificationManager = (NotificationManager)
-//                context.getSystemService(Context.NOTIFICATION_SERVICE);
-//        Notification notification = new Notification(icon, message, when);
-        String title = context.getString(R.string.app_name);
-//        Intent notificationIntent = new Intent(context, MainActivity.class);
-//        // set intent so it does not start a new activity
-//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-//                Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        PendingIntent intent =
-//                PendingIntent.getActivity(context, 0, notificationIntent, 0);
-//
-//        //TODO resolve deprecated method call
-////        notification.setLatestEventInfo(context, title, message, intent);
-//
-//        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-//        notificationManager.notify(0, notification);
-
-
-// Because clicking the notification opens a new ("special") activity, there's
-// no need to create an artificial back stack.
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(title)
-                        .setContentText(message);
-        mBuilder.setAutoCancel(true);
-
-        // Sets an ID for the notification
-        int mNotificationId = 001;
-// Gets an instance of the NotificationManager service
-        NotificationManager mNotifyMgr =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-// Builds the notification and issues it.
-        mNotifyMgr.notify(mNotificationId, mBuilder.build());
     }
 }

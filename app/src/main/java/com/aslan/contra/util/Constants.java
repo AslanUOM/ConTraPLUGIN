@@ -54,6 +54,11 @@ public class Constants {
         public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
     }
 
+    public static final class EnvironmentMonitoring {
+        // The minimum time between location updates in microseconds, here 30 minutes
+        public static final int MIN_TIME_BW_UPDATES = 1000000 * 60 * 30;
+    }
+
     public static final class Type {
         /**
          * Type LOCATION.
@@ -74,6 +79,11 @@ public class Constants {
          * Type ACTIVITY.
          */
         public static final String ACTIVITY = "activity";
+
+        /**
+         * Type ENVIRONMENT SENSOR DATA.
+         */
+        public static final String ENVIRONMENT = "environment";
     }
 
     public static final class BundleType {
