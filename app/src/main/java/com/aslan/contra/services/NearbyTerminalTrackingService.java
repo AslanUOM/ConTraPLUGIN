@@ -7,7 +7,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aslan.contra.listeners.OnBluetoothScanResultChangedListener;
 import com.aslan.contra.listeners.OnWifiScanResultChangedListener;
+import com.aslan.contra.sensor.BluetoothSensor;
 import com.aslan.contra.sensor.WiFiSensor;
 import com.aslan.contra.util.Constants;
 
@@ -28,6 +30,7 @@ public class NearbyTerminalTrackingService extends IntentService {
     private Handler handler = null;
     private Intent intent;
     private WiFiSensor wifiSensor;
+    private BluetoothSensor bluetoothSensor;
 
     public NearbyTerminalTrackingService() {
         super(TAG);
@@ -36,14 +39,14 @@ public class NearbyTerminalTrackingService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        //TODO uncomment WiFi tracking when implemented in server side
         initialiseWifiTracker();
+        initialiseBtTracker();
 
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                //TODO uncomment WiFi tracking when implemented in server side
                 wifiSensor.start();
+                bluetoothSensor.start();
                 Log.d("<<Nearby-onStart>>", "I am ALIVE");
                 Toast.makeText(getApplicationContext(), "Nearby STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.NearbyTerminalTracking.MIN_TIME_BW_UPDATES);
@@ -77,8 +80,6 @@ public class NearbyTerminalTrackingService extends IntentService {
         }
     }
 
-
-    //TODO uncomment WiFi tracking when implemented in server side
     private void initialiseWifiTracker() {
         wifiSensor = new WiFiSensor(this);
         wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
@@ -91,6 +92,24 @@ public class NearbyTerminalTrackingService extends IntentService {
                     Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
                 }
                 wifiSensor.stop();
+                //TODO send to server
+            }
+        });
+    }
+
+    private void initialiseBtTracker() {
+        bluetoothSensor = new BluetoothSensor(this);
+        bluetoothSensor.setOnBluetoothScanResultChangedLsitener(new OnBluetoothScanResultChangedListener() {
+            @Override
+            public void onBluetoothScanResultsChanged(List<String> bluetoothList) {
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                Log.e("TIME", timestamp.toString());
+                for (String bt : bluetoothList) {
+                    Log.d("BLUETOOTH", bt);
+                    Toast.makeText(getApplicationContext(), bt, Toast.LENGTH_SHORT).show();
+                }
+                bluetoothSensor.stop();
+                //TODO send to server
             }
         });
     }
