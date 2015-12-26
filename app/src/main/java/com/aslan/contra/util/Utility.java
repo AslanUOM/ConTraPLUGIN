@@ -2,7 +2,6 @@ package com.aslan.contra.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -18,8 +17,6 @@ import android.util.Patterns;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +38,7 @@ public class Utility {
         String userId = getUserId(ctx);
         // If user-id is null, this is the first run
         boolean firstRun = userId == null;
+        Log.e("UTIL", firstRun + "");
         return firstRun;
     }
 
@@ -65,7 +63,8 @@ public class Utility {
         return userId;
     }
 
-    public static void saveUserId(Context ctx, String userId) {
+    public static void saveUserId(Context ctx, String userID) {
+        userId = userID;
         SharedPreferences preferences = getSharedPreference(ctx);
         preferences.edit().putString(Constants.USER_ID, userId).commit();
     }
