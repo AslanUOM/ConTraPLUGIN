@@ -42,7 +42,9 @@ public class RemoteMessagingService extends Service implements ServiceConnection
             Intent bindingIntent = new Intent();
             bindingIntent.setAction(Constants.FRIEND_FINDER_APP_ACTION_NAME); //TODO change the actual action name logical
             bindingIntent = IntentCreator.createExplicitFromImplicitIntent(getApplicationContext(), bindingIntent); //solution for failure above android 5.0
-            bindService(bindingIntent, this, BIND_AUTO_CREATE);
+            if (bindingIntent != null) {
+                bindService(bindingIntent, this, BIND_AUTO_CREATE);
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
