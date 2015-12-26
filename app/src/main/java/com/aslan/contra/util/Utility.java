@@ -2,14 +2,19 @@ package com.aslan.contra.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -90,6 +95,57 @@ public class Utility {
         String deviceId = Settings.Secure.getString(ctx.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return deviceId;
+    }
+
+    /**
+     * WiFi MAC address of the device.
+     *
+     * @param ctx
+     * @return
+     */
+    public static String getDeviceWiFiMAC(Context ctx) {
+        WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        String deviceWiFiMAC = wInfo.getMacAddress();
+        return deviceWiFiMAC;
+    }
+
+    /**
+     * Bluetooth MAC address of the device.
+     *
+     * @param ctx
+     * @return
+     */
+    public static String getDeviceBtMAC(Context ctx) {
+        String deviceBtMAC = BluetoothAdapter.getDefaultAdapter().getAddress();
+        return deviceBtMAC;
+    }
+
+    /**
+     * API/SDK/OS version of the device.
+     *
+     * @param ctx
+     * @return
+     */
+    public static int getDeviceAPI(Context ctx) {
+        return Build.VERSION.SDK_INT;
+    }
+
+    /**
+     * List of sensors of the device.
+     *
+     * @param ctx
+     * @return
+     */
+    public static List<String> getDeviceSensors(Context ctx) {
+        SensorManager mSensorManager = (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
+        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+        List<String> sensorList = new ArrayList<>();
+        //TODO change later
+        for (Sensor s : mSensorManager.getSensorList(Sensor.TYPE_ALL)) {
+            sensorList.add(s.toString());
+        }
+        return sensorList;
     }
 
     public static String getDeviceToken(Context ctx) {

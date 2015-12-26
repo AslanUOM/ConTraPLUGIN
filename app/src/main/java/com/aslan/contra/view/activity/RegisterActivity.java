@@ -2,10 +2,8 @@ package com.aslan.contra.view.activity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -22,13 +20,11 @@ import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RegisterActivity extends AppCompatActivity implements OnResponseListener<String> {
-    private static final String TAG = "<<<<<< Context >>>>>>";
+    private static final String TAG = "RegisterActivity";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
@@ -72,6 +68,11 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
                 String phoneNumber = etPhoneNumber.getText().toString();
                 String deviceName = Utility.getDeviceName(getApplicationContext());
                 String deviceSerial = Utility.getDeviceSerial(getApplicationContext());
+
+                //TODO use this info to send to server once services are available
+                Log.d(TAG + " BT", Utility.getDeviceBtMAC(getApplicationContext()));
+                Log.d(TAG + " WIFI", Utility.getDeviceWiFiMAC(getApplicationContext()));
+                Log.d(TAG + " API", Utility.getDeviceAPI(getApplicationContext()) + "");
 
                 UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
                 service.setOnResponseListener(this);

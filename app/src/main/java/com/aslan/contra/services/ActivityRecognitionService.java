@@ -52,6 +52,7 @@ public class ActivityRecognitionService extends IntentService {
             @Override
             protected Void doInBackground(Void... params) {
                 activitySensor.start();
+                Log.d("<<Activity-onStart>>", "I am ALIVE");
                 return null;
             }
         }.execute();

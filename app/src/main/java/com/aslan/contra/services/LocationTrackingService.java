@@ -55,7 +55,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
         runnable = new Runnable() {
             public void run() {
                 locationSensor.start();
-                Log.d("<<Location-onStart>>", "I am alive");
+                Log.d("<<Location-onStart>>", "I am ALIVE");
                 Toast.makeText(getApplicationContext(), "Location STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
             }

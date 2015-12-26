@@ -39,7 +39,7 @@ public class EnvironmentMonitorService extends IntentService {
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                Log.d("<<Env-onStart>>", "I am STARTED");
+                Log.d("<<Env-onStart>>", "I am ALIVE");
                 environmentSensor.start();
                 Toast.makeText(getApplicationContext(), "Environment STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.EnvironmentMonitoring.MIN_TIME_BW_UPDATES);

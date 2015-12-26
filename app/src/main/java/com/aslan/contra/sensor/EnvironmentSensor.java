@@ -24,11 +24,6 @@ public class EnvironmentSensor implements SensorEventListener {
         // a particular sensor.
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 
-        //TODO remove later
-        for (Sensor s : mSensorManager.getSensorList(Sensor.TYPE_ALL)) {
-            Log.i("Sen " + TAG, s.toString());
-        }
-
         mAmbientTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);

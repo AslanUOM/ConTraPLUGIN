@@ -44,7 +44,7 @@ public class NearbyTerminalTrackingService extends IntentService {
             public void run() {
                 //TODO uncomment WiFi tracking when implemented in server side
                 wifiSensor.start();
-                Log.d("<<Nearby-onStart>>", "I am alive");
+                Log.d("<<Nearby-onStart>>", "I am ALIVE");
                 Toast.makeText(getApplicationContext(), "Nearby STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.NearbyTerminalTracking.MIN_TIME_BW_UPDATES);
             }
