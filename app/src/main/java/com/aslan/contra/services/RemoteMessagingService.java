@@ -56,9 +56,9 @@ public class RemoteMessagingService extends Service implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d("RemoteService", "onServiceConnected");
-        Log.d("RemoteService", name.toString());
-        Log.d("RemoteService", service.toString());
+        Log.d(TAG, "onServiceConnected");
+        Log.d(TAG, name.toString());
+        Log.d(TAG, service.toString());
         sender = new Messenger(service);
 
         // Extract the information
@@ -74,8 +74,8 @@ public class RemoteMessagingService extends Service implements ServiceConnection
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Log.d("RemoteService", "onServiceConnected");
-        Log.d("RemoteService", name.toString());
+        Log.d(TAG, "onServiceConnected");
+        Log.d(TAG, name.toString());
         sender = null;
     }
 
