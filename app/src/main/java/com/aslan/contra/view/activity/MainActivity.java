@@ -158,6 +158,12 @@ public class MainActivity extends AppCompatActivity
             fragment = new ProfileFragment();
         } else if (id == R.id.nav_settings) {
             fragment = SETTINGS_FRAGMENT;
+        } else if (id == R.id.nav_sign_out) {
+            Utility.saveUserId(getApplicationContext(), null);
+            Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(intent);
+            MainActivity.this.finish();
+            return true;
         } else {
             fragment = HOME_FRAGMENT;
         }
