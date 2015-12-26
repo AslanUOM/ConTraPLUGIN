@@ -31,7 +31,6 @@ public class Constants {
     public static final String ALL_PERMISSIONS_GRANTED = "granted";
     public static final int SHOW_PROFILE = 0x1000;
     public static final long SPLASH_VISIBLE_TIME = 1000;
-    public static final double MIN_DISTANCE_FOR_LOCATION_CHANGE = 100;     //in meters
     public static final String[] PERMISSIONS = {
             Manifest.permission.READ_CONTACTS
     };
@@ -49,9 +48,20 @@ public class Constants {
 
         // The minimum distance to change location Updates in meters
         public static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10L;
+        public static final double MIN_DISTANCE_FOR_LOCATION_CHANGE = 100;     //in meters
 
         // The minimum time between location updates in milliseconds, here 30 minutes
         public static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
+    }
+
+    public static final class NearbyTerminalTracking {
+        // The minimum time between location updates in milliseconds, here 30 minutes
+        public static final int MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
+    }
+
+    public static final class ActivityRecognition {
+        // The minimum time between location updates in milliseconds, here 5 minutes
+        public static final int MIN_TIME_BW_UPDATES = 1000 * 60 * 5;
     }
 
     public static final class EnvironmentMonitoring {

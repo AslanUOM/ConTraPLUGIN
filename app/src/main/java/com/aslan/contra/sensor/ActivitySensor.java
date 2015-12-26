@@ -191,7 +191,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
      * Gets a PendingIntent to be sent for each activity detection.
      */
     private PendingIntent getActivityDetectionPendingIntent() {
-        Intent intent = new Intent(context, ActivityRecognitionService.class);
+        Intent intent = new Intent(context, ActivityRecognitionReceiverService.class);
 
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // requestActivityUpdates() and removeActivityUpdates().
@@ -251,13 +251,13 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
     /**
      * Define this service in Manifest.
      */
-    public static class ActivityRecognitionService extends IntentService {
+    public static class ActivityRecognitionReceiverService extends IntentService {
 
         private final DescendingConfidenceComparator DESC_CONF_COMPARATOR;
         private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
 
-        public ActivityRecognitionService() {
-            super("ActivityRecognitionService");
+        public ActivityRecognitionReceiverService() {
+            super("ActivityRecognitionReceiverService");
             this.DESC_CONF_COMPARATOR = new DescendingConfidenceComparator();
         }
 

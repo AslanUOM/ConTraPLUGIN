@@ -13,9 +13,10 @@ import com.aslan.contra.util.Constants;
  * Created by vishnuvathsan on 25-Dec-15.
  */
 public class EnvironmentMonitorService extends IntentService {
-    public static String TAG = "EnvironmentMonitorService";
+    public static final String TAG = "EnvironmentMonitorService";
+    public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
-    public Handler handler = null;
+    private Handler handler = null;
     private Intent intent;
     private EnvironmentSensor environmentSensor;
 
@@ -23,18 +24,11 @@ public class EnvironmentMonitorService extends IntentService {
         super(TAG);
     }
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public EnvironmentMonitorService(String name) {
-        super(name);
-    }
-
     @Override
     protected void onHandleIntent(Intent intent) {
-
+        if (!isIntentServiceRunning) {
+            isIntentServiceRunning = true;
+        }
     }
 
     @Override
@@ -45,10 +39,9 @@ public class EnvironmentMonitorService extends IntentService {
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                onHandleIntent(EnvironmentMonitorService.this.intent);
                 Log.d("<<Env-onStart>>", "I am STARTED");
                 environmentSensor.start();
-                Toast.makeText(getApplicationContext(), "ENV", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Environment STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.EnvironmentMonitoring.MIN_TIME_BW_UPDATES);
             }
         };
@@ -63,9 +56,11 @@ public class EnvironmentMonitorService extends IntentService {
 
     @Override
     public void onDestroy() {
+        isIntentServiceRunning = false;
         handler.removeCallbacks(runnable);
         environmentSensor.stop();
         Log.d("<<Env-onDestroy>>", "I am DESTROYED");
+        Toast.makeText(getApplicationContext(), "Environment DESTROYED", Toast.LENGTH_SHORT).show();
         stopSelf();
         super.onDestroy();
     }

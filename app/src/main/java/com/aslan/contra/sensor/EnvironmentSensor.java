@@ -18,7 +18,6 @@ public class EnvironmentSensor implements SensorEventListener {
     private Sensor mProximity;
     private Sensor mPressure;
     private Sensor mRelativeHumidity;
-    private Sensor mTemp;
 
     public EnvironmentSensor(Context context) {
         // Get an instance of the sensor service, and use that to get an instance of
@@ -35,7 +34,6 @@ public class EnvironmentSensor implements SensorEventListener {
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-        mTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_TEMPERATURE);
     }
 
     @Override
@@ -62,10 +60,6 @@ public class EnvironmentSensor implements SensorEventListener {
                 Log.i(TAG, "Humidity: " + event.values[0]);
                 mSensorManager.unregisterListener(this, mRelativeHumidity);
                 break;
-            case Sensor.TYPE_TEMPERATURE:
-                Log.i(TAG, "Temp: " + event.values[0]);
-                mSensorManager.unregisterListener(this, mTemp);
-                break;
         }
     }
 
@@ -86,9 +80,6 @@ public class EnvironmentSensor implements SensorEventListener {
                 break;
             case Sensor.TYPE_RELATIVE_HUMIDITY:
                 Log.i(TAG, "Humidity: ");
-                break;
-            case Sensor.TYPE_TEMPERATURE:
-                Log.i(TAG, "Temp: ");
                 break;
         }
     }
@@ -123,12 +114,6 @@ public class EnvironmentSensor implements SensorEventListener {
         } else {
             Log.i(TAG, "Hum not available");
         }
-
-        if (mTemp != null) {
-            mSensorManager.registerListener(this, mTemp, mTemp.getMinDelay());
-        } else {
-            Log.i(TAG, "Temp not available");
-        }
     }
 
     public void stop() {
@@ -137,6 +122,5 @@ public class EnvironmentSensor implements SensorEventListener {
         mSensorManager.unregisterListener(this, mProximity);
         mSensorManager.unregisterListener(this, mPressure);
         mSensorManager.unregisterListener(this, mRelativeHumidity);
-        mSensorManager.unregisterListener(this, mTemp);
     }
 }

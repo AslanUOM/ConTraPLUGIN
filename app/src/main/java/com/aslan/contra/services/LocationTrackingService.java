@@ -3,7 +3,6 @@ package com.aslan.contra.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -11,16 +10,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.aslan.contra.listeners.OnLocationChangedListener;
-import com.aslan.contra.listeners.OnWifiScanResultChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
-import com.aslan.contra.sensor.WiFiSensor;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
-
-import java.sql.Timestamp;
-import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -33,14 +27,12 @@ public class LocationTrackingService extends IntentService implements OnResponse
     public static final String TAG = "LocationTrackingService";
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
-    public Handler handler = null;
-    //    private final long TIME_INTERVAL = 1800000L;
+    private Handler handler = null;
+    private Intent intent;
     private DatabaseHelper dbHelper;
     private LocationSensor locationSensor;
     private Location currentBestLocation;
     private int counter = 0;
-    private WiFiSensor wifiSensor;
-    private Intent intent;
 
     public LocationTrackingService() {
         super(TAG);
@@ -58,27 +50,16 @@ public class LocationTrackingService extends IntentService implements OnResponse
         dbHelper = new DatabaseHelper(getApplicationContext());
 
         initialiseLocationTracker();
-        //TODO uncomment WiFi tracking when implemented in server side
-        initialiseWifiTracker();
 
         handler = new Handler();
         runnable = new Runnable() {
             public void run() {
-                onHandleIntent(LocationTrackingService.this.intent);
                 locationSensor.start();
-                //TODO uncomment WiFi tracking when implemented in server side
-                wifiSensor.start();
-                Log.d("<<Tracking-onStart>>", "I am alive");
-                Toast.makeText(getApplicationContext(), "STARTED", Toast.LENGTH_SHORT).show();
+                Log.d("<<Location-onStart>>", "I am alive");
+                Toast.makeText(getApplicationContext(), "Location STARTED", Toast.LENGTH_SHORT).show();
                 handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
             }
         };
-    }
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-        this.intent = intent;
-        handler.postDelayed(runnable, 1000);
     }
 
     @Override
@@ -89,6 +70,13 @@ public class LocationTrackingService extends IntentService implements OnResponse
     }
 
     @Override
+    protected void onHandleIntent(Intent intent) {
+        if (!isIntentServiceRunning) {
+            isIntentServiceRunning = true;
+        }
+    }
+
+    @Override
     public void onDestroy() {
         isIntentServiceRunning = false;
         handler.removeCallbacks(runnable);
@@ -96,18 +84,10 @@ public class LocationTrackingService extends IntentService implements OnResponse
 //        no need to stop separately as it stops itself on scanned result
 //        wifiSensor.stop();
         stopSelf();
-        Log.d("<<Tracking-onDestroy>>", "I am DESTROYED");
-        Toast.makeText(getApplicationContext(), "DESTROYED", Toast.LENGTH_SHORT).show();
+        Log.d("<<Location-onDestroy>>", "I am DESTROYED");
+        Toast.makeText(getApplicationContext(), "Location DESTROYED", Toast.LENGTH_SHORT).show();
 
         super.onDestroy();
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        if (!isIntentServiceRunning) {
-            isIntentServiceRunning = true;
-        }
-        this.intent = intent;
     }
 
     @Override
@@ -135,7 +115,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
     }
 
     private void initialiseLocationTracker() {
-        locationSensor = new LocationSensor(this, 0, 0);
+        locationSensor = new LocationSensor(this);
         locationSensor.setOnLocationChangedListener(new OnLocationChangedListener() {
 
             @Override
@@ -166,25 +146,6 @@ public class LocationTrackingService extends IntentService implements OnResponse
                         }
                     }
                 }
-            }
-        });
-    }
-
-    //TODO uncomment WiFi tracking when implemented in server side
-    private void initialiseWifiTracker() {
-        wifiSensor = new WiFiSensor(this);
-        wifiSensor.setOnWifiScanResultChangedLsitener(new OnWifiScanResultChangedListener() {
-            @Override
-            public void onWifiScanResultsChanged(List<ScanResult> wifiList) {
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                Log.e("TIME", timestamp.toString());
-                for (ScanResult wifi : wifiList) {
-                    if (dbHelper.insertWifi(wifi, timestamp.toString())) {
-                        Log.d("WIFI", wifi.toString());
-                        Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                wifiSensor.stop();
             }
         });
     }

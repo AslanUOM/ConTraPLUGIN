@@ -12,14 +12,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <!-- Permission to collect the activities of the user -->
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
-    <!--Permission to collect environment sensor data-->
+    <!-- Permission to collect environment sensor data -->
     <uses-feature
         android:name="android.hardware.sensor.relativehumidity"
         android:required="true" />
@@ -29,8 +28,8 @@
     <uses-feature
         android:name="android.hardware.sensor.temperature"
         android:required="true" />
-    <!--<uses-feature android:name="android.hardware.sensor.pressure"-->
-    <!--android:required="true" />-->
+    <!-- <uses-feature android:name="android.hardware.sensor.pressure" -->
+    <!-- android:required="true" /> -->
     <uses-feature
         android:name="android.hardware.sensor.light"
         android:required="true" />
@@ -43,12 +42,13 @@
     <uses-feature
         android:name="android.hardware.sensor.gyroscope"
         android:required="true" />
-    <!--<uses-feature android:name="android.hardware.sensor.compas"-->
-    <!--android:required="true" />-->
+    <!-- <uses-feature android:name="android.hardware.sensor.compas" -->
+    <!-- android:required="true" /> -->
 
     <permission
         android:name="com.aslan.contra.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="com.aslan.contra.permission.C2D_MESSAGE" />
 
     <application
@@ -57,7 +57,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -67,6 +66,7 @@
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
                 <category android:name="com.aslan.contra" />
             </intent-filter>
         </receiver>
@@ -78,16 +78,15 @@
             android:theme="@style/AppTheme.FulScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".view.activity.RegisterActivity"
             android:noHistory="true"
@@ -108,12 +107,16 @@
         <service
             android:name=".services.LocationTrackingService"
             android:exported="false" />
-
-        <service android:name=".sensor.ActivitySensor$ActivityRecognitionService" />
-
+        <service android:name=".sensor.ActivitySensor$ActivityRecognitionReceiverService" />
         <service
             android:name=".services.EnvironmentMonitorService"
             android:exported="false" />
+        <service
+            android:name=".services.ActivityRecognitionService"
+            android:exported="false" />
+        <service
+            android:name=".services.NearbyTerminalTrackingService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

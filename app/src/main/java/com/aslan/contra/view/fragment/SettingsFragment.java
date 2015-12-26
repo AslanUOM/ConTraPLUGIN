@@ -2,7 +2,6 @@ package com.aslan.contra.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
@@ -14,9 +13,10 @@ import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
-import com.aslan.contra.sensor.ActivitySensor;
+import com.aslan.contra.services.ActivityRecognitionService;
 import com.aslan.contra.services.EnvironmentMonitorService;
 import com.aslan.contra.services.LocationTrackingService;
+import com.aslan.contra.services.NearbyTerminalTrackingService;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.wsclient.OnResponseListener;
@@ -30,10 +30,9 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
     private SwitchCompat swLocTrackEnable;
     private SwitchCompat swActivityTrack;
     private SwitchCompat swEnvironmentMonitor;
+    private SwitchCompat swNearbyTerminal;
 
     private OnFragmentInteractionListener mListener;
-
-    private ActivitySensor activitySensor;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -63,18 +62,16 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
+
         // Find the user interface components
         this.btnGetContacts = (Button) view.findViewById(R.id.btnContacts);
         this.btnExportToSD = (Button) view.findViewById(R.id.btnExport);
 
         this.swLocTrackEnable = (SwitchCompat) view.findViewById(R.id.swLocTrack);
-
         this.swActivityTrack = (SwitchCompat) view.findViewById(R.id.swActivityTrack);
-        this.activitySensor = ActivitySensor.getInstance(getContext());
-
         this.swEnvironmentMonitor = (SwitchCompat) view.findViewById(R.id.swEnvironmentMonitor);
-
-        final DatabaseHelper dbHelper = new DatabaseHelper(getContext());
+        this.swNearbyTerminal = (SwitchCompat) view.findViewById(R.id.swNearbyTerminal);
 
         swLocTrackEnable.setChecked(RunningServices.getInstance().isLocationServiceRunning(getContext()));
         swLocTrackEnable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -94,27 +91,43 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             }
         });
 
-        swActivityTrack.setChecked(activitySensor.isRunning());
+        swNearbyTerminal.setChecked(RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(getContext()));
+        swNearbyTerminal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent serviceIntent = new Intent(getContext(), NearbyTerminalTrackingService.class);
+                    serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+                    getContext().startService(serviceIntent);
+                    Toast.makeText(getContext(), "Nearby Terminal Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent serviceIntent = new Intent(getContext(), NearbyTerminalTrackingService.class);
+                    serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+                    getContext().stopService(serviceIntent);
+                    Toast.makeText(getContext(), "Nearby Terminal Tracking Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        swActivityTrack.setChecked(RunningServices.getInstance().isActivityRecognitionServiceRunning(getContext()));
         swActivityTrack.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    // Start service
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-
-                            activitySensor.start();
-                            return null;
-                        }
-                    }.execute();
-//                    activitySensor.start();
+                    Intent serviceIntent = new Intent(getContext(), ActivityRecognitionService.class);
+                    serviceIntent.addCategory(ActivityRecognitionService.TAG);
+                    getContext().startService(serviceIntent);
+                    Toast.makeText(getContext(), "Activity Recognition Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
-                    // Stop service
-                    activitySensor.stop();
+                    Intent serviceIntent = new Intent(getContext(), ActivityRecognitionService.class);
+                    serviceIntent.addCategory(ActivityRecognitionService.TAG);
+                    getContext().stopService(serviceIntent);
+                    Toast.makeText(getContext(), "Activity Recognition Stopped @ PLUGIN", Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+        swEnvironmentMonitor.setChecked(RunningServices.getInstance().isEnvironmentMonitorServiceRunning(getContext()));
         swEnvironmentMonitor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

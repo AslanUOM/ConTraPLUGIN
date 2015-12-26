@@ -10,12 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.aslan.contra.R;
-import com.aslan.contra.sensor.ActivitySensor;
+import com.aslan.contra.services.ActivityRecognitionService;
+import com.aslan.contra.services.EnvironmentMonitorService;
 import com.aslan.contra.services.LocationTrackingService;
+import com.aslan.contra.services.NearbyTerminalTrackingService;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.util.Utility;
@@ -24,9 +25,6 @@ import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
 import com.aslan.contra.view.fragment.PermissionFragment;
 import com.aslan.contra.view.fragment.ProfileFragment;
 import com.aslan.contra.view.fragment.SettingsFragment;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
@@ -95,6 +93,21 @@ public class MainActivity extends AppCompatActivity
         if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
             Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
             serviceIntent.addCategory(LocationTrackingService.TAG);
+            startService(serviceIntent);
+        }
+        if (!RunningServices.getInstance().isActivityRecognitionServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, ActivityRecognitionService.class);
+            serviceIntent.addCategory(ActivityRecognitionService.TAG);
+            startService(serviceIntent);
+        }
+        if (!RunningServices.getInstance().isEnvironmentMonitorServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, EnvironmentMonitorService.class);
+            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+            startService(serviceIntent);
+        }
+        if (!RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, NearbyTerminalTrackingService.class);
+            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
             startService(serviceIntent);
         }
     }
