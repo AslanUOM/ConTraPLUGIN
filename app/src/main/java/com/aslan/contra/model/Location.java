@@ -3,6 +3,7 @@ package com.aslan.contra.model;
 /**
  * Created by Vishnuvathsasarma on 05-Nov-15.
  */
+//TODO delete this class if not necessary
 public class Location extends Sensor {
     private String provider;
     private String latitude;

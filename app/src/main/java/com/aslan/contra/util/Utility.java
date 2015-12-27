@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -148,6 +151,19 @@ public class Utility {
         return sensorList;
     }
 
+    public static float getBatteryLevel(Context ctx) {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = ctx.registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batteryPercent = 100 * level / (float) scale;
+        Log.i("BatteryLevel", "" + level);
+        Log.i("BatteryScale", "" + scale);
+        Log.i("Battery%", "" + batteryPercent);
+
+        return batteryPercent;
+    }
+
     public static String getDeviceToken(Context ctx) {
         if (deviceToken == null) {
             SharedPreferences preferences = getSharedPreference(ctx);
@@ -202,7 +218,7 @@ public class Utility {
     }
 
     public static String[] nonGrantedPermissions(Context ctx) {
-        List<String> nonGrantedPermissions = new ArrayList<String>();
+        List<String> nonGrantedPermissions = new ArrayList<>();
 
         // Android 6.0 or latest
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

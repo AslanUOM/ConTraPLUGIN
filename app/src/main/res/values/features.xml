@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="feature_names">
-        <item>Location</item>
+        <item>Activity</item>
         <item>Contact</item>
+        <item>Internet</item>
+        <item>Location</item>
+        <item>Nearby Terminals</item>
         <item>Phone State</item>
+        <item>Push notification</item>
+        <item>Storage</item>
     </array>
     <array name="feature_descriptions">
-        <item>ConTra tracks your location</item>
+        <item>ConTra tracks your activity/movement</item>
         <item>ConTra collects your contacts</item>
-        <item>Reads the device id and other states.</item>
+        <item>ConTra use your internet</item>
+        <item>ConTra tracks your location</item>
+        <item>ConTra tracks your nearby terminals/devices</item>
+        <item>ConTra reads the device id and other states</item>
+        <item>ConTra sends you push notifications</item>
+        <item>ConTra writes to your storage/SD card</item>
     </array>
     <array name="feature_icons">
-        <item>@drawable/ic_gps_fixed_grey_800_36dp</item>
-        <item>@drawable/ic_people_grey_800_36dp</item>
-        <item>@drawable/ic_people_grey_800_36dp</item>
+        <item>@drawable/ic_directions_walk_grey_800_36dp</item>
+        <item>@drawable/ic_contacts_grey_800_36dp</item>
+        <item>@drawable/ic_import_export_grey_800_36dp</item>
+        <item>@drawable/ic_location_on_grey_800_36dp</item>
+        <item>@drawable/ic_track_changes_grey_800_36dp</item>
+        <item>@drawable/ic_perm_device_info_grey_800_36dp</item>
+        <item>@drawable/ic_tap_and_play_grey_800_36dp</item>
+        <item>@drawable/ic_sd_storage_grey_800_36dp</item>
     </array>
     <array name="feature_permissions">
+        <item>com.google.android.gms.permission.ACTIVITY_RECOGNITION</item>
+        <item>android.permission.READ_CONTACTS</item>
+        <item>android.permission.ACCESS_NETWORK_STATE,android.permission.INTERNET</item>
         <item>android.permission.ACCESS_COARSE_LOCATION,android.permission.ACCESS_FINE_LOCATION</item>
-        <item>android.permission.READ_CONTACTS,android.permission.GET_ACCOUNTS</item>
+        <item>
+            android.permission.ACCESS_WIFI_STATE,android.permission.CHANGE_WIFI_STATE,android.permission.BLUETOOTH,android.permission.BLUETOOTH_ADMIN
+        </item>
         <item>android.permission.READ_PHONE_STATE</item>
+        <item>com.google.android.c2dm.permission.RECEIVE</item>
+        <item>android.permission.WRITE_EXTERNAL_STORAGE</item>
     </array>
 </resources>

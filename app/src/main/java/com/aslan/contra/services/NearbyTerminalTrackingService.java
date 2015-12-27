@@ -91,6 +91,7 @@ public class NearbyTerminalTrackingService extends IntentService {
                     Log.d("WIFI", wifi.toString());
                     Toast.makeText(getApplicationContext(), wifi.toString(), Toast.LENGTH_SHORT).show();
                 }
+//                Utility.getBatteryLevel(getApplicationContext());
                 wifiSensor.stop();
                 //TODO send to server
             }

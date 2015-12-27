@@ -2,56 +2,59 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aslan.contra">
 
+    <!-- Custom permission for other apps to tie in to this app-->
+    <permission
+        android:name="com.aslan.contra.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.aslan.contra.permission.C2D_MESSAGE" />
+
+    <!-- Needed to communicate with the server-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- To get device hardware info-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- Allows using PowerManager WakeLocks to keep processor from sleeping or screen from dimming-->
+    <!--<uses-permission android:name="android.permission.WAKE_LOCK" />-->
+
+    <!-- To receive GCM push notifications-->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <!-- To collect contact entries-->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- For location updates-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- To collect the activities of the user -->
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+
+    <!-- To collect nearby terminal/device data-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
-    <!-- Permission to collect the activities of the user -->
-    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
-
-    <!-- Permission to collect environment sensor data -->
-    <uses-feature
-        android:name="android.hardware.sensor.relativehumidity"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.sensor.ambienttemperature"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.sensor.temperature"
-        android:required="true" />
-    <!-- <uses-feature android:name="android.hardware.sensor.pressure" -->
-    <!-- android:required="true" /> -->
+    <!-- To collect environment sensor data -->
     <uses-feature
         android:name="android.hardware.sensor.light"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.sensor.proximity"
-        android:required="true" />
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.sensor.barometer"
-        android:required="true" />
-    <uses-feature
-        android:name="android.hardware.sensor.gyroscope"
-        android:required="true" />
-    <!-- <uses-feature android:name="android.hardware.sensor.compas" -->
-    <!-- android:required="true" /> -->
-
-    <permission
-        android:name="com.aslan.contra.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-
-    <uses-permission android:name="com.aslan.contra.permission.C2D_MESSAGE" />
+        android:required="false" />
+    <!--<uses-feature-->
+    <!--android:name="android.hardware.sensor.gyroscope"-->
+    <!--android:required="false" />-->
+    <!-- <uses-feature android:name="android.hardware.sensor.compass" -->
+    <!-- android:required="false" /> -->
 
     <application
         android:allowBackup="true"

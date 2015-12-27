@@ -1,7 +1,7 @@
 package com.aslan.contra.model;
 
 import java.sql.Timestamp;
-
+//TODO delete this class if not necessary
 /**
  * Created by Vishnuvathsasarma on 05-Nov-15.
  */
