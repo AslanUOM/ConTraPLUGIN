@@ -65,19 +65,26 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
                 this.progressDialog = ProgressDialog.show(this, "", "Please wait...");
 
                 // Read the phone number
-                String phoneNumber = etPhoneNumber.getText().toString();
-                String deviceName = Utility.getDeviceName(getApplicationContext());
-                String deviceSerial = Utility.getDeviceSerial(getApplicationContext());
+                String phoneNumber = etPhoneNumber.getText().toString().trim();
+                if (Utility.getUserId(getApplicationContext()) == null || !Utility.getUserId(getApplicationContext()).equals(phoneNumber)) {
+                    String deviceName = Utility.getDeviceName(getApplicationContext());
+                    String deviceSerial = Utility.getDeviceSerial(getApplicationContext());
 
-                //TODO use this info to send to server once services are available
-                Log.d(TAG + " BT", Utility.getDeviceBtMAC(getApplicationContext()));
-                Log.d(TAG + " WIFI", Utility.getDeviceWiFiMAC(getApplicationContext()));
-                Log.d(TAG + " API", Utility.getDeviceAPI(getApplicationContext()) + "");
+                    //TODO use this info to send to server once services are available
+                    Log.d(TAG + " BT", Utility.getDeviceBtMAC(getApplicationContext()));
+                    Log.d(TAG + " WIFI", Utility.getDeviceWiFiMAC(getApplicationContext()));
+                    Log.d(TAG + " API", Utility.getDeviceAPI(getApplicationContext()) + "");
 
-                UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
-                service.setOnResponseListener(this);
-                // Country is hardcoded as Sri Lanka
-                service.registerUser("lk", phoneNumber, deviceName, deviceSerial);
+                    UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
+                    service.setOnResponseListener(this);
+                    // Country is hardcoded as Sri Lanka
+                    service.registerUser("lk", phoneNumber, deviceName, deviceSerial);
+                } else {
+                    Utility.saveUserSignedIn(getApplicationContext(), true);
+                    // Move to the MainActivity home fragment
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
             }
         } else {
             askToEnableNetwork();
@@ -110,8 +117,9 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
         if (userID != null) {
             // Save the user-id
             Utility.saveUserId(getApplicationContext(), userID);
+            Utility.saveUserSignedIn(getApplicationContext(), true);
 
-            // Move to the MainActivity
+            // Move to the MainActivity permission fragment
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.putExtra(Constants.COMMAND, Constants.SHOW_PROFILE);
             startActivity(intent);

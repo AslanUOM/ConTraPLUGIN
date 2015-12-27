@@ -1,12 +1,13 @@
 package com.aslan.contra.util;
 
-import android.Manifest;
-
 /**
  * Created by gobinath on 10/29/15.
  */
 public class Constants {
     public static final String USER_ID = "userId";
+    public static final String SIGNED_IN_STATUS = "signed in status";
+    public static final String SIGNED_IN = "signed in";
+    public static final String SIGNED_OUT = "signed out";
     public static final String DEVICE_TOKEN = "deviceToken";
 
     /**
@@ -31,9 +32,6 @@ public class Constants {
     public static final String ALL_PERMISSIONS_GRANTED = "granted";
     public static final int SHOW_PROFILE = 0x1000;
     public static final long SPLASH_VISIBLE_TIME = 1000;
-    public static final String[] PERMISSIONS = {
-            Manifest.permission.READ_CONTACTS
-    };
 
     public static final String FRIEND_FINDER_APP_ACTION_NAME = "aslan.app.RemoteMessagingService";
 

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.aslan.contra.R;
 import com.aslan.contra.util.Constants;
@@ -37,6 +35,9 @@ public class SplashActivity extends AppCompatActivity {
                 Class target;
                 // TODO: Check first run and change the activity
                 if (firstRun) {
+                    target = RegisterActivity.class;
+                } else if (Utility.isUserSignedIn(getApplicationContext()).equals(Constants.SIGNED_OUT)) {
+                    //TODO should be login activity
                     target = RegisterActivity.class;
                 } else {
                     target = MainActivity.class;

@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
  */
 public class Utility {
     private static String userId;
+    private static String signed_in_status;
     private static String deviceToken;
 
     public static SharedPreferences getSharedPreference(Context ctx) {
@@ -44,9 +45,9 @@ public class Utility {
 
     public static boolean isFirstRun(Context ctx) {
         String userId = getUserId(ctx);
+        String signed_in = isUserSignedIn(ctx);
         // If user-id is null, this is the first run
-        boolean firstRun = userId == null;
-        Log.e("UTIL", firstRun + "");
+        boolean firstRun = userId == null || signed_in == null;
         return firstRun;
     }
 
@@ -75,6 +76,24 @@ public class Utility {
         userId = userID;
         SharedPreferences preferences = getSharedPreference(ctx);
         preferences.edit().putString(Constants.USER_ID, userId).commit();
+    }
+
+    public static String isUserSignedIn(Context ctx) {
+        if (signed_in_status == null) {
+            SharedPreferences preferences = getSharedPreference(ctx);
+            signed_in_status = preferences.getString(Constants.SIGNED_IN_STATUS, null);
+        }
+        return signed_in_status;
+    }
+
+    public static void saveUserSignedIn(Context ctx, boolean status) {
+        if (status) {
+            signed_in_status = Constants.SIGNED_IN;
+        } else {
+            signed_in_status = Constants.SIGNED_OUT;
+        }
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putString(Constants.SIGNED_IN_STATUS, signed_in_status).commit();
     }
 
     public static String getDeviceName(Context ctx) {

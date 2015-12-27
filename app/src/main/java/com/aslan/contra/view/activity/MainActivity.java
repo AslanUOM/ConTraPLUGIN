@@ -112,6 +112,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Stop the sensors at sign out.
+     */
+    private void stopSensors() {
+        //TODO comment when you don't want to auto start the tracking service at app start
+        if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
+            serviceIntent.addCategory(LocationTrackingService.TAG);
+            stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isActivityRecognitionServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, ActivityRecognitionService.class);
+            serviceIntent.addCategory(ActivityRecognitionService.TAG);
+            stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isEnvironmentMonitorServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, EnvironmentMonitorService.class);
+            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+            stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(getApplicationContext())) {
+            Intent serviceIntent = new Intent(MainActivity.this, NearbyTerminalTrackingService.class);
+            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+            stopService(serviceIntent);
+        }
+    }
+
 
     /**
      * Check for the non granted permissions and if there are any, move to the PermissionFramgment.
@@ -159,7 +186,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             fragment = SETTINGS_FRAGMENT;
         } else if (id == R.id.nav_sign_out) {
-            Utility.saveUserId(getApplicationContext(), null);
+            stopSensors();
+            Utility.saveUserSignedIn(getApplicationContext(), false);
             Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
             startActivity(intent);
             MainActivity.this.finish();
