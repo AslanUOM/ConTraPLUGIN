@@ -4,20 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import com.aslan.contra.R;
+import com.aslan.contra.services.ActivityRecognitionService;
+import com.aslan.contra.services.EnvironmentMonitorService;
 import com.aslan.contra.services.LocationTrackingService;
-import com.aslan.contra.util.DatabaseHelper;
+import com.aslan.contra.services.NearbyTerminalTrackingService;
 import com.aslan.contra.util.RunningServices;
-import com.aslan.contra.wsclient.OnResponseListener;
-import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
+import com.aslan.contra.util.Utility;
 
 public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -67,6 +64,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        startSensors();
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -86,5 +84,33 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * Start the sensors based on user saved preference to collect the data.
+     */
+    private void startSensors() {
+        Context ctx = getContext();
+        //TODO comment when you don't want to auto start the tracking service at app start
+        if (Utility.getTrackingServiceState(ctx, LocationTrackingService.TAG) && !RunningServices.getInstance().isLocationServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, LocationTrackingService.class);
+            serviceIntent.addCategory(LocationTrackingService.TAG);
+            ctx.startService(serviceIntent);
+        }
+        if (Utility.getTrackingServiceState(ctx, ActivityRecognitionService.TAG) && !RunningServices.getInstance().isActivityRecognitionServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, ActivityRecognitionService.class);
+            serviceIntent.addCategory(ActivityRecognitionService.TAG);
+            ctx.startService(serviceIntent);
+        }
+        if (Utility.getTrackingServiceState(ctx, EnvironmentMonitorService.TAG) && !RunningServices.getInstance().isEnvironmentMonitorServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, EnvironmentMonitorService.class);
+            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+            ctx.startService(serviceIntent);
+        }
+        if (Utility.getTrackingServiceState(ctx, NearbyTerminalTrackingService.TAG) && !RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, NearbyTerminalTrackingService.class);
+            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+            ctx.startService(serviceIntent);
+        }
     }
 }

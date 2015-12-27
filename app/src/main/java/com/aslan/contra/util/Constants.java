@@ -40,6 +40,13 @@ public class Constants {
     private Constants() {
     }
 
+    public static final class ServiceTAGs {
+        public static final String ACTIVITY_RECOGNITION = "ActivityRecognitionService";
+        public static final String ENVIRON_MONITORING = "EnvironmentMonitorService";
+        public static final String NEARBY_TERMINAL_TRACKING = "NearbyTerminalTrackingService";
+        public static final String LOCATION_TRACKING = "LocationTrackingService";
+    }
+
     public static final class LocationTracking {
         // The maximum validity period of a location, here 30 minute
         public static final int MAX_VALIDITY_PERIOD = 1000 * 60 * 2;

@@ -7,13 +7,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.aslan.contra.sensor.EnvironmentSensor;
-import com.aslan.contra.util.Constants;
+
+import static com.aslan.contra.util.Constants.EnvironmentMonitoring;
+import static com.aslan.contra.util.Constants.ServiceTAGs;
 
 /**
  * Created by vishnuvathsan on 25-Dec-15.
  */
 public class EnvironmentMonitorService extends IntentService {
-    public static final String TAG = "EnvironmentMonitorService";
+    public static final String TAG = ServiceTAGs.ENVIRON_MONITORING;
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
     private Handler handler = null;
@@ -42,7 +44,7 @@ public class EnvironmentMonitorService extends IntentService {
                 Log.d("<<Env-onStart>>", "I am ALIVE");
                 environmentSensor.start();
                 Toast.makeText(getApplicationContext(), "Environment STARTED", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, Constants.EnvironmentMonitoring.MIN_TIME_BW_UPDATES);
+                handler.postDelayed(runnable, EnvironmentMonitoring.MIN_TIME_BW_UPDATES);
             }
         };
     }

@@ -170,17 +170,14 @@ public class Utility {
         return sensorList;
     }
 
-    public static float getBatteryLevel(Context ctx) {
-        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent batteryStatus = ctx.registerReceiver(null, ifilter);
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        float batteryPercent = 100 * level / (float) scale;
-        Log.i("BatteryLevel", "" + level);
-        Log.i("BatteryScale", "" + scale);
-        Log.i("Battery%", "" + batteryPercent);
+    public static boolean getTrackingServiceState(Context ctx, String key) {
+        SharedPreferences preferences = getSharedPreference(ctx);
+        return preferences.getBoolean(key, false);
+    }
 
-        return batteryPercent;
+    public static void saveTrackingServiceState(Context ctx, String key, boolean status) {
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putBoolean(key, status).commit();
     }
 
     public static String getDeviceToken(Context ctx) {
@@ -195,6 +192,21 @@ public class Utility {
         SharedPreferences preferences = getSharedPreference(ctx);
         preferences.edit().putString(Constants.DEVICE_TOKEN, deviceToken).commit();
     }
+
+
+    public static float getBatteryLevel(Context ctx) {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = ctx.registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batteryPercent = 100 * level / (float) scale;
+        Log.i("BatteryLevel", "" + level);
+        Log.i("BatteryScale", "" + scale);
+        Log.i("Battery%", "" + batteryPercent);
+
+        return batteryPercent;
+    }
+
 
     /**
      * Check whether the network access is available or not.

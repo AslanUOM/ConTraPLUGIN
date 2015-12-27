@@ -11,10 +11,13 @@ import android.widget.Toast;
 
 import com.aslan.contra.listeners.OnLocationChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
-import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
+
+import static com.aslan.contra.util.Constants.BundleType;
+import static com.aslan.contra.util.Constants.LocationTracking;
+import static com.aslan.contra.util.Constants.ServiceTAGs;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -24,7 +27,7 @@ import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
  */
 public class LocationTrackingService extends IntentService implements OnResponseListener<String> {
 
-    public static final String TAG = "LocationTrackingService";
+    public static final String TAG = ServiceTAGs.LOCATION_TRACKING;
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
     private Handler handler = null;
@@ -57,7 +60,7 @@ public class LocationTrackingService extends IntentService implements OnResponse
                 locationSensor.start();
                 Log.d("<<Location-onStart>>", "I am ALIVE");
                 Toast.makeText(getApplicationContext(), "Location STARTED", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, Constants.LocationTracking.MIN_TIME_BW_UPDATES);
+                handler.postDelayed(runnable, LocationTracking.MIN_TIME_BW_UPDATES);
             }
         };
     }
@@ -98,8 +101,8 @@ public class LocationTrackingService extends IntentService implements OnResponse
             Log.d(TAG, response);
             Intent serviceIntent = new Intent(this, RemoteMessagingService.class);
             Bundle bundle = new Bundle();
-            bundle.putString(Constants.BundleType.BUNDLE_TYPE, Constants.BundleType.NEARBY_FRIENDS);
-            bundle.putString(Constants.BundleType.NEARBY_FRIENDS, response);
+            bundle.putString(BundleType.BUNDLE_TYPE, BundleType.NEARBY_FRIENDS);
+            bundle.putString(BundleType.NEARBY_FRIENDS, response);
             serviceIntent.putExtras(bundle);
             startService(serviceIntent);
 

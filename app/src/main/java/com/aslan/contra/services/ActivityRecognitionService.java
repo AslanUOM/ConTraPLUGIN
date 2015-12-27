@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.aslan.contra.sensor.ActivitySensor;
 
+import static com.aslan.contra.util.Constants.ServiceTAGs;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -16,7 +18,7 @@ import com.aslan.contra.sensor.ActivitySensor;
  * helper methods.
  */
 public class ActivityRecognitionService extends IntentService {
-    public static final String TAG = "ActivityRecognitionService";
+    public static final String TAG = ServiceTAGs.ACTIVITY_RECOGNITION;
     public static boolean isIntentServiceRunning = false;
     //    public static Runnable runnable = null;
 //    private Handler handler = null;

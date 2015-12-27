@@ -11,10 +11,12 @@ import com.aslan.contra.listeners.OnBluetoothScanResultChangedListener;
 import com.aslan.contra.listeners.OnWifiScanResultChangedListener;
 import com.aslan.contra.sensor.BluetoothSensor;
 import com.aslan.contra.sensor.WiFiSensor;
-import com.aslan.contra.util.Constants;
 
 import java.sql.Timestamp;
 import java.util.List;
+
+import static com.aslan.contra.util.Constants.NearbyTerminalTracking;
+import static com.aslan.contra.util.Constants.ServiceTAGs;
 
 
 /**
@@ -24,7 +26,7 @@ import java.util.List;
  * TODO: Customize class - update intent actions and extra parameters.
  */
 public class NearbyTerminalTrackingService extends IntentService {
-    public static final String TAG = "NearbyTerminalTrackingService";
+    public static final String TAG = ServiceTAGs.NEARBY_TERMINAL_TRACKING;
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
     private Handler handler = null;
@@ -49,7 +51,7 @@ public class NearbyTerminalTrackingService extends IntentService {
                 bluetoothSensor.start();
                 Log.d("<<Nearby-onStart>>", "I am ALIVE");
                 Toast.makeText(getApplicationContext(), "Nearby STARTED", Toast.LENGTH_SHORT).show();
-                handler.postDelayed(runnable, Constants.NearbyTerminalTracking.MIN_TIME_BW_UPDATES);
+                handler.postDelayed(runnable, NearbyTerminalTracking.MIN_TIME_BW_UPDATES);
             }
         };
     }

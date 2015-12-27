@@ -19,6 +19,7 @@ import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.services.NearbyTerminalTrackingService;
 import com.aslan.contra.util.DatabaseHelper;
 import com.aslan.contra.util.RunningServices;
+import com.aslan.contra.util.Utility;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 
@@ -78,11 +79,13 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    Utility.saveTrackingServiceState(getContext(), LocationTrackingService.TAG, true);
                     Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
                     serviceIntent.addCategory(LocationTrackingService.TAG);
                     getContext().startService(serviceIntent);
                     Toast.makeText(getContext(), "Location Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
+                    Utility.saveTrackingServiceState(getContext(), LocationTrackingService.TAG, false);
                     Intent serviceIntent = new Intent(getContext(), LocationTrackingService.class);
                     serviceIntent.addCategory(LocationTrackingService.TAG);
                     getContext().stopService(serviceIntent);
@@ -96,11 +99,13 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    Utility.saveTrackingServiceState(getContext(), NearbyTerminalTrackingService.TAG, true);
                     Intent serviceIntent = new Intent(getContext(), NearbyTerminalTrackingService.class);
                     serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
                     getContext().startService(serviceIntent);
                     Toast.makeText(getContext(), "Nearby Terminal Tracking Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
+                    Utility.saveTrackingServiceState(getContext(), NearbyTerminalTrackingService.TAG, false);
                     Intent serviceIntent = new Intent(getContext(), NearbyTerminalTrackingService.class);
                     serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
                     getContext().stopService(serviceIntent);
@@ -114,11 +119,13 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    Utility.saveTrackingServiceState(getContext(), ActivityRecognitionService.TAG, true);
                     Intent serviceIntent = new Intent(getContext(), ActivityRecognitionService.class);
                     serviceIntent.addCategory(ActivityRecognitionService.TAG);
                     getContext().startService(serviceIntent);
                     Toast.makeText(getContext(), "Activity Recognition Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
+                    Utility.saveTrackingServiceState(getContext(), ActivityRecognitionService.TAG, false);
                     Intent serviceIntent = new Intent(getContext(), ActivityRecognitionService.class);
                     serviceIntent.addCategory(ActivityRecognitionService.TAG);
                     getContext().stopService(serviceIntent);
@@ -132,11 +139,13 @@ public class SettingsFragment extends Fragment implements OnResponseListener<Str
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    Utility.saveTrackingServiceState(getContext(), EnvironmentMonitorService.TAG, true);
                     Intent serviceIntent = new Intent(getContext(), EnvironmentMonitorService.class);
                     serviceIntent.addCategory(EnvironmentMonitorService.TAG);
                     getContext().startService(serviceIntent);
                     Toast.makeText(getContext(), "Environment Monitoring Started @ PLUGIN", Toast.LENGTH_LONG).show();
                 } else {
+                    Utility.saveTrackingServiceState(getContext(), EnvironmentMonitorService.TAG, false);
                     Intent serviceIntent = new Intent(getContext(), EnvironmentMonitorService.class);
                     serviceIntent.addCategory(EnvironmentMonitorService.TAG);
                     getContext().stopService(serviceIntent);
