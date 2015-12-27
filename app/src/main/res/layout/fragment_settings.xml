@@ -12,114 +12,169 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:layout_weight="85">
+        android:layout_weight="85"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-            <!--<Switch-->
-            <!--android:id="@+id/swLocTrack"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Enable Location Tracking" />-->
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:drawableLeft="@drawable/ic_directions_walk_grey_800_36dp"
+                        android:drawablePadding="15dp"
+                        android:gravity="center_vertical"
+                        android:text="Activity Tracking"
+                        android:textSize="20dp" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/swActivityTrack"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp" />
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:gravity="top"
+                    android:paddingLeft="51dp"
+                    android:text="Uses activity recognition from google play services to identify user's current activity like WALKING, DRIVING, TILTING, RUNNING.., etc."
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:drawableLeft="@drawable/ic_location_on_grey_800_36dp"
+                        android:drawablePadding="15dp"
+                        android:gravity="center_vertical"
+                        android:text="Location Tracking"
+                        android:textSize="20dp" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/swLocTrack"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:drawableLeft="@drawable/ic_directions_walk_grey_800_36dp"
-                    android:drawablePadding="15dp"
-                    android:gravity="center_vertical"
-                    android:text="Activity Tracking"
-                    android:textSize="20dp" />
+                    android:gravity="top"
+                    android:paddingLeft="51dp"
+                    android:text="Use device's GPS and cellular network to collect location information"
+                    android:textSize="15dp" />
+            </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/swActivityTrack"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:drawableLeft="@drawable/ic_settings_input_antenna_grey_800_36dp"
+                        android:drawablePadding="15dp"
+                        android:gravity="center_vertical"
+                        android:text="Environment Monitoring"
+                        android:textSize="20dp" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/swEnvironmentMonitor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:drawableLeft="@drawable/ic_location_on_grey_800_36dp"
-                    android:drawablePadding="15dp"
-                    android:gravity="center_vertical"
-                    android:text="Location Tracking"
-                    android:textSize="20dp" />
+                    android:gravity="top"
+                    android:paddingLeft="51dp"
+                    android:text="Use device's light sensor, proximity sensor and barometer to collect environmental conditions like ambient temperature, relative humidity, atmospheric pressure, light level and proximity"
+                    android:textSize="15dp" />
+            </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/swLocTrack"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:drawableLeft="@drawable/ic_track_changes_grey_800_36dp"
+                        android:drawablePadding="15dp"
+                        android:gravity="center_vertical"
+                        android:text="Nearby Terminal Tracking"
+                        android:textSize="20dp" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/swNearbyTerminal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_margin="5dp" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:drawableLeft="@drawable/ic_settings_input_antenna_grey_800_36dp"
-                    android:drawablePadding="15dp"
-                    android:gravity="center_vertical"
-                    android:text="Environment Monitoring"
-                    android:textSize="20dp" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/swEnvironmentMonitor"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:drawableLeft="@drawable/ic_track_changes_grey_800_36dp"
-                    android:drawablePadding="15dp"
-                    android:gravity="center_vertical"
-                    android:text="Nearby Terminal Tracking"
-                    android:textSize="20dp" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/swNearbyTerminal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp" />
-            </RelativeLayout>
+                    android:gravity="top"
+                    android:paddingLeft="51dp"
+                    android:text="Use devics's Wi-Fi and Bluetooth to scan and discover nearby devices/terminals"
+                    android:textSize="15dp" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
