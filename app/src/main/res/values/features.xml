@@ -38,7 +38,7 @@
         <item>
             android.permission.ACCESS_WIFI_STATE,android.permission.CHANGE_WIFI_STATE,android.permission.BLUETOOTH,android.permission.BLUETOOTH_ADMIN
         </item>
-        <item>android.permission.READ_PHONE_STATE</item>
+        <item>android.permission.READ_PHONE_STATE,android.permission.RECEIVE_BOOT_COMPLETED</item>
         <item>com.google.android.c2dm.permission.RECEIVE</item>
         <item>android.permission.WRITE_EXTERNAL_STORAGE</item>
     </array>

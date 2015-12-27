@@ -13,12 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.aslan.contra.R;
-import com.aslan.contra.services.ActivityRecognitionService;
-import com.aslan.contra.services.EnvironmentMonitorService;
-import com.aslan.contra.services.LocationTrackingService;
-import com.aslan.contra.services.NearbyTerminalTrackingService;
 import com.aslan.contra.util.Constants;
-import com.aslan.contra.util.RunningServices;
 import com.aslan.contra.util.Utility;
 import com.aslan.contra.view.fragment.HomeFragment;
 import com.aslan.contra.view.fragment.OnFragmentInteractionListener;
@@ -70,7 +65,7 @@ public class MainActivity extends AppCompatActivity
         if (showProfile) {
             changeFragment(new ProfileFragment());
             // Start sensors for the first time run.
-            startSensors();
+//            Utility.startSensors(getApplicationContext(), true);
         } else {
             boolean nonGrantedPermissionsExists = checkNonGrantedPermissions();
             if (!nonGrantedPermissionsExists) {
@@ -83,60 +78,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    /**
-     * Start the sensors to collect the data.
-     */
-    private void startSensors() {
-        //TODO comment when you don't want to auto start the tracking service at app start
-        if (!RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
-            serviceIntent.addCategory(LocationTrackingService.TAG);
-            startService(serviceIntent);
-        }
-        if (!RunningServices.getInstance().isActivityRecognitionServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, ActivityRecognitionService.class);
-            serviceIntent.addCategory(ActivityRecognitionService.TAG);
-            startService(serviceIntent);
-        }
-        if (!RunningServices.getInstance().isEnvironmentMonitorServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, EnvironmentMonitorService.class);
-            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
-            startService(serviceIntent);
-        }
-        if (!RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, NearbyTerminalTrackingService.class);
-            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
-            startService(serviceIntent);
-        }
-    }
-
-    /**
-     * Stop the sensors at sign out.
-     */
-    private void stopSensors() {
-        //TODO comment when you don't want to auto start the tracking service at app start
-        if (RunningServices.getInstance().isLocationServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, LocationTrackingService.class);
-            serviceIntent.addCategory(LocationTrackingService.TAG);
-            stopService(serviceIntent);
-        }
-        if (RunningServices.getInstance().isActivityRecognitionServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, ActivityRecognitionService.class);
-            serviceIntent.addCategory(ActivityRecognitionService.TAG);
-            stopService(serviceIntent);
-        }
-        if (RunningServices.getInstance().isEnvironmentMonitorServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, EnvironmentMonitorService.class);
-            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
-            stopService(serviceIntent);
-        }
-        if (RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(getApplicationContext())) {
-            Intent serviceIntent = new Intent(MainActivity.this, NearbyTerminalTrackingService.class);
-            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
-            stopService(serviceIntent);
-        }
     }
 
 
@@ -186,7 +127,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             fragment = SETTINGS_FRAGMENT;
         } else if (id == R.id.nav_sign_out) {
-            stopSensors();
+            Utility.stopSensors(getApplicationContext());
             Utility.saveUserSignedIn(getApplicationContext(), false);
             Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
             startActivity(intent);
@@ -220,7 +161,7 @@ public class MainActivity extends AppCompatActivity
             if (Constants.ALL_PERMISSIONS_GRANTED.equals(command)) {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 toggle.setDrawerIndicatorEnabled(true);
-                startSensors();
+                Utility.startSensors(getApplicationContext(), true);
             }
         } else if (fragment instanceof ProfileFragment) {
             if (showProfile) {  // Only for the first time it will be true

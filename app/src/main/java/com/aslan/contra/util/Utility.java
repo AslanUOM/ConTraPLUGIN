@@ -25,6 +25,10 @@ import android.util.Patterns;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.Feature;
+import com.aslan.contra.services.ActivityRecognitionService;
+import com.aslan.contra.services.EnvironmentMonitorService;
+import com.aslan.contra.services.LocationTrackingService;
+import com.aslan.contra.services.NearbyTerminalTrackingService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -285,6 +289,88 @@ public class Utility {
         } catch (PackageManager.NameNotFoundException e) {
             // should never happen
             throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    /**
+     * Start the sensors to collect the data.
+     */
+    public static void startSensors(Context ctx, boolean isFirstRun) {
+        /**
+         * Start the sensors based on user saved preference to collect the data.
+         */
+        if (!isFirstRun) {
+            //TODO comment when you don't want to auto start the tracking service at app start
+            if (Utility.getTrackingServiceState(ctx, LocationTrackingService.TAG) && !RunningServices.getInstance().isLocationServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, LocationTrackingService.class);
+                serviceIntent.addCategory(LocationTrackingService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (Utility.getTrackingServiceState(ctx, ActivityRecognitionService.TAG) && !RunningServices.getInstance().isActivityRecognitionServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, ActivityRecognitionService.class);
+                serviceIntent.addCategory(ActivityRecognitionService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (Utility.getTrackingServiceState(ctx, EnvironmentMonitorService.TAG) && !RunningServices.getInstance().isEnvironmentMonitorServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, EnvironmentMonitorService.class);
+                serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (Utility.getTrackingServiceState(ctx, NearbyTerminalTrackingService.TAG) && !RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, NearbyTerminalTrackingService.class);
+                serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+                ctx.startService(serviceIntent);
+            }
+        } else {
+
+            //TODO comment when you don't want to auto start the tracking service at app start
+            if (!RunningServices.getInstance().isLocationServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, LocationTrackingService.class);
+                serviceIntent.addCategory(LocationTrackingService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (!RunningServices.getInstance().isActivityRecognitionServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, ActivityRecognitionService.class);
+                serviceIntent.addCategory(ActivityRecognitionService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (!RunningServices.getInstance().isEnvironmentMonitorServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, EnvironmentMonitorService.class);
+                serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+                ctx.startService(serviceIntent);
+            }
+            if (!RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(ctx)) {
+                Intent serviceIntent = new Intent(ctx, NearbyTerminalTrackingService.class);
+                serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+                ctx.startService(serviceIntent);
+            }
+        }
+    }
+
+    /**
+     * Stop the sensors at sign out.
+     */
+    public static void stopSensors(Context ctx) {
+        //TODO comment when you don't want to auto start the tracking service at app start
+        if (RunningServices.getInstance().isLocationServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, LocationTrackingService.class);
+            serviceIntent.addCategory(LocationTrackingService.TAG);
+            ctx.stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isActivityRecognitionServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, ActivityRecognitionService.class);
+            serviceIntent.addCategory(ActivityRecognitionService.TAG);
+            ctx.stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isEnvironmentMonitorServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, EnvironmentMonitorService.class);
+            serviceIntent.addCategory(EnvironmentMonitorService.TAG);
+            ctx.stopService(serviceIntent);
+        }
+        if (RunningServices.getInstance().isNearbyTerminalTrackingServiceRunning(ctx)) {
+            Intent serviceIntent = new Intent(ctx, NearbyTerminalTrackingService.class);
+            serviceIntent.addCategory(NearbyTerminalTrackingService.TAG);
+            ctx.stopService(serviceIntent);
         }
     }
 }
