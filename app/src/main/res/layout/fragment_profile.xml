@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="4">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,6 +44,15 @@
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress" />
             </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false" />
+
         </LinearLayout>
     </RelativeLayout>
 

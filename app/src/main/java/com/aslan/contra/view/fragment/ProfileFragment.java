@@ -2,13 +2,21 @@ package com.aslan.contra.view.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
@@ -17,9 +25,17 @@ import com.aslan.contra.util.Utility;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class ProfileFragment extends Fragment {
+
+    private static final String extraNo = "Extra number ";
+    //    for dynamic list items
+    private RecyclerView listView;
+    private List<String> extraNumbers = new ArrayList<>();
+    private RecyclerView.Adapter adapter;
     private OnFragmentInteractionListener mListener;
     // UI components
     private EditText etName;
@@ -27,13 +43,13 @@ public class ProfileFragment extends Fragment {
     private Button btnUpdate;
     private ProgressDialog progressDialog;
 
+    public ProfileFragment() {
+        // Required empty public constructor
+    }
+
     public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
         return fragment;
-    }
-
-    public ProfileFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -50,8 +66,14 @@ public class ProfileFragment extends Fragment {
         // Find the UI view
         this.etName = (EditText) view.findViewById(R.id.etName);
         this.etEmail = (EditText) view.findViewById(R.id.etEmail);
-        this.btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
+        listView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        listView.setHasFixedSize(true);
+        listView.setLayoutManager(new LinearLayoutManager(getContext()));
+        //       todo call at end(after fetching data from net)
+        adapter = new CustomAdapter();
+        listView.setAdapter(adapter);
 
+        this.btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +106,8 @@ public class ProfileFragment extends Fragment {
                     etName.setText(result.get(Constants.NAME));
                     etEmail.setText(result.get(Constants.EMAIL));
                 }
+                // todo refresh list
+                refreshList();
             }
 
             @Override
@@ -127,6 +151,28 @@ public class ProfileFragment extends Fragment {
         updateServiceClient.updateUserProfile(Utility.getUserId(getContext()), name, email);
     }
 
+    /*
+     * Refresh the view after ading or removing a list item
+     */
+    private void refreshList() {
+        extraNumbers.add("");
+        adapter.notifyDataSetChanged();
+
+        //the best practice
+//        adapter.notifyItemInserted(extraNumbers.size() - 1);
+    }
+
+    private void refreshList(int position) {
+        extraNumbers.remove(position);
+        if (extraNumbers.isEmpty()) {
+            extraNumbers.add("");
+        }
+        adapter.notifyDataSetChanged();
+
+        //the best practice
+//        adapter.notifyItemRemoved(position);
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -142,5 +188,96 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+
+    //Custom adapter to create custom list item on the view
+    private class CustomAdapter extends RecyclerView.Adapter {
+//        private List<String> extraNumbers;
+
+        public CustomAdapter() {
+            super();
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_list_item_layout, parent, false);
+            return new NumberHolder(itemView);
+
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+
+            if (position % 2 == 1) {
+                holder.itemView.setBackgroundColor(Color.parseColor("#E8E8E8"));
+            }
+            // Find the EditText from holder
+            TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
+            etExtraPhoneHint.setHint(extraNo + (position + 1));
+            final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
+            etExtraPhone.setText(extraNumbers.get(position));
+            etExtraPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    boolean done = actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED;
+                    return false;
+                }
+            });
+            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    String val = etExtraPhone.getText().toString().trim();
+                    extraNumbers.set(position, val);
+                }
+
+            });
+
+            // Find the Add button from holder
+            Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //todo onclick
+                    Log.e("BTNINDEX_ADD", position + "");
+                    refreshList();
+                }
+            });
+
+            // Find the Remove button from holder
+            Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
+            btnRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("BTNINDEX_DEL", position + "");
+                    //todo change: this currently update the extra number array list before deletion
+                    etName.requestFocus();
+                    refreshList(position);
+                }
+            });
+
+//                holder.itemView.setClickable(true);
+//                holder.itemView.setFocusable(true);
+            //binds on click listener to list items
+//                holder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                    }
+//                });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return extraNumbers.size();
+        }
+
+        class NumberHolder extends RecyclerView.ViewHolder {
+            public NumberHolder(View itemView) {
+                super(itemView);
+            }
+        }
     }
 }
