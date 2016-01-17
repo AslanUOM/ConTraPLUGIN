@@ -28,6 +28,8 @@ import java.util.Map;
 public class ProfileFragment extends Fragment {
 
     private static final String extraNo = "Number ";
+    private ViewGroup header;
+    private ViewGroup footer;
     // for dynamic list items
     private RecyclerView listView;
     private List<String> otherNumbers = new ArrayList<>();
@@ -64,26 +66,31 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Find the UI view
-        etRegPhoneNo = (EditText) view.findViewById(R.id.etRegPhoneNo);
+        listView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        listView.setHasFixedSize(true);
+        listView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        header = (ViewGroup) getLayoutInflater(savedInstanceState).inflate(R.layout.profile_header_layout, listView, false);
+
+        etRegPhoneNo = (EditText) header.findViewById(R.id.etRegPhoneNo);
         etRegPhoneNo.setText(Utility.getUserId(getContext()));
-        etName = (EditText) view.findViewById(R.id.etName);
+        etName = (EditText) header.findViewById(R.id.etName);
         etName.requestFocus();
-        etEmail = (EditText) view.findViewById(R.id.etEmail);
+        etEmail = (EditText) header.findViewById(R.id.etEmail);
+
         // Find the Add button from holder
-        btnAdd = (Button) view.findViewById(R.id.btnAdd);
+        btnAdd = (Button) header.findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //todo onclick
                 otherNumbers.add("");//todo retrieve and add the correct data
                 focusedPosition = otherNumbers.size() - 1;
+                adapter.notifyDataSetChanged();
                 //the best practice
-                adapter.notifyItemInserted(focusedPosition);
+//                adapter.notifyItemInserted(focusedPosition);
             }
         });
-        listView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        listView.setHasFixedSize(true);
-        listView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
@@ -223,77 +230,84 @@ public class ProfileFragment extends Fragment {
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_list_item_layout, parent, false);
-            return new NumberHolder(itemView);
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return ViewType.HEADER;
+            } else {
+                return ViewType.NORMAL;
+            }
 
         }
 
         @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == ViewType.NORMAL) {
+                View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_list_item_layout, parent, false);
+                return new NumberHolder(itemView);
+            } else {
+                return new NameHolder(header);
+            }
+        }
+
+        @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-
-//            if (position % 2 == 1) {
-//                holder.itemView.setBackgroundColor(Color.parseColor("#E8E8E8"));
-//            }
-
-            // Find the Remove button from holder
-            final Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
-            btnRemove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("BTNINDEX_DEL", position + "");
-                    isRemovePressed = true;
-                    //todo change: this currently update the extra number array list before deletion
-                    focusedPosition = position;
-                    if (position == otherNumbers.size() - 1) {
+            if (position != 0) {
+                // Find the Remove button from holder
+                final Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
+                btnRemove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.e("BTNINDEX_DEL", position - 1 + "");
+                        isRemovePressed = true;
+                        //todo change: this currently update the extra number array list before deletion
                         focusedPosition = position - 1;
-                    }
-                    otherNumbers.remove(position);
+                        if (position == otherNumbers.size()) {
+                            focusedPosition = position - 2;
+                        }
+                        otherNumbers.remove(position - 1);
 //        if (otherNumbers.isEmpty()) {
 //            otherNumbers.add("");
 //        }
-                    adapter.notifyDataSetChanged();
-
-                    //the best practice
+                        adapter.notifyDataSetChanged();
+                        //the best practice
 //        adapter.notifyItemRemoved(position);
-                }
-            });
-
-            // Find the EditText from holder
-            TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
-            etExtraPhoneHint.setHint(extraNo + (position + 1));
-            final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
-            etExtraPhone.setText(otherNumbers.get(position));
-//            btnRemove.setVisibility(View.INVISIBLE);
-            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        btnRemove.setVisibility(View.VISIBLE);
-                        focusedPosition = position;
-                    } else if (!isRemovePressed) {
-                        btnRemove.setVisibility(View.INVISIBLE);
-                        String val = etExtraPhone.getText().toString().trim();//todo check for null?
-                        if (position < otherNumbers.size()) {
-                            otherNumbers.set(position, val);
-                        }
-                    } else {
-                        btnRemove.setVisibility(View.INVISIBLE);
-                        isRemovePressed = false;
                     }
+                });
+
+                // Find the EditText from holder
+                TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
+                etExtraPhoneHint.setHint(extraNo + (position));
+                final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
+                etExtraPhone.setText(otherNumbers.get(position - 1));
+//            btnRemove.setVisibility(View.INVISIBLE);
+                etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hasFocus) {
+                            btnRemove.setVisibility(View.VISIBLE);
+                            focusedPosition = position - 1;
+                        } else if (!isRemovePressed) {
+                            btnRemove.setVisibility(View.INVISIBLE);
+                            String val = etExtraPhone.getText().toString().trim();//todo check for null?
+                            if (position - 1 < otherNumbers.size()) {
+                                otherNumbers.set(position - 1, val);
+                            }
+                        } else {
+                            btnRemove.setVisibility(View.INVISIBLE);
+                            isRemovePressed = false;
+                        }
+                    }
+                });
+
+
+                if (position - 1 == focusedPosition) {
+                    etExtraPhone.requestFocus();
+                    Log.e("FOCUSSED_POS", "" + focusedPosition);
                 }
-            });
-
-
-            if (position == focusedPosition) {
-                etExtraPhone.requestFocus();
-                Log.e("FOCUSSED_POS", "" + focusedPosition);
-            }
 
 //                holder.itemView.setClickable(true);
 //                holder.itemView.setFocusable(true);
-            //binds on click listener to list items
+                //binds on click listener to list items
 //                holder.itemView.setOnClickListener(new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View v) {
@@ -301,15 +315,27 @@ public class ProfileFragment extends Fragment {
 //                    }
 //                });
 
+            }
         }
 
         @Override
         public int getItemCount() {
-            return otherNumbers.size();
+            return otherNumbers.size() + 1;
+        }
+
+        private class ViewType {
+            public static final int HEADER = 1;
+            public static final int NORMAL = 2;
         }
 
         class NumberHolder extends RecyclerView.ViewHolder {
             public NumberHolder(View itemView) {
+                super(itemView);
+            }
+        }
+
+        class NameHolder extends RecyclerView.ViewHolder {
+            public NameHolder(View itemView) {
                 super(itemView);
             }
         }
