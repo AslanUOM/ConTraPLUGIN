@@ -8,14 +8,11 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
@@ -177,11 +174,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void refreshList(int position) {
-        if (position == otherNumbers.size() - 1) {
-            focusedPosition = position - 1;
-        } else {
-            focusedPosition = position;
-        }
+        focusedPosition = position;
         otherNumbers.remove(position);
         if (otherNumbers.isEmpty()) {
             otherNumbers.add("");
@@ -232,42 +225,6 @@ public class ProfileFragment extends Fragment {
 //            if (position % 2 == 1) {
 //                holder.itemView.setBackgroundColor(Color.parseColor("#E8E8E8"));
 //            }
-            // Find the EditText from holder
-            TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
-            etExtraPhoneHint.setHint(extraNo + (position + 1));
-            final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
-            etExtraPhone.setText(otherNumbers.get(position));
-            etExtraPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    boolean done = actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_UNSPECIFIED;
-                    return false;
-                }
-            });
-            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    String val = etExtraPhone.getText().toString().trim();
-                    if (position < otherNumbers.size()) {
-                        otherNumbers.set(position, val);
-                    }
-                }
-
-
-            if (position == focusedPosition) {
-                etExtraPhone.requestFocus();
-                Log.e("FOCUSSED_POS", "" + focusedPosition);
-            }
-            // Find the Add button from holder
-            final Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //todo onclick
-                    Log.e("BTNINDEX_ADD", position + "");
-                    refreshList();
-                }
-            });
 
             // Find the Remove button from holder
             final Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
@@ -279,20 +236,32 @@ public class ProfileFragment extends Fragment {
                     refreshList(position);
                 }
             });
-            btnRemove.setVisibility(View.INVISIBLE);
+
+            // Find the EditText from holder
+            TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
+            etExtraPhoneHint.setHint(extraNo + (position + 1));
+            final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
+            etExtraPhone.setText(otherNumbers.get(position));
+//            btnRemove.setVisibility(View.INVISIBLE);
             etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    String val = etExtraPhone.getText().toString().trim();
-                    extraNumbers.set(position, val);
                     if (hasFocus) {
                         btnRemove.setVisibility(View.VISIBLE);
+                        focusedPosition = position;
                     } else {
                         btnRemove.setVisibility(View.INVISIBLE);
+                        String val = etExtraPhone.getText().toString().trim();//todo check for null?
+                        otherNumbers.set(position, val);
                     }
                 }
-
             });
+
+
+            if (position == focusedPosition) {
+                etExtraPhone.requestFocus();
+                Log.e("FOCUSSED_POS", "" + focusedPosition);
+            }
 
 //                holder.itemView.setClickable(true);
 //                holder.itemView.setFocusable(true);
