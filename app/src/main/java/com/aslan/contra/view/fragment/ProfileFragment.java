@@ -2,7 +2,6 @@ package com.aslan.contra.view.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -36,6 +35,7 @@ public class ProfileFragment extends Fragment {
     private RecyclerView listView;
     private List<String> otherNumbers = new ArrayList<>();
     private RecyclerView.Adapter adapter;
+    private int focusedPosition;
     private OnFragmentInteractionListener mListener;
     // UI components
     private EditText etRegPhoneNo;
@@ -168,6 +168,7 @@ public class ProfileFragment extends Fragment {
      * Refresh the view after ading or removing a list item
      */
     private void refreshList() {
+        focusedPosition = otherNumbers.size();
         otherNumbers.add("");
         adapter.notifyDataSetChanged();
 
@@ -176,6 +177,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void refreshList(int position) {
+        if (position == otherNumbers.size() - 1) {
+            focusedPosition = position - 1;
+        } else {
+            focusedPosition = position;
+        }
         otherNumbers.remove(position);
         if (otherNumbers.isEmpty()) {
             otherNumbers.add("");
@@ -223,9 +229,9 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-            if (position % 2 == 1) {
-                holder.itemView.setBackgroundColor(Color.parseColor("#E8E8E8"));
-            }
+//            if (position % 2 == 1) {
+//                holder.itemView.setBackgroundColor(Color.parseColor("#E8E8E8"));
+//            }
             // Find the EditText from holder
             TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
             etExtraPhoneHint.setHint(extraNo + (position + 1));
@@ -242,10 +248,17 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     String val = etExtraPhone.getText().toString().trim();
-                    otherNumbers.set(position, val);
+                    if (position < otherNumbers.size()) {
+                        otherNumbers.set(position, val);
+                    }
                 }
 
             });
+
+            if (position == focusedPosition) {
+                etExtraPhone.requestFocus();
+                Log.e("FOCUSSED_POS", "" + focusedPosition);
+            }
 
             // Find the Remove button from holder
             Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
@@ -254,7 +267,6 @@ public class ProfileFragment extends Fragment {
                 public void onClick(View v) {
                     Log.e("BTNINDEX_DEL", position + "");
                     //todo change: this currently update the extra number array list before deletion
-                    etName.requestFocus();
                     refreshList(position);
                 }
             });
