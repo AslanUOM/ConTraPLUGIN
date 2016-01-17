@@ -33,6 +33,7 @@ public class ProfileFragment extends Fragment {
     private List<String> otherNumbers = new ArrayList<>();
     private RecyclerView.Adapter adapter;
     private int focusedPosition;
+    private boolean isRemovePressed = false;
     private OnFragmentInteractionListener mListener;
     // UI components
     private EditText etRegPhoneNo;
@@ -66,6 +67,7 @@ public class ProfileFragment extends Fragment {
         etRegPhoneNo = (EditText) view.findViewById(R.id.etRegPhoneNo);
         etRegPhoneNo.setText(Utility.getUserId(getContext()));
         etName = (EditText) view.findViewById(R.id.etName);
+        etName.requestFocus();
         etEmail = (EditText) view.findViewById(R.id.etEmail);
         // Find the Add button from holder
         btnAdd = (Button) view.findViewById(R.id.btnAdd);
@@ -73,15 +75,15 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //todo onclick
-                refreshList();
+                otherNumbers.add("");//todo retrieve and add the correct data
+                focusedPosition = otherNumbers.size() - 1;
+                //the best practice
+                adapter.notifyItemInserted(focusedPosition);
             }
         });
         listView = (RecyclerView) view.findViewById(R.id.recyclerView);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
-        //       todo call at end(after fetching data from net)
-        adapter = new CustomAdapter();
-        listView.setAdapter(adapter);
 
         btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
@@ -115,9 +117,17 @@ public class ProfileFragment extends Fragment {
                 if (result != null) {
                     etName.setText(result.get(Constants.NAME));
                     etEmail.setText(result.get(Constants.EMAIL));
+
+                    // todo refresh list
+//                    otherNumbers.add("");
+                    //todo retrieve and add the correct data
+                    focusedPosition = Integer.MAX_VALUE;
+                    //       todo call at end(after fetching data from net)
+                    adapter = new CustomAdapter();
+                    listView.setAdapter(adapter);
+                    //the best practice
+//        adapter.notifyItemInserted(otherNumbers.size() - 1);
                 }
-                // todo refresh list
-                refreshList();
             }
 
             @Override
@@ -161,29 +171,30 @@ public class ProfileFragment extends Fragment {
         updateServiceClient.updateUserProfile(Utility.getUserId(getContext()), name, email);
     }
 
-    /*
-     * Refresh the view after ading or removing a list item
-     */
-    private void refreshList() {
-        focusedPosition = otherNumbers.size();
-        otherNumbers.add("");
-        adapter.notifyDataSetChanged();
+//    /*
+//     * Refresh the view after ading or removing a list item
+//     */
+//    private void refreshList() {
+//        focusedPosition = otherNumbers.size();
+//        otherNumbers.add("");
+//        adapter.notifyDataSetChanged();
+//
+//        //the best practice
+////        adapter.notifyItemInserted(otherNumbers.size() - 1);
+//    }
 
-        //the best practice
-//        adapter.notifyItemInserted(otherNumbers.size() - 1);
-    }
-
-    private void refreshList(int position) {
-        focusedPosition = position;
-        otherNumbers.remove(position);
-        if (otherNumbers.isEmpty()) {
-            otherNumbers.add("");
-        }
-        adapter.notifyDataSetChanged();
-
-        //the best practice
-//        adapter.notifyItemRemoved(position);
-    }
+//    private void refreshList(int position) {
+//        if (position == )
+//        focusedPosition = position;
+//        otherNumbers.remove(position);
+////        if (otherNumbers.isEmpty()) {
+////            otherNumbers.add("");
+////        }
+//        adapter.notifyDataSetChanged();
+//
+//        //the best practice
+////        adapter.notifyItemRemoved(position);
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -232,8 +243,20 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Log.e("BTNINDEX_DEL", position + "");
+                    isRemovePressed = true;
                     //todo change: this currently update the extra number array list before deletion
-                    refreshList(position);
+                    focusedPosition = position;
+                    if (position == otherNumbers.size() - 1) {
+                        focusedPosition = position - 1;
+                    }
+                    otherNumbers.remove(position);
+//        if (otherNumbers.isEmpty()) {
+//            otherNumbers.add("");
+//        }
+                    adapter.notifyDataSetChanged();
+
+                    //the best practice
+//        adapter.notifyItemRemoved(position);
                 }
             });
 
@@ -249,10 +272,15 @@ public class ProfileFragment extends Fragment {
                     if (hasFocus) {
                         btnRemove.setVisibility(View.VISIBLE);
                         focusedPosition = position;
-                    } else {
+                    } else if (!isRemovePressed) {
                         btnRemove.setVisibility(View.INVISIBLE);
                         String val = etExtraPhone.getText().toString().trim();//todo check for null?
-                        otherNumbers.set(position, val);
+                        if (position < otherNumbers.size()) {
+                            otherNumbers.set(position, val);
+                        }
+                    } else {
+                        btnRemove.setVisibility(View.INVISIBLE);
+                        isRemovePressed = false;
                     }
                 }
             });
