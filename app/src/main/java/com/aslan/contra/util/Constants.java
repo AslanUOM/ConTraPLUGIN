@@ -5,6 +5,7 @@ package com.aslan.contra.util;
  */
 public class Constants {
     public static final String USER_ID = "userId";
+    public static final String OTHER_NUMBERS = "other numbers";
     public static final String SIGNED_IN_STATUS = "signed in status";
     public static final String SIGNED_IN = "signed in";
     public static final String SIGNED_OUT = "signed out";

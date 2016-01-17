@@ -20,6 +20,7 @@ import com.aslan.contra.view.adapter.CustomProfileAdapter;
 import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -89,12 +90,23 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        otherNumbers = Utility.getOtherNumbers(getContext());
+        adapter = new CustomProfileAdapter(otherNumbers, header);
+        listView.setAdapter(adapter);
+        //the best practice
+//        adapter.notifyItemInserted(otherNumbers.size() - 1);
+
         btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateProfile();
+                try {
+                    Utility.saveOtherNumbers(getContext(), otherNumbers);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -121,13 +133,10 @@ public class ProfileFragment extends Fragment {
                 if (result != null) {
                     etName.setText(result.get(Constants.NAME));
                     etEmail.setText(result.get(Constants.EMAIL));
-//                    otherNumbers.add("");
                     //todo retrieve and add the correct data
+//                    adapter.notifyDataSetChanged();
 //                    focusedPosition = Integer.MAX_VALUE;
-                    adapter = new CustomProfileAdapter(otherNumbers, header);
-                    listView.setAdapter(adapter);
-                    //the best practice
-//        adapter.notifyItemInserted(otherNumbers.size() - 1);
+
                 }
             }
 
