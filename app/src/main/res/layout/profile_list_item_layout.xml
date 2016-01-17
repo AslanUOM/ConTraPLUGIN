@@ -10,23 +10,12 @@
         android:layout_gravity="center_vertical">
 
         <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toLeftOf="@+id/btnRemove"
-            android:background="@drawable/custom_btn_add"
-            android:scaleType="fitXY" />
-
-        <Button
             android:id="@+id/btnRemove"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
             android:background="@drawable/custom_btn_remove"
             android:scaleType="fitXY" />
 
@@ -35,9 +24,9 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/btnAdd"
-            android:layout_toStartOf="@+id/btnAdd"
-            android:hint="Extra number 1">
+            android:layout_toLeftOf="@+id/btnRemove"
+            android:layout_toStartOf="@+id/btnRemove"
+            android:hint="Number 1">
 
             <EditText
                 android:id="@+id/etExtraPhone"

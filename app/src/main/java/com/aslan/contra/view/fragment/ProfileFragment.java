@@ -31,15 +31,17 @@ import java.util.Map;
 
 public class ProfileFragment extends Fragment {
 
-    private static final String extraNo = "Extra number ";
-    //    for dynamic list items
+    private static final String extraNo = "Number ";
+    // for dynamic list items
     private RecyclerView listView;
-    private List<String> extraNumbers = new ArrayList<>();
+    private List<String> otherNumbers = new ArrayList<>();
     private RecyclerView.Adapter adapter;
     private OnFragmentInteractionListener mListener;
     // UI components
+    private EditText etRegPhoneNo;
     private EditText etName;
     private EditText etEmail;
+    private Button btnAdd;
     private Button btnUpdate;
     private ProgressDialog progressDialog;
 
@@ -64,8 +66,19 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Find the UI view
-        this.etName = (EditText) view.findViewById(R.id.etName);
-        this.etEmail = (EditText) view.findViewById(R.id.etEmail);
+        etRegPhoneNo = (EditText) view.findViewById(R.id.etRegPhoneNo);
+        etRegPhoneNo.setText(Utility.getUserId(getContext()));
+        etName = (EditText) view.findViewById(R.id.etName);
+        etEmail = (EditText) view.findViewById(R.id.etEmail);
+        // Find the Add button from holder
+        btnAdd = (Button) view.findViewById(R.id.btnAdd);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo onclick
+                refreshList();
+            }
+        });
         listView = (RecyclerView) view.findViewById(R.id.recyclerView);
         listView.setHasFixedSize(true);
         listView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -73,7 +86,7 @@ public class ProfileFragment extends Fragment {
         adapter = new CustomAdapter();
         listView.setAdapter(adapter);
 
-        this.btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
+        btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,17 +168,17 @@ public class ProfileFragment extends Fragment {
      * Refresh the view after ading or removing a list item
      */
     private void refreshList() {
-        extraNumbers.add("");
+        otherNumbers.add("");
         adapter.notifyDataSetChanged();
 
         //the best practice
-//        adapter.notifyItemInserted(extraNumbers.size() - 1);
+//        adapter.notifyItemInserted(otherNumbers.size() - 1);
     }
 
     private void refreshList(int position) {
-        extraNumbers.remove(position);
-        if (extraNumbers.isEmpty()) {
-            extraNumbers.add("");
+        otherNumbers.remove(position);
+        if (otherNumbers.isEmpty()) {
+            otherNumbers.add("");
         }
         adapter.notifyDataSetChanged();
 
@@ -193,7 +206,7 @@ public class ProfileFragment extends Fragment {
 
     //Custom adapter to create custom list item on the view
     private class CustomAdapter extends RecyclerView.Adapter {
-//        private List<String> extraNumbers;
+//        private List<String> otherNumbers;
 
         public CustomAdapter() {
             super();
@@ -217,7 +230,7 @@ public class ProfileFragment extends Fragment {
             TextInputLayout etExtraPhoneHint = (TextInputLayout) holder.itemView.findViewById(R.id.etExtraPhoneHint);
             etExtraPhoneHint.setHint(extraNo + (position + 1));
             final EditText etExtraPhone = (EditText) holder.itemView.findViewById(R.id.etExtraPhone);
-            etExtraPhone.setText(extraNumbers.get(position));
+            etExtraPhone.setText(otherNumbers.get(position));
             etExtraPhone.setOnEditorActionListener(new EditText.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -229,20 +242,9 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     String val = etExtraPhone.getText().toString().trim();
-                    extraNumbers.set(position, val);
+                    otherNumbers.set(position, val);
                 }
 
-            });
-
-            // Find the Add button from holder
-            Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //todo onclick
-                    Log.e("BTNINDEX_ADD", position + "");
-                    refreshList();
-                }
             });
 
             // Find the Remove button from holder
@@ -271,7 +273,7 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return extraNumbers.size();
+            return otherNumbers.size();
         }
 
         class NumberHolder extends RecyclerView.ViewHolder {
