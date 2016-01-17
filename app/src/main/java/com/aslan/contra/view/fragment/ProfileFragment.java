@@ -225,17 +225,10 @@ public class ProfileFragment extends Fragment {
                     return false;
                 }
             });
-            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    String val = etExtraPhone.getText().toString().trim();
-                    extraNumbers.set(position, val);
-                }
 
-            });
 
             // Find the Add button from holder
-            Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
+            final Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
             btnAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -246,7 +239,7 @@ public class ProfileFragment extends Fragment {
             });
 
             // Find the Remove button from holder
-            Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
+            final Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
             btnRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -255,6 +248,20 @@ public class ProfileFragment extends Fragment {
                     etName.requestFocus();
                     refreshList(position);
                 }
+            });
+            btnRemove.setVisibility(View.INVISIBLE);
+            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    String val = etExtraPhone.getText().toString().trim();
+                    extraNumbers.set(position, val);
+                    if (hasFocus) {
+                        btnRemove.setVisibility(View.VISIBLE);
+                    } else {
+                        btnRemove.setVisibility(View.INVISIBLE);
+                    }
+                }
+
             });
 
 //                holder.itemView.setClickable(true);
