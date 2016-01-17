@@ -253,15 +253,24 @@ public class ProfileFragment extends Fragment {
                     }
                 }
 
-            });
 
             if (position == focusedPosition) {
                 etExtraPhone.requestFocus();
                 Log.e("FOCUSSED_POS", "" + focusedPosition);
             }
+            // Find the Add button from holder
+            final Button btnAdd = (Button) holder.itemView.findViewById(R.id.btnAdd);
+            btnAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //todo onclick
+                    Log.e("BTNINDEX_ADD", position + "");
+                    refreshList();
+                }
+            });
 
             // Find the Remove button from holder
-            Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
+            final Button btnRemove = (Button) holder.itemView.findViewById(R.id.btnRemove);
             btnRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -269,6 +278,20 @@ public class ProfileFragment extends Fragment {
                     //todo change: this currently update the extra number array list before deletion
                     refreshList(position);
                 }
+            });
+            btnRemove.setVisibility(View.INVISIBLE);
+            etExtraPhone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    String val = etExtraPhone.getText().toString().trim();
+                    extraNumbers.set(position, val);
+                    if (hasFocus) {
+                        btnRemove.setVisibility(View.VISIBLE);
+                    } else {
+                        btnRemove.setVisibility(View.INVISIBLE);
+                    }
+                }
+
             });
 
 //                holder.itemView.setClickable(true);
