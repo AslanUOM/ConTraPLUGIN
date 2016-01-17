@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_remove_circle_red_a700_48dp" android:state_pressed="true" />
-    <item android:drawable="@drawable/ic_remove_circle_red_a700_48dp" android:state_focused="true" />
+    <item android:drawable="@drawable/ic_remove_circle_red_a400_48dp" android:state_pressed="true" />
+    <item android:drawable="@drawable/ic_remove_circle_red_a400_48dp" android:state_focused="true" />
     <item android:drawable="@drawable/ic_remove_circle_red_900_48dp" />
 </selector>
