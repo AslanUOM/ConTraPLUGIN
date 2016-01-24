@@ -194,11 +194,20 @@ public class Utility {
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
         List<String> sensorList = new ArrayList<>();
         //TODO change later
-        for (Sensor s : mSensorManager.getSensorList(Sensor.TYPE_ALL)) {
+        for (Sensor s : sensors) {
             sensorList.add(s.toString());
         }
         return sensorList;
     }
+//    public static String[] getDeviceSensors(Context ctx) {
+//        SensorManager mSensorManager = (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
+//        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+//        String[] sensorList = new String[sensors.size()];
+//        for (int i = 0; i < sensors.size(); i++) {
+//            sensorList[i] = sensors.get(i).toString();
+//        }
+//        return sensorList;
+//    }
 
     public static boolean getTrackingServiceState(Context ctx, String key) {
         SharedPreferences preferences = getSharedPreference(ctx);

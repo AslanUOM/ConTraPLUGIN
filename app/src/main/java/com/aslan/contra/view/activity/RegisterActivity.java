@@ -67,8 +67,6 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
                 // Read the phone number
                 String phoneNumber = etPhoneNumber.getText().toString().trim();
                 if (Utility.getUserId(getApplicationContext()) == null || !Utility.getUserId(getApplicationContext()).equals(phoneNumber)) {
-                    String deviceName = Utility.getDeviceName(getApplicationContext());
-                    String deviceSerial = Utility.getDeviceSerial(getApplicationContext());
 
                     //TODO use this info to send to server once services are available
                     Log.d(TAG + " BT", Utility.getDeviceBtMAC(getApplicationContext()));
@@ -78,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
                     UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
                     service.setOnResponseListener(this);
                     // Country is hardcoded as Sri Lanka
-                    service.registerUser("lk", phoneNumber, deviceName, deviceSerial);
+                    service.registerUser("lk", phoneNumber);
                 } else {
                     Utility.saveUserSignedIn(getApplicationContext(), true);
                     // Move to the MainActivity home fragment

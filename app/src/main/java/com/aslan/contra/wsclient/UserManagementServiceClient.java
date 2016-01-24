@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aslan.contra.dto.common.Device;
+import com.aslan.contra.dto.ws.UserDevice;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.Utility;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -11,7 +13,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -33,9 +34,9 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
         this.context = context;
     }
 
-    public void registerUser(String country, String phoneNumber, String deviceName, String deviceSerial) {
+    public void registerUser(String country, String phoneNumber) {
         UserRegistrationTask task = new UserRegistrationTask();
-        task.execute(country, phoneNumber, deviceName, deviceSerial);
+        task.execute(country, phoneNumber);
     }
 
     public void retrieveUserProfile(String userId) {
@@ -80,12 +81,15 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
             try {
                 // Get the device token
                 String deviceToken = deviceToken();
+                String country = params[0];
+                String phoneNumber = params[1];
 
                 // Create HttpHeaders
                 HttpHeaders requestHeaders = new HttpHeaders();
 
                 // Set the content type
-                requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//                requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                requestHeaders.setContentType(MediaType.APPLICATION_JSON);
 
                 // Create the parameters
                 MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
@@ -96,9 +100,22 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
                 // TODO: Update the GCM token here
                 formData.add("deviceToken", deviceToken);
 
+                Device device = new Device();
+                device.setDeviceID(Utility.getDeviceSerial(context));
+                device.setApi(Utility.getDeviceAPI(context));
+                device.setBluetoothMAC(Utility.getDeviceBtMAC(context));
+                device.setManufacturer(Utility.getDeviceName(context));
+                device.setToken(deviceToken);
+                device.setWifiMAC(Utility.getDeviceWiFiMAC(context));
+                device.setSensors(Utility.getDeviceSensors(context).toArray(new String[0]));
 
+                UserDevice userDevice = new UserDevice();
+                userDevice.setUserID(phoneNumber);
+                userDevice.setDevice(device);
+
+                //TODO update request to new form
                 // Populate the MultiValueMap being serialized and headers in an HttpEntity object to use for the request
-                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<MultiValueMap<String, Object>>(
+                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(
                         formData, requestHeaders);
 
                 // Create a new RestTemplate instance
@@ -106,12 +123,29 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
 
                 // Make the network request, posting the message, expecting a String in response from the server
                 ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
-                        getOnResponseListener().getType());
+                        getOnResponseListener().getType(), country);
 
                 if (response.getStatusCode().value() == Constants.HTTP_CREATED) {
                     // Return the response body to display to the user
                     return response.getBody();
                 }
+
+
+//                // Populate the MultiValueMap being serialized and headers in an HttpEntity object to use for the request
+//                HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(
+//                        formData, requestHeaders);
+//
+//                // Create a new RestTemplate instance
+//                RestTemplate restTemplate = new RestTemplate(true);
+//
+//                // Make the network request, posting the message, expecting a String in response from the server
+//                ResponseEntity<T> response = restTemplate.exchange(Constants.WebServiceUrls.REGISTER_USER_SERVICE_URL, HttpMethod.POST, requestEntity,
+//                        getOnResponseListener().getType(), country);
+//
+//                if (response.getStatusCode().value() == Constants.HTTP_CREATED) {
+//                    // Return the response body to display to the user
+//                    return response.getBody();
+//                }
             } catch (Exception e) {
                 Log.e(this.getClass().getName(), e.getMessage(), e);
             }
