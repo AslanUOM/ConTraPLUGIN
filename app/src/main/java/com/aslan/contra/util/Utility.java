@@ -24,6 +24,7 @@ import android.util.Log;
 import android.util.Patterns;
 
 import com.aslan.contra.R;
+import com.aslan.contra.commons.App;
 import com.aslan.contra.commons.Feature;
 import com.aslan.contra.services.ActivityRecognitionService;
 import com.aslan.contra.services.EnvironmentMonitorService;
@@ -246,6 +247,30 @@ public class Utility {
         return batteryPercent;
     }
 
+    //TODO remove this method when you get the actual app data from server
+    public static App[] getAllApps(Context ctx) {
+        Resources resources = ctx.getResources();
+        TypedArray appTitles = resources.obtainTypedArray(R.array.app_titles);
+        TypedArray appIcons = resources.obtainTypedArray(R.array.app_icons);
+        TypedArray appMarketUrls = resources.obtainTypedArray(R.array.app_market);
+
+        int noOfFeatures = appTitles.length();
+        App[] apps = new App[noOfFeatures];
+
+        for (int i = 0; i < noOfFeatures; i++) {
+            App app = new App();
+            app.setTitle(appTitles.getString(i));
+            app.setIcon(appIcons.getDrawable(i));
+            app.setUrl(appMarketUrls.getString(i));
+            apps[i] = app;
+        }
+
+        appTitles.recycle();
+        appMarketUrls.recycle();
+        appIcons.recycle();
+
+        return apps;
+    }
 
     /**
      * Check whether the network access is available or not.

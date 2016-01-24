@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_margin="10dp"
+    android:background="@drawable/custom_outline_box"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tvPromoTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="Welcome"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/colorLightText" />
+
+    <ImageView
+        android:id="@+id/ivAppIcon"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/tvPromoTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/app_ic_guard2" />
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/btnGPlay"-->
+    <!--android:layout_width="225dp"-->
+    <!--android:layout_height="75dp"-->
+    <!--android:layout_below="@+id/ivAppIcon"-->
+    <!--android:layout_alignParentEnd="true"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:src="@drawable/google_play_rounded_btn"-->
+    <!--android:scaleType="matrix" />-->
+
+    <Button
+        android:id="@+id/btnGPlay"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivAppIcon"
+        android:layout_marginEnd="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/google_play_rounded_btn"
+        android:scaleType="fitCenter" />
+
+</RelativeLayout>
