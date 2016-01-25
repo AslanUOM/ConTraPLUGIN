@@ -2,56 +2,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical"
-    android:layout_margin="10dp"
-    android:background="@drawable/custom_outline_box"
-    android:padding="10dp">
+    android:layout_gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/tvPromoTitle"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Welcome"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/colorLightText" />
+        android:layout_gravity="center_vertical"
+        android:layout_margin="10dp"
+        android:background="@drawable/custom_outline_box"
+        android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/ivAppIcon"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_below="@+id/tvPromoTitle"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="5dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/app_ic_guard2" />
+        <TextView
+            android:id="@+id/tvPromoTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:padding="20dp"
+            android:text="Welcome"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/colorLightText" />
 
-    <!--<ImageButton-->
-    <!--android:id="@+id/btnGPlay"-->
-    <!--android:layout_width="225dp"-->
-    <!--android:layout_height="75dp"-->
-    <!--android:layout_below="@+id/ivAppIcon"-->
-    <!--android:layout_alignParentEnd="true"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:src="@drawable/google_play_rounded_btn"-->
-    <!--android:scaleType="matrix" />-->
+        <ImageView
+            android:id="@+id/ivAppIcon"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_below="@+id/tvPromoTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:fitsSystemWindows="true"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/app_ic_guard2" />
 
-    <Button
-        android:id="@+id/btnGPlay"
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/ivAppIcon"
-        android:layout_marginEnd="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/google_play_rounded_btn"
-        android:scaleType="fitCenter" />
+        <Button
+            android:id="@+id/btnGPlay"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/google_play_rounded_btn"
+            android:padding="20dp"
+            android:scaleType="fitCenter" />
 
+    </RelativeLayout>
 </RelativeLayout>

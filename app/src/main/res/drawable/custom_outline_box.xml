@@ -8,4 +8,6 @@
         android:type="linear"
         android:useLevel="false" />
     <corners android:radius="20dp" />
+    <stroke android:color="#ffffff" android:width="1dp" />
+    <padding android:left="10dp" android:right="10dp" />
 </shape>

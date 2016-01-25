@@ -2,13 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.aslan.contra.view.fragment.PermissionFragment">
 
     <TextView
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/txtMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,9 +17,15 @@
         android:layout_alignParentTop="true"
         android:text="ConTra supports the following features right now. By using these features, you accept to provide permission to use the relevant resources."
         android:textAlignment="gravity"
-        android:textAppearance="?android:textAppearanceSmall" />
+        android:background="@drawable/custom_home_header"
+        android:textColor="@color/colorLightText"
+        android:textAppearance="?android:textAppearanceMedium" />
 
     <Button
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/btnGrantPermissions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,6 +36,10 @@
         android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
         android:id="@+id/recyclerFeatures"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

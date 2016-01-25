@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="app_titles">
-        <item>Vishnu uses Friends Finder</item>
-        <item>Gobinath uses Smart Assistant</item>
-        <item>Nirushan uses Guard</item>
-        <item>Sirojan uses ConTra</item>
-        <item>Nirosh uses Personal Guardian</item>
+        <item>4 of your friends uses Friends Finder</item>
+        <item>2 of your friends uses Smart Assistant</item>
+        <item>5 of your friends uses Personal Guardian</item>
+        <item>9 of your friends uses ConTra</item>
     </array>
     <array name="app_icons">
         <item>@drawable/app_ic_friendsfinder</item>
         <item>@drawable/app_ic_assistant</item>
         <item>@drawable/app_ic_guard2</item>
         <item>@drawable/app_ic_contra</item>
-        <item>@drawable/app_ic_guard</item>
     </array>
     <array name="app_market">
+        <item>market://details?id=com.aslan.friendsfinder</item>
         <item>market://details?id=com.aslan.contra</item>
-        <item>market://details?id=com.aslan.contra</item>
-        <item>market://details?id=com.aslan.contra</item>
-        <item>market://details?id=com.aslan.contra</item>
+        <item>market://details?id=com.vishnu.personalguardian</item>
         <item>market://details?id=com.aslan.contra</item>
     </array>
 </resources>

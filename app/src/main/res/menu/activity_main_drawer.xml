@@ -28,7 +28,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/nav_sign_out"
-            android:icon="@drawable/ic_settings_power_grey_600_24dp"
+            android:icon="@drawable/ic_power_settings_new_grey_600_24dp"
             android:title="Sign Out" />
     </group>
 
