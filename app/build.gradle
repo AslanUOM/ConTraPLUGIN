@@ -26,7 +26,6 @@ android {
     }
 }
 
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -37,6 +36,6 @@ dependencies {
     compile 'com.android.support:design:23.1.0'
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
-    //    compile 'com.github.AslanUOM:ConTra:v0.1-alpha'
+    compile 'com.google.code.gson:gson:2.5'
     compile files('libs/contradto-1.0-SNAPSHOT.jar')
 }

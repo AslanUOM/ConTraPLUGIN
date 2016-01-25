@@ -189,15 +189,16 @@ public class Utility {
      * @param ctx
      * @return
      */
-    public static List<String> getDeviceSensors(Context ctx) {
+    public static String[] getDeviceSensors(Context ctx) {
         SensorManager mSensorManager = (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
         List<String> sensorList = new ArrayList<>();
-        //TODO change later
-        for (Sensor s : sensors) {
-            sensorList.add(s.toString());
+        final int noOfSensors = sensors.size();
+        String[] sensorNames = new String[noOfSensors];
+        for (int i = 0; i < noOfSensors; i++) {
+            sensorNames[i] = sensors.get(i).getName();
         }
-        return sensorList;
+        return sensorNames;
     }
 //    public static String[] getDeviceSensors(Context ctx) {
 //        SensorManager mSensorManager = (SensorManager) ctx.getSystemService(Context.SENSOR_SERVICE);

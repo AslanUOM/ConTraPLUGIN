@@ -112,7 +112,7 @@ public class Constants {
         /**
          * URL for ConTra service(server).
          */
-        public static final String CONTRA_SERVICE_URL = "http://contra.projects.mrt.ac.lk:8080/contra";
+        public static final String CONTRA_SERVICE_URL = "http://contra.projects.mrt.ac.lk:8080/contra/service";
 
         /**
          * URL Get Nearby friends Data.
@@ -127,7 +127,7 @@ public class Constants {
         /**
          * URL Register User.
          */
-        public static final String REGISTER_USER_SERVICE_URL = CONTRA_SERVICE_URL + "/user/create/{query}";
+        public static final String REGISTER_USER_SERVICE_URL = CONTRA_SERVICE_URL + "/user/create/{country}";
 
         /**
          * URL Get User Profile.

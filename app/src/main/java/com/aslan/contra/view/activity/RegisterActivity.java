@@ -14,16 +14,17 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
+import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.Utility;
-import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.ServiceConnector;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RegisterActivity extends AppCompatActivity implements OnResponseListener<String> {
+public class RegisterActivity extends AppCompatActivity implements ServiceConnector.OnResponseListener<String> {
     private static final String TAG = "RegisterActivity";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -74,9 +75,9 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
                     Log.d(TAG + " API", Utility.getDeviceAPI(getApplicationContext()) + "");
 
                     UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
-                    service.setOnResponseListener(this);
+                    //service.setOnResponseListener(this);
                     // Country is hardcoded as Sri Lanka
-                    service.registerUser("lk", phoneNumber);
+                    service.registerUser("lk", phoneNumber, this);
                 } else {
                     Utility.saveUserSignedIn(getApplicationContext(), true);
                     // Move to the MainActivity home fragment
@@ -108,13 +109,13 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
     }
 
     @Override
-    public void onResponseReceived(String userID) {
+    public void onResponseReceived(Message<String> message) {
         // Hide the progress dialog
         progressDialog.dismiss();
-        
-        if (userID != null) {
+
+        if (message.isSuccess()) {
             // Save the user-id
-            Utility.saveUserId(getApplicationContext(), userID);
+            Utility.saveUserId(getApplicationContext(), message.getEntity());
             Utility.saveUserSignedIn(getApplicationContext(), true);
 
             // Move to the MainActivity permission fragment
@@ -125,11 +126,6 @@ public class RegisterActivity extends AppCompatActivity implements OnResponseLis
             // TODO: Replace by AlertDialog
             Toast.makeText(this, "Unable to register the user", Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public Class getType() {
-        return String.class;
     }
 
 
