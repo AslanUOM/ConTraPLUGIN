@@ -1,23 +1,18 @@
 package com.aslan.contra.view.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.aslan.contra.R;
 import com.aslan.contra.commons.App;
 import com.aslan.contra.util.Utility;
+import com.aslan.contra.view.adapter.PromoAppCollectionPagerAdapter;
 
 public class HomeFragment extends Fragment {
     private TextView tvGreetings;
@@ -31,7 +26,7 @@ public class HomeFragment extends Fragment {
      */
     private ViewPager promoAppPager;
     private PromoAppCollectionPagerAdapter promoAppCollectionPagerAdapter;
-    private static App[] apps;
+    private App[] apps;
 
     private OnFragmentInteractionListener mListener;
 
@@ -50,7 +45,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apps = Utility.getAllApps(getContext());
 //        if (getArguments() != null) {
 //        }
     }
@@ -71,7 +65,7 @@ public class HomeFragment extends Fragment {
         tvGreetings = (TextView) view.findViewById(R.id.tvGreetings);
         tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         promoAppPager = (ViewPager) view.findViewById(R.id.pager);
-        promoAppCollectionPagerAdapter = new PromoAppCollectionPagerAdapter(getChildFragmentManager(), apps);
+        promoAppCollectionPagerAdapter = new PromoAppCollectionPagerAdapter(getChildFragmentManager(), Utility.getAllApps(getContext()).length);
         promoAppPager.setAdapter(promoAppCollectionPagerAdapter);
 //        listView = (RecyclerView) view.findViewById(R.id.recyclerView);
 //        listView.setHasFixedSize(true);
@@ -97,78 +91,6 @@ public class HomeFragment extends Fragment {
         mListener = null;
     }
 
-    public static class PromoAppCollectionPagerAdapter extends FragmentStatePagerAdapter {
-        final App[] apps;
-
-        public PromoAppCollectionPagerAdapter(FragmentManager fm, final App[] apps) {
-            super(fm);
-            this.apps = apps;
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            Fragment fragment = new PromoAppObjectFragment();
-            Bundle args = new Bundle();
-            args.putInt(PromoAppObjectFragment.ARG_OBJECT, i); // Our object is just an integer :-P
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            // For this contrived example, we have a 100-object collection.
-            return apps.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return "OBJECT " + position;
-        }
-    }
-
-    public static class PromoAppObjectFragment extends Fragment {
-
-        public static final String ARG_OBJECT = "object";
-
-        private TextView tvPromoTitle;
-        private ImageView ivAppIcon;
-        private Button btnGPlay;
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-//            promoAppPager.removeView(videoView);
-//            videoView = (VideoView) rootView;
-
-//            index = args.getInt(ARG_OBJECT);
-//            changeView();
-
-            return inflater.inflate(R.layout.home_list_item_layout, container, false);
-        }
-
-        @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-            this.tvPromoTitle = (TextView) view.findViewById(R.id.tvPromoTitle);
-            this.ivAppIcon = (ImageView) view.findViewById(R.id.ivAppIcon);
-            this.btnGPlay = (Button) view.findViewById(R.id.btnGPlay);
-            Bundle args = getArguments();
-            setApps(apps[args.getInt(ARG_OBJECT)]);
-        }
-
-        public void setApps(final App app) {
-            this.ivAppIcon.setImageDrawable(app.getIcon());
-            this.tvPromoTitle.setText(app.getTitle());
-            this.btnGPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(app.getUrl()));
-                    startActivity(intent);
-                }
-            });
-        }
-    }
 
 //    private class AppAdapter extends RecyclerView.Adapter<AppViewHolder> {
 //        private App[] apps;

@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -20,6 +22,7 @@ import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -284,6 +287,103 @@ public class Utility {
         NetworkInfo activeNetworkInfo = connectivityManager
                 .getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // Check LocationService
+    public static boolean isLocationServiceAvailable(Context ctx) {
+        LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || locationManager
+                .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    // Show alert dialog to confirm and enable the network
+    public static boolean askToEnableNetwork(final Context ctx) {
+        final boolean[] yes = new boolean[1];
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setMessage(R.string.internet_request_msg)
+                .setTitle("Unable to connect")
+                .setCancelable(false)
+                .setPositiveButton("Settings",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(
+                                        Settings.ACTION_WIRELESS_SETTINGS);
+                                ctx.startActivity(i);
+                                yes[0] = true;
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+//                                finish();
+                                yes[0] = false;
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        return yes[0];
+    }
+
+    // Show alert dialog to confirm and enable the LocationService
+    public static boolean askToEnableLocationService(final Context ctx) {
+        final boolean[] yes = new boolean[1];
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setMessage(R.string.location_service_request_msg)
+                .setTitle("Unable to detect location")
+                .setCancelable(false)
+                .setPositiveButton("Settings",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent i = new Intent(
+                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                ctx.startActivity(i);
+                                yes[0] = true;
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+//                                ctx.finish();
+                                yes[0] = false;
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        return yes[0];
+    }
+
+    public static boolean askToEnableGPSservice(final Context ctx) {
+        final boolean[] yes = new boolean[1];
+        // Show alert dialog to confirm and enable the GPS service
+        LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+            builder.setMessage(R.string.gps_request_msg)
+                    .setTitle("Unable to detect location")
+                    .setCancelable(false)
+                    .setPositiveButton("Settings",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,
+                                                    int id) {
+                                    Intent i = new Intent(
+                                            Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    ctx.startActivity(i);
+                                    yes[0] = true;
+                                }
+                            })
+                    .setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,
+                                                    int id) {
+                                    yes[0] = false;
+//                                    finish();
+                                }
+                            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        return yes[0];
     }
 
     public static Feature[] getAllFeatures(Context ctx) {

@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.aslan.contra"
@@ -38,4 +39,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
     compile 'com.google.code.gson:gson:2.5'
     compile files('libs/contradto-1.0-SNAPSHOT.jar')
+    compile files('libs/contradto.jar')
 }

@@ -17,9 +17,9 @@ import com.aslan.contra.util.Constants;
 public class LocationSensor {
     private final Context mContext;
     // The minimum distance to change Updates in meters
-    private final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+    private final long MIN_DISTANCE_CHANGE_FOR_UPDATES;
     // The minimum time between updates in milliseconds
-    private final long MIN_TIME_BW_UPDATES = 0;
+    private final long MIN_TIME_BW_UPDATES;
     // flag for GPS status
     boolean isGPSEnabled = false;
     // flag for network status
@@ -56,6 +56,14 @@ public class LocationSensor {
 
     public LocationSensor(Context context) {
         this.mContext = context;
+        this.MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+        this.MIN_TIME_BW_UPDATES = 0;
+    }
+
+    public LocationSensor(Context context, long min_dis, long min_time) {
+        this.mContext = context;
+        this.MIN_DISTANCE_CHANGE_FOR_UPDATES = min_dis;
+        this.MIN_TIME_BW_UPDATES = min_time;
     }
 
     public void start() {

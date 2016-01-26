@@ -12,6 +12,8 @@
     <string name="action_settings">Settings</string>
 
     <!-- Alert Messages-->
+    <string name="gps_request_msg">You need a to turn on GPS to start this application.\nPlease turn on GPS Service in Settings</string>
+    <string name="location_service_request_msg">You need a to turn on Location Services to use this application.\nPlease turn on Location Service in Settings</string>
     <string name="internet_request_msg">You need a network connection to use this application.\nPlease turn on mobile network or Wi-Fi in Settings</string>
     <string name="internet_error_msg">Your internet connection is not working.\nCannot use the application without internet.\nCheck your internet connectivity</string>
 </resources>
