@@ -5,6 +5,8 @@ package com.aslan.contra.util;
  */
 public class Constants {
     public static final String USER_ID = "userId";
+    public static final String USER_NAME = "username";
+    public static final String USER_EMAIL = "user email";
     public static final String OTHER_NUMBERS = "other numbers";
     public static final String SIGNED_IN_STATUS = "signed in status";
     public static final String SIGNED_IN = "signed in";
@@ -119,10 +121,15 @@ public class Constants {
          */
         public static final String GET_NEARBY_FRIENDS_DATA_URL = CONTRA_SERVICE_URL + "/contextprovider/nearbyfriends/{query}";
 
+//        /**
+//         * URL Post Sensor Data.
+//         */
+//        public static final String SEND_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/sensordatareceiver/save";
+
         /**
-         * URL Post Sensor Data.
+         * URL Post Location Sensor Data.
          */
-        public static final String SEND_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/sensordatareceiver/save";
+        public static final String SEND_LOCATION_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/location/create";
 
         /**
          * URL Register User.

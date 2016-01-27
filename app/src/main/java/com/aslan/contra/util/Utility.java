@@ -33,6 +33,7 @@ import com.aslan.contra.services.ActivityRecognitionService;
 import com.aslan.contra.services.EnvironmentMonitorService;
 import com.aslan.contra.services.LocationTrackingService;
 import com.aslan.contra.services.NearbyTerminalTrackingService;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,6 +50,8 @@ import java.util.regex.Pattern;
  */
 public class Utility {
     private static String userId;
+    private static String userName;
+    private static String userEmail;
     private static List<String> otherNumbers;
     private static String signed_in_status;
     private static String deviceToken;
@@ -91,6 +94,34 @@ public class Utility {
         userId = userID;
         SharedPreferences preferences = getSharedPreference(ctx);
         preferences.edit().putString(Constants.USER_ID, userId).commit();
+    }
+
+    public static String getUserName(Context ctx) {
+        if (userName == null) {
+            SharedPreferences preferences = getSharedPreference(ctx);
+            userName = preferences.getString(Constants.USER_NAME, null);
+        }
+        return userName;
+    }
+
+    public static void saveUserName(Context ctx, String name) {
+        userName = name;
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putString(Constants.USER_NAME, userName).apply();
+    }
+
+    public static String getUserEmail(Context ctx) {
+        if (userEmail == null) {
+            SharedPreferences preferences = getSharedPreference(ctx);
+            userEmail = preferences.getString(Constants.USER_EMAIL, null);
+        }
+        return userEmail;
+    }
+
+    public static void saveUserEmail(Context ctx, String email) {
+        userEmail = email;
+        SharedPreferences preferences = getSharedPreference(ctx);
+        preferences.edit().putString(Constants.USER_EMAIL, userEmail).commit();
     }
 
     public static List<String> getOtherNumbers(Context ctx) {
@@ -224,6 +255,21 @@ public class Utility {
         preferences.edit().putBoolean(key, status).commit();
     }
 
+    /**
+     * Register this device and return the device token. This method must be invoked inside an AsyncTask.
+     *
+     * @return
+     */
+    public static String regDeviceToken(Context ctx) throws IOException {
+        String deviceToken = null;
+        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(ctx);
+        deviceToken = gcm.register(Constants.SENDER_ID);
+        // Persist the regID - no need to register again.
+        if (deviceToken != null) {
+            Utility.saveDeviceToken(ctx, deviceToken);
+        }
+        return deviceToken;
+    }
     public static String getDeviceToken(Context ctx) {
         if (deviceToken == null) {
             SharedPreferences preferences = getSharedPreference(ctx);

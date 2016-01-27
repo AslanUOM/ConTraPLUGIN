@@ -3,19 +3,18 @@ package com.aslan.contra.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.listeners.OnLocationChangedListener;
 import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.util.DatabaseHelper;
-import com.aslan.contra.wsclient.OnResponseListener;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
+import com.aslan.contra.wsclient.ServiceConnector;
 
-import static com.aslan.contra.util.Constants.BundleType;
 import static com.aslan.contra.util.Constants.LocationTracking;
 import static com.aslan.contra.util.Constants.ServiceTAGs;
 
@@ -25,7 +24,7 @@ import static com.aslan.contra.util.Constants.ServiceTAGs;
  * <p/>
  * helper methods.
  */
-public class LocationTrackingService extends IntentService implements OnResponseListener<String> {
+public class LocationTrackingService extends IntentService implements ServiceConnector.OnResponseListener<String> {
 
     public static final String TAG = ServiceTAGs.LOCATION_TRACKING;
     public static boolean isIntentServiceRunning = false;
@@ -93,29 +92,29 @@ public class LocationTrackingService extends IntentService implements OnResponse
         super.onDestroy();
     }
 
-    @Override
-    public void onResponseReceived(String response) {
-        if (response != null) {
-            // TODO handle received response from server for location changed
-            Toast.makeText(this, response, Toast.LENGTH_LONG).show();
-            Log.d(TAG, response);
-            Intent serviceIntent = new Intent(this, RemoteMessagingService.class);
-            Bundle bundle = new Bundle();
-            bundle.putString(BundleType.BUNDLE_TYPE, BundleType.NEARBY_FRIENDS);
-            bundle.putString(BundleType.NEARBY_FRIENDS, response);
-            serviceIntent.putExtras(bundle);
-            startService(serviceIntent);
-
-        } else {
-            // TODO: Replace by AlertDialog
-            Toast.makeText(this, "No nearby friends", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @Override
-    public Class getType() {
-        return String.class;
-    }
+//    @Override
+//    public void onResponseReceived(String response) {
+//        if (response != null) {
+//            // TODO handle received response from server for location changed
+//            Toast.makeText(this, response, Toast.LENGTH_LONG).show();
+//            Log.d(TAG, response);
+//            Intent serviceIntent = new Intent(this, RemoteMessagingService.class);
+//            Bundle bundle = new Bundle();
+//            bundle.putString(BundleType.BUNDLE_TYPE, BundleType.NEARBY_FRIENDS);
+//            bundle.putString(BundleType.NEARBY_FRIENDS, response);
+//            serviceIntent.putExtras(bundle);
+//            startService(serviceIntent);
+//
+//        } else {
+//            // TODO: Replace by AlertDialog
+//            Toast.makeText(this, "No nearby friends", Toast.LENGTH_LONG).show();
+//        }
+//    }
+//
+//    @Override
+//    public Class getType() {
+//        return String.class;
+//    }
 
     private void initialiseLocationTracker() {
         locationSensor = new LocationSensor(this);
@@ -140,8 +139,8 @@ public class LocationTrackingService extends IntentService implements OnResponse
                                     Toast.makeText(getApplicationContext(), loc, Toast.LENGTH_SHORT).show();
 
                                     SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(getApplicationContext());
-                                    service.setOnResponseListener(LocationTrackingService.this);
-                                    service.sendLocation(currentBestLocation);
+//                                    service.setOnResponseListener(LocationTrackingService.this);
+                                    service.sendLocation(currentBestLocation, LocationTrackingService.this);
 
                                 }
                             }
@@ -151,5 +150,15 @@ public class LocationTrackingService extends IntentService implements OnResponse
                 }
             }
         });
+    }
+
+    @Override
+    public void onResponseReceived(Message<String> result) {
+        if (result != null && result.isSuccess()) {
+            Toast.makeText(getApplicationContext(), "Location Sent", Toast.LENGTH_SHORT).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(getApplicationContext(), "Unable to send location", Toast.LENGTH_SHORT).show();
+        }
     }
 }

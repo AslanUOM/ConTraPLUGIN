@@ -14,18 +14,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
-import com.aslan.contra.util.Constants;
+import com.aslan.contra.dto.common.Person;
+import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.util.Utility;
 import com.aslan.contra.view.adapter.CustomProfileAdapter;
-import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.wsclient.ServiceConnector;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements ServiceConnector.OnResponseListener<Person> {
 
     private ViewGroup header;
     // for dynamic list items
@@ -110,8 +110,15 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        // Load the existing information from the server
-        loadProfile();
+        String name = Utility.getUserName(getContext());
+        String email = Utility.getUserEmail(getContext());
+        if (name != null && email != null) {
+            etName.setText(name);
+            etEmail.setText(email);
+        } else {
+            // Todo Load the existing information from the server
+//        loadProfile();
+        }
     }
 
     /**
@@ -119,34 +126,15 @@ public class ProfileFragment extends Fragment {
      */
     private void loadProfile() {
         // UserManagementServiceClient
-        final UserManagementServiceClient<Map<String, String>> retrieveServiceClient = new UserManagementServiceClient<>(getContext());
+        UserManagementServiceClient service = new UserManagementServiceClient(getContext());
+        //service.setOnResponseListener(this);
+        service.retrieveUserProfile(Utility.getUserId(getContext()), ProfileFragment.this);
 
         // Show progress dialog while retrieving information from server
         this.progressDialog = ProgressDialog.show(getContext(), "", "Loading...");
 
         // Retrieve the information
-        retrieveServiceClient.setOnResponseListener(new OnResponseListener<Map<String, String>>() {
-            @Override
-            public void onResponseReceived(Map<String, String> result) {
-                // Hide the progress dialog
-                progressDialog.dismiss();
-                if (result != null) {
-                    etName.setText(result.get(Constants.NAME));
-                    etEmail.setText(result.get(Constants.EMAIL));
-                    //todo retrieve and add the correct data
-//                    adapter.notifyDataSetChanged();
-//                    focusedPosition = Integer.MAX_VALUE;
 
-                }
-            }
-
-            @Override
-            public Class getType() {
-                return Map.class;
-            }
-        });
-        // Execute the task
-        retrieveServiceClient.retrieveUserProfile(Utility.getUserId(getContext()));
     }
 
     /**
@@ -156,29 +144,53 @@ public class ProfileFragment extends Fragment {
         // Show progress bar during update
         progressDialog = ProgressDialog.show(getContext(), "", "Updating...");
 
-        final UserManagementServiceClient<String> updateServiceClient = new UserManagementServiceClient<>(getContext());
+        UserManagementServiceClient service = new UserManagementServiceClient(getContext());
         String name = etName.getText().toString();
         String email = etEmail.getText().toString();
+        Utility.saveUserName(getContext(), name);
+        Utility.saveUserEmail(getContext(), email);
 
-        updateServiceClient.setOnResponseListener(new OnResponseListener<String>() {
+//        service.setOnResponseListener(new OnResponseListener<String>() {
+//            @Override
+//            public void onResponseReceived(String result) {
+//                progressDialog.dismiss();
+//                String msg;
+//                if (result != null) {
+//                    msg = "Profile is updated successfully.";
+//                } else {
+//                    msg = "Failed to update the profile. Please retry again";
+//                }
+//                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public Class getType() {
+//                return String.class;
+//            }
+//        });
+        service.updateUserProfile(Utility.getUserId(getContext()), name, email, otherNumbers.toArray(new String[0]), new ServiceConnector.OnResponseListener<String>() {
             @Override
-            public void onResponseReceived(String result) {
+            public void onResponseReceived(Message<String> result) {
+                progressDialog.cancel();
                 progressDialog.dismiss();
-                String msg;
-                if (result != null) {
-                    msg = "Profile is updated successfully.";
-                } else {
-                    msg = "Failed to update the profile. Please retry again";
-                }
-                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-            }
+                progressDialog = null;
 
-            @Override
-            public Class getType() {
-                return String.class;
+                if (result != null && result.isSuccess()) {
+//            etName.setText(result.getEntity().getName());
+//            etEmail.setText(result.getEntity().getEmail());
+//            String[] nums = result.getEntity().getPhoneNumbers();
+//            otherNumbers.clear();
+//            for (int i = 0; i < nums.length; i++) {
+//                otherNumbers.add(nums[i]);
+//            }
+//            adapter.notifyDataSetChanged();
+                    Toast.makeText(getContext(), "User updated", Toast.LENGTH_LONG).show();
+                } else {
+                    // TODO: Replace by AlertDialog
+                    Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
+                }
             }
         });
-        updateServiceClient.updateUserProfile(Utility.getUserId(getContext()), name, email);
     }
 
     @Override
@@ -196,5 +208,28 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onResponseReceived(Message<Person> result) {
+        // Hide the progress dialog
+        progressDialog.cancel();
+        progressDialog.dismiss();
+        progressDialog = null;
+
+        if (result != null && result.isSuccess()) {
+            etName.setText(result.getEntity().getName());
+            etEmail.setText(result.getEntity().getEmail());
+            String[] nums = result.getEntity().getPhoneNumbers();
+            otherNumbers.clear();
+            for (int i = 0; i < nums.length; i++) {
+                otherNumbers.add(nums[i]);
+            }
+            adapter.notifyDataSetChanged();
+            Toast.makeText(getContext(), "User updated", Toast.LENGTH_LONG).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
+        }
     }
 }

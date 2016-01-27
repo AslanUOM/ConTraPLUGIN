@@ -29,6 +29,7 @@ import com.aslan.contra.wsclient.UserManagementServiceClient;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RegisterActivity extends AppCompatActivity implements ServiceConnector.OnResponseListener<String> {
@@ -114,16 +115,7 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
                 country = etCountry.getText().toString().trim().toUpperCase();
                 String phoneNumber = etPhoneNumber.getText().toString().trim();
                 if (Utility.getUserId(getApplicationContext()) == null || !Utility.getUserId(getApplicationContext()).equals(phoneNumber)) {
-
-                    //TODO use this info to send to server once services are available
-                    Log.d(TAG + " BT", Utility.getDeviceBtMAC(getApplicationContext()));
-                    Log.d(TAG + " WIFI", Utility.getDeviceWiFiMAC(getApplicationContext()));
-                    Log.d(TAG + " API", Utility.getDeviceAPI(getApplicationContext()) + "");
-
-                    UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
-                    //service.setOnResponseListener(this);
-                    // Country is hardcoded as Sri Lanka
-                    service.registerUser(country, phoneNumber, this);
+                    new RegisterTask().execute(country, phoneNumber);
                 } else {
                     Utility.saveUserSignedIn(getApplicationContext(), true);
                     // Move to the MainActivity home fragment
@@ -356,6 +348,23 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
             }
         }
 
+    }
+
+    private class RegisterTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            String token = null;
+            try {
+                token = Utility.regDeviceToken(getApplicationContext());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            UserManagementServiceClient service = new UserManagementServiceClient(getApplicationContext());
+            //service.setOnResponseListener(this);
+            // Country is derived automatically from current location using google reverse geo-coding API
+            service.registerUser(params[0], params[1], RegisterActivity.this);
+            return null;
+        }
     }
 
 //    private class MyHttpAsyncTask extends AsyncTask<String, Void, String> {
