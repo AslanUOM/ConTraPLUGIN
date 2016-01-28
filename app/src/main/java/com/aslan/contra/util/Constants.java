@@ -132,6 +132,11 @@ public class Constants {
         public static final String SEND_LOCATION_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/location/create";
 
         /**
+         * URL Post Location Sensor Data.
+         */
+        public static final String SEND_ENVIRONMENT_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/environment/create";
+
+        /**
          * URL Register User.
          */
         public static final String REGISTER_USER_SERVICE_URL = CONTRA_SERVICE_URL + "/user/create/{country}";

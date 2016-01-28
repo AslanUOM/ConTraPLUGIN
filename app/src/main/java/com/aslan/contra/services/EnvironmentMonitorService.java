@@ -6,7 +6,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.sensor.EnvironmentSensor;
+import com.aslan.contra.wsclient.ServiceConnector;
 
 import static com.aslan.contra.util.Constants.EnvironmentMonitoring;
 import static com.aslan.contra.util.Constants.ServiceTAGs;
@@ -14,7 +16,7 @@ import static com.aslan.contra.util.Constants.ServiceTAGs;
 /**
  * Created by vishnuvathsan on 25-Dec-15.
  */
-public class EnvironmentMonitorService extends IntentService {
+public class EnvironmentMonitorService extends IntentService implements ServiceConnector.OnResponseListener<String> {
     public static final String TAG = ServiceTAGs.ENVIRON_MONITORING;
     public static boolean isIntentServiceRunning = false;
     public static Runnable runnable = null;
@@ -36,7 +38,7 @@ public class EnvironmentMonitorService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        environmentSensor = new EnvironmentSensor(getApplicationContext());
+        environmentSensor = new EnvironmentSensor(getApplicationContext(), this);
 
         handler = new Handler();
         runnable = new Runnable() {
@@ -65,5 +67,15 @@ public class EnvironmentMonitorService extends IntentService {
         Toast.makeText(getApplicationContext(), "Environment DESTROYED", Toast.LENGTH_SHORT).show();
         stopSelf();
         super.onDestroy();
+    }
+
+    @Override
+    public void onResponseReceived(Message<String> result) {
+        if (result != null && result.isSuccess()) {
+            Toast.makeText(getApplicationContext(), "Environment sensor data sent", Toast.LENGTH_LONG).show();
+        } else {
+            // TODO: Replace by AlertDialog
+            Toast.makeText(getApplicationContext(), "Unable to send the environment sensor data", Toast.LENGTH_LONG).show();
+        }
     }
 }
