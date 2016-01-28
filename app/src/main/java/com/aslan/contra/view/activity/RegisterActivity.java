@@ -87,10 +87,13 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
                 // Validate the zip code for modification
                 String modifiedZipCode = etCountry.getText().toString().replaceFirst("\\+", "");
                 if (!modifiedZipCode.equals(countryZipCode)) {
-                    countryISOCode = Utility.toCountryISOCode(this, modifiedZipCode);
-                    if (countryISOCode == null) {
+                    String modifiedISOCode = Utility.toCountryISOCode(this, modifiedZipCode);
+                    if (modifiedISOCode == null) {
                         Toast.makeText(this, "Invalid country code", Toast.LENGTH_LONG).show();
                         return;
+                    } else {
+                        countryISOCode = modifiedISOCode;
+                        countryZipCode = modifiedZipCode;
                     }
                 }
 
