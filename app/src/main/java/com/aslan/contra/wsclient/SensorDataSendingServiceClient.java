@@ -5,7 +5,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.aslan.contra.dto.common.Environment;
 import com.aslan.contra.dto.common.Time;
+import com.aslan.contra.dto.ws.UserEnvironment;
 import com.aslan.contra.dto.ws.UserLocation;
 import com.aslan.contra.model.SensorData;
 import com.aslan.contra.model.SensorResponse;
@@ -35,6 +37,7 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
         location.setName(currentBestLocation.getProvider());
         location.setLatitude(currentBestLocation.getLatitude());
         location.setLongitude(currentBestLocation.getLongitude());
+        location.setLocationID(location.getLongitude() + ":" + location.getLatitude());
 
         UserLocation userLocation = new UserLocation();
         userLocation.setLocation(location);
@@ -65,6 +68,22 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
 
 //        SensorDataSendingTask task = new SensorDataSendingTask();
 //        task.execute(response);
+    }
+
+    public void sendEnvironment(Environment environment, Time time, ServiceConnector.OnResponseListener<String> listener) {
+        UserEnvironment userEnvironment = new UserEnvironment();
+        userEnvironment.setUserID(Utility.getUserId(context));
+        userEnvironment.setDeviceID(Utility.getDeviceSerial(context));
+        userEnvironment.setEnvironment(environment);
+        userEnvironment.setTime(time);
+
+        Request<UserEnvironment> request = new Request<>();
+        request.setEntity(userEnvironment);
+        request.setHttpMethod(HttpMethod.POST);
+        request.setUrl(Constants.WebServiceUrls.SEND_ENVIRONMENT_SENSOR_DATA_URL);
+
+        ServiceConnector<UserEnvironment, String> serviceConnector = new ServiceConnector<>(listener);
+        serviceConnector.execute(request);
     }
 
     public void sendActivity(int activity, int confidence) {

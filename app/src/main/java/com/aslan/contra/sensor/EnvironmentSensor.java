@@ -9,13 +9,8 @@ import android.util.Log;
 
 import com.aslan.contra.dto.common.Environment;
 import com.aslan.contra.dto.common.Time;
-import com.aslan.contra.dto.ws.UserEnvironment;
-import com.aslan.contra.util.Constants;
-import com.aslan.contra.util.Utility;
-import com.aslan.contra.wsclient.Request;
+import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
 import com.aslan.contra.wsclient.ServiceConnector;
-
-import org.springframework.http.HttpMethod;
 
 /**
  * Created by vishnuvathsan on 25-Dec-15.
@@ -88,27 +83,9 @@ public class EnvironmentSensor implements SensorEventListener {
                 break;
         }
         if (sensorCount == 0) {
-//            SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(context);
-//            service.sendEnvironment(environment, time, listener);
-            sendEnvironment(environment, time, listener);
+            SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(context);
+            service.sendEnvironment(environment, time, listener);
         }
-    }
-
-    //    TODO move to SensorDataSendingServiceClient.java
-    public void sendEnvironment(Environment environment, Time time, ServiceConnector.OnResponseListener<String> listener) {
-        UserEnvironment userEnvironment = new UserEnvironment();
-        userEnvironment.setUserID(Utility.getUserId(context));
-        userEnvironment.setDeviceID(Utility.getDeviceSerial(context));
-        userEnvironment.setEnvironment(environment);
-        userEnvironment.setTime(time);
-
-        Request<UserEnvironment> request = new Request<>();
-        request.setEntity(userEnvironment);
-        request.setHttpMethod(HttpMethod.POST);
-        request.setUrl(Constants.WebServiceUrls.SEND_ENVIRONMENT_SENSOR_DATA_URL);
-
-        ServiceConnector<UserEnvironment, String> serviceConnector = new ServiceConnector<>(listener);
-        serviceConnector.execute(request);
     }
 
     @Override
