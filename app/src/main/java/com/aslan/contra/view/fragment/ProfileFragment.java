@@ -24,8 +24,9 @@ import com.aslan.contra.wsclient.UserManagementServiceClient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class ProfileFragment extends Fragment implements ServiceConnector.OnResponseListener<Person> {
+public class ProfileFragment extends Fragment implements ServiceConnector.OnResponseListener<Map<String, Object>> {
 
     private ViewGroup header;
     // for dynamic list items
@@ -117,7 +118,7 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
             etEmail.setText(email);
         } else {
             // Todo Load the existing information from the server
-//        loadProfile();
+            loadProfile();
         }
     }
 
@@ -211,19 +212,21 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
     }
 
     @Override
-    public void onResponseReceived(Message<Person> result) {
+    public void onResponseReceived(Message<Map<String, Object>> result) {
         // Hide the progress dialog
         progressDialog.cancel();
         progressDialog.dismiss();
         progressDialog = null;
 
         if (result != null && result.isSuccess()) {
-            etName.setText(result.getEntity().getName());
-            etEmail.setText(result.getEntity().getEmail());
-            String[] nums = result.getEntity().getPhoneNumbers();
+            Map<String, Object> entity = result.getEntity();
+            etName.setText(entity.get("name").toString());
+            etEmail.setText(entity.get("email").toString());
+            ArrayList<String> nums = (ArrayList) entity.get("phoneNumbers");
             otherNumbers.clear();
-            for (int i = 0; i < nums.length; i++) {
-                otherNumbers.add(nums[i]);
+            //otherNumbers.addAll(nums);
+            for(String n : nums) {
+                otherNumbers.add(n);
             }
             adapter.notifyDataSetChanged();
             Toast.makeText(getContext(), "User updated", Toast.LENGTH_LONG).show();

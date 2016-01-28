@@ -1,13 +1,16 @@
 package com.aslan.contra.view.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -59,35 +62,41 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        locationManager = (LocationManager) getApplicationContext()
-                .getSystemService(Service.LOCATION_SERVICE);
-        locationReceiver = new LocationSensor(this);
-        if (Utility.isLocationServiceAvailable(this)) {
-            if (Utility.isNetworkAvailable(this)) {
+        // For Android 6 or latest, check the permission before using location
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 200);
+        } else {
+            locationManager = (LocationManager) getApplicationContext()
+                    .getSystemService(Service.LOCATION_SERVICE);
+            locationReceiver = new LocationSensor(this);
+            if (Utility.isLocationServiceAvailable(this)) {
+                if (Utility.isNetworkAvailable(this)) {
 
-                locationReceiver
-                        .setOnLocationChangedListener(new OnLocationChangedListener() {
+                    locationReceiver
+                            .setOnLocationChangedListener(new OnLocationChangedListener() {
 
-                            @Override
-                            public void onLocationChanged(Location loc) {
-                                location = loc;
-                            }
-                        });
-                locationReceiver.start();
+                                @Override
+                                public void onLocationChanged(Location loc) {
+                                    location = loc;
+                                }
+                            });
+                    locationReceiver.start();
 
-                if (location == null) {
-                    // GPS should be enabled to obtain current location if the
-                    // device does not contain a last known location
-                    askToEnableGPSservice();
+                    if (location == null) {
+                        // GPS should be enabled to obtain current location if the
+                        // device does not contain a last known location
+                        askToEnableGPSservice();
+                    } else {
+                        getCountry();
+                    }
                 } else {
-                    getCountry();
+                    askToEnableNetwork();
                 }
             } else {
-                askToEnableNetwork();
+                askToEnableLocationService();
             }
-        } else {
-            askToEnableLocationService();
         }
+
 
         // Find the UI components
         this.btnSignIn = (Button) findViewById(R.id.btnSignIn);
@@ -103,6 +112,62 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
                 onSignInClicked();
             }
         });
+    }
+
+    /**
+     * What to do, if the permission to access location is not granted.
+     * However this method is never called. App just closes. Need to fix it later.
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 200) {
+            boolean allPermissionsGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (allPermissionsGranted) {
+                locationManager = (LocationManager) getApplicationContext()
+                        .getSystemService(Service.LOCATION_SERVICE);
+                locationReceiver = new LocationSensor(this);
+                if (Utility.isLocationServiceAvailable(this)) {
+                    if (Utility.isNetworkAvailable(this)) {
+
+                        locationReceiver
+                                .setOnLocationChangedListener(new OnLocationChangedListener() {
+
+                                    @Override
+                                    public void onLocationChanged(Location loc) {
+                                        location = loc;
+                                    }
+                                });
+                        locationReceiver.start();
+
+                        if (location == null) {
+                            // GPS should be enabled to obtain current location if the
+                            // device does not contain a last known location
+                            askToEnableGPSservice();
+                        } else {
+                            getCountry();
+                        }
+                    } else {
+                        askToEnableNetwork();
+                    }
+                } else {
+                    askToEnableLocationService();
+                }
+            } else {
+                Toast.makeText(this, "ConTra requires to access your location.", Toast.LENGTH_LONG).show();
+                this.finish();
+            }
+        }
     }
 
     private void onSignInClicked() {

@@ -3,7 +3,12 @@ package com.aslan.contra.wsclient;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aslan.contra.dto.common.Person;
 import com.aslan.contra.dto.ws.Message;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeBase;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -59,12 +64,15 @@ public class ServiceConnector<T, R> {
 
                 // Create a new RestTemplate instance
                 RestTemplate restTemplate = new RestTemplate(true);
+                Gson gson = new Gson();
+                Log.i("JSON", gson.toJson(entity));
                 ResponseEntity<String> response = restTemplate.exchange(request.getUrl(), request.getHttpMethod(), entity, String.class, (Object[]) request.getUrlVariables());
 
                 String body = response.getBody();
 
+                Log.i("RESPONSE", body);
                 // Construct the Message<R>
-                Gson gson = new Gson();
+
                 return gson.fromJson(body, type);
             } catch (Exception e) {
                 Log.e(this.getClass().getName(), e.getMessage(), e);

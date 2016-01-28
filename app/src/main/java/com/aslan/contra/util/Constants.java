@@ -139,7 +139,7 @@ public class Constants {
         /**
          * URL Get User Profile.
          */
-        public static final String RETRIEVE_USER_PROFILE_URL = CONTRA_SERVICE_URL + "/user/find/{query}";
+        public static final String RETRIEVE_USER_PROFILE_URL = CONTRA_SERVICE_URL + "/user/find/{userID}";
 
         /**
          * URL Update User.

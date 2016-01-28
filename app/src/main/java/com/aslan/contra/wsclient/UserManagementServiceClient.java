@@ -10,6 +10,10 @@ import com.aslan.contra.util.Utility;
 
 import org.springframework.http.HttpMethod;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Created by gobinath on 10/30/15.
  */
@@ -47,13 +51,13 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
         serviceConnector.execute(request);
     }
 
-    public void retrieveUserProfile(String userId, ServiceConnector.OnResponseListener<Person> listener) {
+    public void retrieveUserProfile(String userId, ServiceConnector.OnResponseListener<Map<String, Object>> listener) {
         Request<String> request = new Request<>();
         request.setHttpMethod(HttpMethod.GET);
         request.setUrl(Constants.WebServiceUrls.RETRIEVE_USER_PROFILE_URL);
         request.setUrlVariables(userId);
 
-        ServiceConnector<String, Person> serviceConnector = new ServiceConnector<>(listener);
+        ServiceConnector<String, Map<String, Object>> serviceConnector = new ServiceConnector<>(listener);
         serviceConnector.execute(request);
     }
 
