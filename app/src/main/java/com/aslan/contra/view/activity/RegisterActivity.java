@@ -1,19 +1,15 @@
 package com.aslan.contra.view.activity;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,11 +18,8 @@ import android.widget.Toast;
 
 import com.aslan.contra.R;
 import com.aslan.contra.dto.ws.Message;
-import com.aslan.contra.listeners.OnLocationChangedListener;
-import com.aslan.contra.sensor.LocationSensor;
 import com.aslan.contra.util.Constants;
 import com.aslan.contra.util.Utility;
-import com.aslan.contra.util.XMLreader;
 import com.aslan.contra.wsclient.ServiceConnector;
 import com.aslan.contra.wsclient.UserManagementServiceClient;
 import com.google.android.gms.common.ConnectionResult;
@@ -40,11 +33,9 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private String country;
-    private XMLreader locationReader;
-    private Location location;
-    private LocationSensor locationReceiver;
-    private LocationManager locationManager;
+
+    private String countryISOCode;
+    private String countryZipCode;
 
     // UI components
     private Button btnSignIn;
@@ -62,48 +53,13 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // For Android 6 or latest, check the permission before using location
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 200);
-        } else {
-            locationManager = (LocationManager) getApplicationContext()
-                    .getSystemService(Service.LOCATION_SERVICE);
-            locationReceiver = new LocationSensor(this);
-            if (Utility.isLocationServiceAvailable(this)) {
-                if (Utility.isNetworkAvailable(this)) {
-
-                    locationReceiver
-                            .setOnLocationChangedListener(new OnLocationChangedListener() {
-
-                                @Override
-                                public void onLocationChanged(Location loc) {
-                                    location = loc;
-                                }
-                            });
-                    locationReceiver.start();
-
-                    if (location == null) {
-                        // GPS should be enabled to obtain current location if the
-                        // device does not contain a last known location
-                        askToEnableGPSservice();
-                    } else {
-                        getCountry();
-                    }
-                } else {
-                    askToEnableNetwork();
-                }
-            } else {
-                askToEnableLocationService();
-            }
-        }
-
-
         // Find the UI components
         this.btnSignIn = (Button) findViewById(R.id.btnSignIn);
         this.etCountry = (EditText) findViewById(R.id.etCountry);
         this.etPhoneNumber = (EditText) findViewById(R.id.etPhoneNumber);
 
-        // TODO: Automatically get the phone number and fill the EdiText
+        this.etCountry.setText("+" + getCountryZipCode());
+        this.etPhoneNumber.requestFocus();
 
         // Set OnClickListener to the button
         this.btnSignIn.setOnClickListener(new View.OnClickListener() {
@@ -114,73 +70,37 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
         });
     }
 
-    /**
-     * What to do, if the permission to access location is not granted.
-     * However this method is never called. App just closes. Need to fix it later.
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 200) {
-            boolean allPermissionsGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allPermissionsGranted = false;
-                    break;
-                }
-            }
+    public String getCountryZipCode() {
+        String countryZipCode = "";
+        TelephonyManager manager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        countryISOCode = manager.getSimCountryIso().toUpperCase().trim();
+        countryZipCode = Utility.toCountryZIPCode(this, countryISOCode);
 
-            if (allPermissionsGranted) {
-                locationManager = (LocationManager) getApplicationContext()
-                        .getSystemService(Service.LOCATION_SERVICE);
-                locationReceiver = new LocationSensor(this);
-                if (Utility.isLocationServiceAvailable(this)) {
-                    if (Utility.isNetworkAvailable(this)) {
-
-                        locationReceiver
-                                .setOnLocationChangedListener(new OnLocationChangedListener() {
-
-                                    @Override
-                                    public void onLocationChanged(Location loc) {
-                                        location = loc;
-                                    }
-                                });
-                        locationReceiver.start();
-
-                        if (location == null) {
-                            // GPS should be enabled to obtain current location if the
-                            // device does not contain a last known location
-                            askToEnableGPSservice();
-                        } else {
-                            getCountry();
-                        }
-                    } else {
-                        askToEnableNetwork();
-                    }
-                } else {
-                    askToEnableLocationService();
-                }
-            } else {
-                Toast.makeText(this, "ConTra requires to access your location.", Toast.LENGTH_LONG).show();
-                this.finish();
-            }
-        }
+        return countryZipCode;
     }
+
 
     private void onSignInClicked() {
         if (Utility.isNetworkAvailable(getApplicationContext())) {
             if (checkPlayServices()) {
+
+                // Validate the zip code for modification
+                String modifiedZipCode = etCountry.getText().toString().replaceFirst("\\+", "");
+                if (!modifiedZipCode.equals(countryZipCode)) {
+                    countryISOCode = Utility.toCountryISOCode(this, modifiedZipCode);
+                    if (countryISOCode == null) {
+                        Toast.makeText(this, "Invalid country code", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+
                 // Show progress dialog while retrieving information from server
                 this.progressDialog = ProgressDialog.show(this, "", "Please wait...");
 
                 // Read the phone number
-                country = etCountry.getText().toString().trim().toUpperCase();
                 String phoneNumber = etPhoneNumber.getText().toString().trim();
                 if (Utility.getUserId(getApplicationContext()) == null || !Utility.getUserId(getApplicationContext()).equals(phoneNumber)) {
-                    new RegisterTask().execute(country, phoneNumber);
+                    new RegisterTask().execute(countryISOCode, phoneNumber);
                 } else {
                     Utility.saveUserSignedIn(getApplicationContext(), true);
                     // Move to the MainActivity home fragment
@@ -258,57 +178,6 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
         alert.show();
     }
 
-    // Show alert dialog to confirm and enable the LocationService
-    private void askToEnableLocationService() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.location_service_request_msg)
-                .setTitle("Unable to detect location")
-                .setCancelable(false)
-                .setPositiveButton("Settings",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent i = new Intent(
-                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(i);
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                finish();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void askToEnableGPSservice() {
-        // Show alert dialog to confirm and enable the GPS service
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.gps_request_msg)
-                    .setTitle("Unable to detect location")
-                    .setCancelable(false)
-                    .setPositiveButton("Settings",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,
-                                                    int id) {
-                                    Intent i = new Intent(
-                                            Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                    startActivity(i);
-                                }
-                            })
-                    .setNegativeButton("Cancel",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,
-                                                    int id) {
-                                    finish();
-                                }
-                            });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
-    }
 
 //    /**
 //     * Registers the application with GCM servers asynchronously.
@@ -342,20 +211,6 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
 //        service.registerUser("lk", phoneNumber, deviceName, deviceSerial);
 //    }
 
-    private void getCountry() {
-        // method to get the country of the user
-        double latitude = location.getLatitude(); // 20.593;
-        double longitude = location.getLongitude(); // 78.962;
-
-        String currLoc = latitude + "," + longitude;
-        String URL = "https://maps.googleapis.com/maps/api/geocode/xml?latlng="
-                + currLoc
-                + "&result_type=country&key=AIzaSyCyc9xJr_8wXxrmjeadKVhpVp84nkleoyE";
-        locationReader = new XMLreader();
-        locationReader.setTAG("short_name");
-        new XmlReader().execute(URL);
-        RegisterActivity.this.progressDialog = ProgressDialog.show(this, "", "Finding the country...");
-    }
 
     /**
      * Check the device to make sure it has the Google Play Services APK. If it
@@ -378,42 +233,6 @@ public class RegisterActivity extends AppCompatActivity implements ServiceConnec
         return true;
     }
 
-    private class XmlReader extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            // Show progress dialog while retrieving information from server
-            String temp = locationReader.readURL(urls[0]);
-            return temp;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            RegisterActivity.this.progressDialog.dismiss();
-            country = result;
-            if (country != null && country.length() > 0) {
-                etCountry.setText(country);
-                locationReceiver.stop();
-            } else {
-                // invoked when no data received due to error in internet
-                // connection
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        RegisterActivity.this);
-                builder.setMessage(R.string.internet_error_msg)
-                        .setTitle("Unable to retrive data from internet")
-                        .setCancelable(false)
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        RegisterActivity.this.finish();
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        }
-
-    }
 
     private class RegisterTask extends AsyncTask<String, Void, Void> {
         @Override

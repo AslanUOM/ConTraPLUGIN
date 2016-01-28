@@ -23,6 +23,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -270,6 +271,7 @@ public class Utility {
         }
         return deviceToken;
     }
+
     public static String getDeviceToken(Context ctx) {
         if (deviceToken == null) {
             SharedPreferences preferences = getSharedPreference(ctx);
@@ -634,4 +636,26 @@ public class Utility {
         }
         return bytes;
     } //End of code from Apache pig
+
+    public static String toCountryISOCode(Context ctx, String zipCode) {
+        String[] originalArray = ctx.getResources().getStringArray(R.array.country_codes);
+        for (int i = 0; i < originalArray.length; i++) {
+            String[] array = originalArray[i].split(",");
+            if (array[0].trim().equals(zipCode)) {
+                return array[1];
+            }
+        }
+        return null;
+    }
+
+    public static String toCountryZIPCode(Context ctx, String isoCode) {
+        String[] originalArray = ctx.getResources().getStringArray(R.array.country_codes);
+        for (int i = 0; i < originalArray.length; i++) {
+            String[] array = originalArray[i].split(",");
+            if (array[1].trim().equals(isoCode)) {
+                return array[0];
+            }
+        }
+        return null;
+    }
 }
