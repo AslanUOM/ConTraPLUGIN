@@ -31,15 +31,6 @@ public class EnvironmentSensor implements SensorEventListener {
     public EnvironmentSensor(Context context, ServiceConnector.OnResponseListener<String> listener) {
         this.context = context;
         this.listener = listener;
-        // Get an instance of the sensor service, and use that to get an instance of
-        // a particular sensor.
-        mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-
-        mAmbientTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
     }
 
     @Override
@@ -103,6 +94,19 @@ public class EnvironmentSensor implements SensorEventListener {
     }
 
     public void start() {
+        if (mSensorManager == null) {
+            // Get an instance of the sensor service, and use that to get an instance of
+            // a particular sensor.
+            mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+
+            mAmbientTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+            mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        }
+
+
         if (mAmbientTemp != null) {
             mSensorManager.registerListener(this, mAmbientTemp, mAmbientTemp.getMinDelay());
             sensorCount++;

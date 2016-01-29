@@ -73,8 +73,8 @@ public class Constants {
     }
 
     public static final class EnvironmentMonitoring {
-        // The minimum time between location updates in microseconds, here 30 minutes
-        public static final int MIN_TIME_BW_UPDATES = 1000000 * 60 * 30;
+        // The minimum time between environment sensor updates in milliseconds, here 30 minutes
+        public static final int MIN_TIME_BW_UPDATES = 1000 * 60 * 30;
     }
 
     public static final class Type {

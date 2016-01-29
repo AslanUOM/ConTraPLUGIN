@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aslan.contra.R;
-import com.aslan.contra.dto.common.Person;
 import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.util.Utility;
 import com.aslan.contra.view.adapter.CustomProfileAdapter;
@@ -236,7 +235,7 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
             }
         } else {
             // TODO: Replace by AlertDialog
-            Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Unable to retrieve the user", Toast.LENGTH_LONG).show();
         }
     }
 }
