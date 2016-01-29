@@ -26,8 +26,7 @@ public class EnvironmentSensor implements SensorEventListener {
     private Sensor mPressure;
     private Sensor mRelativeHumidity;
     private int sensorCount = 0;
-    private Time time;
-    private Environment environment;
+
 
     public EnvironmentSensor(Context context, ServiceConnector.OnResponseListener<String> listener) {
         this.context = context;
@@ -41,25 +40,21 @@ public class EnvironmentSensor implements SensorEventListener {
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-
-        environment = new Environment();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-//        float millibars_of_pressure = event.values[0];
+        Environment environment = new Environment();
         switch (event.sensor.getType()) {
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
                 Log.i(TAG, "Amb Temp: " + event.values[0]);
                 environment.setTemperature(event.values[0]);
-                time = Time.valueOf(event.timestamp);
                 sensorCount--;
                 mSensorManager.unregisterListener(this, mAmbientTemp);
                 break;
             case Sensor.TYPE_LIGHT:
                 Log.i(TAG, "Light: " + event.values[0]);
                 environment.setIlluminance(event.values[0]);
-                time = Time.valueOf(event.timestamp);
                 sensorCount--;
                 mSensorManager.unregisterListener(this, mLight);
                 break;
@@ -70,21 +65,19 @@ public class EnvironmentSensor implements SensorEventListener {
             case Sensor.TYPE_PRESSURE:
                 Log.i(TAG, "Pressure: " + event.values[0]);
                 environment.setPressure(event.values[0]);
-                time = Time.valueOf(event.timestamp);
                 sensorCount--;
                 mSensorManager.unregisterListener(this, mPressure);
                 break;
             case Sensor.TYPE_RELATIVE_HUMIDITY:
                 Log.i(TAG, "Humidity: " + event.values[0]);
                 environment.setHumidity(event.values[0]);
-                time = Time.valueOf(event.timestamp);
                 sensorCount--;
                 mSensorManager.unregisterListener(this, mRelativeHumidity);
                 break;
         }
         if (sensorCount == 0) {
             SensorDataSendingServiceClient service = new SensorDataSendingServiceClient(context);
-            service.sendEnvironment(environment, time, listener);
+            service.sendEnvironment(environment, Time.now(), listener);
         }
     }
 
