@@ -44,6 +44,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -657,5 +658,14 @@ public class Utility {
             }
         }
         return null;
+    }
+
+    public static <T> T getDefaultIfNull(Map<String, Object> map, String key, T def) {
+        Object obj = map.get(key);
+        if (obj == null) {
+            return def;
+        } else {
+            return (T) obj;
+        }
     }
 }

@@ -23,6 +23,7 @@ import com.aslan.contra.wsclient.UserManagementServiceClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -220,16 +221,19 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
 
         if (result != null && result.isSuccess()) {
             Map<String, Object> entity = result.getEntity();
-            etName.setText(entity.get("name").toString());
-            etEmail.setText(entity.get("email").toString());
-            ArrayList<String> nums = (ArrayList) entity.get("phoneNumbers");
-            otherNumbers.clear();
-            //otherNumbers.addAll(nums);
-            for(String n : nums) {
-                otherNumbers.add(n);
+            if (entity != null) {
+                etName.setText(Utility.getDefaultIfNull(entity, "name", ""));
+                etEmail.setText(Utility.getDefaultIfNull(entity, "email", ""));
+                List<String> nums = Collections.emptyList();
+                nums = Utility.getDefaultIfNull(entity, "phoneNumbers", nums);
+                otherNumbers.clear();
+                //otherNumbers.addAll(nums);
+                for (String n : nums) {
+                    otherNumbers.add(n);
+                }
+                adapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "User updated", Toast.LENGTH_LONG).show();
             }
-            adapter.notifyDataSetChanged();
-            Toast.makeText(getContext(), "User updated", Toast.LENGTH_LONG).show();
         } else {
             // TODO: Replace by AlertDialog
             Toast.makeText(getContext(), "Unable to register the user", Toast.LENGTH_LONG).show();
