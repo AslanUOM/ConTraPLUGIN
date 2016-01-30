@@ -63,6 +63,10 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         // Find the UI view
         tvGreetings = (TextView) view.findViewById(R.id.tvGreetings);
+        String name = Utility.getUserName(getContext());
+        if (name != null) {
+            tvGreetings.setText("Welcome " + name);
+        }
         tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         promoAppPager = (ViewPager) view.findViewById(R.id.pager);
         promoAppCollectionPagerAdapter = new PromoAppCollectionPagerAdapter(getChildFragmentManager(), Utility.getAllApps(getContext()).length);

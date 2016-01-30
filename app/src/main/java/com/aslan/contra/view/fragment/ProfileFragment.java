@@ -91,12 +91,6 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
             }
         });
 
-        otherNumbers = Utility.getOtherNumbers(getContext());
-        adapter = new CustomProfileAdapter(otherNumbers, header);
-        listView.setAdapter(adapter);
-        //the best practice
-//        adapter.notifyItemInserted(otherNumbers.size() - 1);
-
         btnUpdate = (Button) view.findViewById(R.id.btnUpdate);
         // Set OnClickListener
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +104,12 @@ public class ProfileFragment extends Fragment implements ServiceConnector.OnResp
                 }
             }
         });
+
+        otherNumbers = Utility.getOtherNumbers(getContext());
+        adapter = new CustomProfileAdapter(otherNumbers, header);
+        listView.setAdapter(adapter);
+        //the best practice
+//        adapter.notifyItemInserted(otherNumbers.size() - 1);
 
         String name = Utility.getUserName(getContext());
         String email = Utility.getUserEmail(getContext());

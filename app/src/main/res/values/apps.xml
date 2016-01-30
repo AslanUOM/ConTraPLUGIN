@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="app_titles">
-        <item>4 of your friends uses Friends Finder</item>
-        <item>2 of your friends uses Smart Assistant</item>
-        <item>5 of your friends uses Personal Guardian</item>
-        <item>9 of your friends uses ConTra</item>
+        <item>4 of your friends using Friends Finder</item>
+        <item>2 of your friends using Smart Assistant</item>
+        <item>5 of your friends using Personal Guardian</item>
+        <item>9 of your friends using ConTra</item>
     </array>
     <array name="app_icons">
         <item>@drawable/app_ic_friendsfinder</item>

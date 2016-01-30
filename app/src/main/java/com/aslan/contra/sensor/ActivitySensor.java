@@ -5,13 +5,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.aslan.contra.R;
-import com.aslan.contra.wsclient.OnResponseListener;
+import com.aslan.contra.dto.common.Device;
+import com.aslan.contra.dto.ws.Message;
 import com.aslan.contra.wsclient.SensorDataSendingServiceClient;
+import com.aslan.contra.wsclient.ServiceConnector;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -254,7 +261,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
     public static class ActivityRecognitionReceiverService extends IntentService {
 
         private final DescendingConfidenceComparator DESC_CONF_COMPARATOR;
-        private SensorDataSendingServiceClient<Object> sensorDataSendingServiceClient;
+        private SensorDataSendingServiceClient sensorDataSendingServiceClient;
 
         public ActivityRecognitionReceiverService() {
             super("ActivityRecognitionReceiverService");
@@ -264,18 +271,7 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
         @Override
         public void onCreate() {
             super.onCreate();
-            this.sensorDataSendingServiceClient = new SensorDataSendingServiceClient<>(getApplicationContext());
-            this.sensorDataSendingServiceClient.setOnResponseListener(new OnResponseListener<Object>() {
-                @Override
-                public void onResponseReceived(Object result) {
-                    // Do nothing
-                }
-
-                @Override
-                public Class getType() {
-                    return Object.class;
-                }
-            });
+            this.sensorDataSendingServiceClient = new SensorDataSendingServiceClient(getApplicationContext());
         }
 
         @Override
@@ -292,15 +288,53 @@ public class ActivitySensor implements GoogleApiClient.ConnectionCallbacks, Goog
                 Collections.sort(detectedActivities, DESC_CONF_COMPARATOR);
 
                 DetectedActivity highConfActivity = detectedActivities.get(0);
-                int type = highConfActivity.getType();
+                final int type = highConfActivity.getType();
                 int confidence = highConfActivity.getConfidence();
                 final String msg = "Type: " + getActivityName(type) + " with confidence: " + confidence + "%";
                 Log.i(TAG, msg);
 
                 // Show a notification
-                generateNotification(getApplicationContext(),msg);
+                generateNotification(getApplicationContext(), msg);
                 // Send the data to the server
-                sensorDataSendingServiceClient.sendActivity(type, confidence);
+                if (confidence > 60) {
+                    // Get an instance of the sensor service, and use that to get an instance of
+                    // a particular sensor.
+                    final SensorManager mSensorManager = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
+                    final Sensor mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                    if (mProximity != null) {
+                        mSensorManager.registerListener(new SensorEventListener() {
+                            @Override
+                            public void onSensorChanged(SensorEvent event) {
+                                if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+                                    Log.i(TAG, "Proximity: " + event.values[0]);
+                                    mSensorManager.unregisterListener(this, mProximity);
+                                    Device device = new Device();
+                                    device.setState(getActivityName(type));
+                                    device.setProximity(event.values[0]);
+                                    sensorDataSendingServiceClient.updateDeviceState(device, new ServiceConnector.OnResponseListener<String>() {
+                                        @Override
+                                        public void onResponseReceived(Message<String> result) {
+                                            if (result != null && result.isSuccess()) {
+                                                Toast.makeText(getApplicationContext(), "Activity and Proximity sensor data sent", Toast.LENGTH_LONG).show();
+                                            } else {
+                                                // TODO: Replace by AlertDialog
+                                                Toast.makeText(getApplicationContext(), "Unable to send Activity and Proximity sensor data", Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+                            }
+                        }, mProximity, mProximity.getMinDelay());
+                    } else {
+                        Log.i(TAG, "Proximity not available");
+                    }
+//                    sensorDataSendingServiceClient.sendActivity(type, confidence);
+                }
             }
 
         }

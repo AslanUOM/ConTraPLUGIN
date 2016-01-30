@@ -5,8 +5,10 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.aslan.contra.dto.common.Device;
 import com.aslan.contra.dto.common.Environment;
 import com.aslan.contra.dto.common.Time;
+import com.aslan.contra.dto.ws.UserDevice;
 import com.aslan.contra.dto.ws.UserEnvironment;
 import com.aslan.contra.dto.ws.UserLocation;
 import com.aslan.contra.model.SensorData;
@@ -86,19 +88,21 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
         serviceConnector.execute(request);
     }
 
-    public void sendActivity(int activity, int confidence) {
-        SensorResponse response = new SensorResponse();
-        SensorData locData = new SensorData();
-        locData.setType(Constants.Type.ACTIVITY);
-        locData.setSource("Google Play Services");
-        locData.setTime(System.currentTimeMillis());
-        locData.setAccuracy(confidence);
-        locData.setData(new String[]{Integer.toString(activity)});
-        response.addSensorData(locData);
-        response.setUserID(Utility.getUserId(context));
+    public void updateDeviceState(Device device, ServiceConnector.OnResponseListener<String> listener) {
+        device.setDeviceID(Utility.getDeviceSerial(context));
+        device.setBatteryLevel(Utility.getBatteryLevel(context));
 
-//        SensorDataSendingTask task = new SensorDataSendingTask();
-//        task.execute(response);
+        UserDevice userDevice = new UserDevice();
+        userDevice.setUserID(Utility.getUserId(context));
+        userDevice.setDevice(device);
+
+        Request<UserDevice> request = new Request<>();
+        request.setEntity(userDevice);
+        request.setHttpMethod(HttpMethod.POST);
+        request.setUrl(Constants.WebServiceUrls.UPDATE_USER_DEVICE_URL);
+
+        ServiceConnector<UserDevice, String> serviceConnector = new ServiceConnector<>(listener);
+        serviceConnector.execute(request);
     }
 
     public void sendContacts() {
@@ -142,6 +146,21 @@ public class SensorDataSendingServiceClient<T> extends ServiceClient<T> {
 //            task.execute(response);
         }
     }
+
+//    public void sendActivity(int activity, int confidence) {
+//        SensorResponse response = new SensorResponse();
+//        SensorData locData = new SensorData();
+//        locData.setType(Constants.Type.ACTIVITY);
+//        locData.setSource("Google Play Services");
+//        locData.setTime(System.currentTimeMillis());
+//        locData.setAccuracy(confidence);
+//        locData.setData(new String[]{Integer.toString(activity)});
+//        response.addSensorData(locData);
+//        response.setUserID(Utility.getUserId(context));
+//
+////        SensorDataSendingTask task = new SensorDataSendingTask();
+////        task.execute(response);
+//    }
 
 //    /**
 //     * AsyncTask to send the sensor data to server.

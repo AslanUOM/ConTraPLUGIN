@@ -121,11 +121,6 @@ public class Constants {
          */
         public static final String GET_NEARBY_FRIENDS_DATA_URL = CONTRA_SERVICE_URL + "/contextprovider/nearbyfriends/{query}";
 
-//        /**
-//         * URL Post Sensor Data.
-//         */
-//        public static final String SEND_SENSOR_DATA_URL = CONTRA_SERVICE_URL + "/sensordatareceiver/save";
-
         /**
          * URL Post Location Sensor Data.
          */
@@ -142,14 +137,24 @@ public class Constants {
         public static final String REGISTER_USER_SERVICE_URL = CONTRA_SERVICE_URL + "/user/create/{country}";
 
         /**
+         * URL Update User.
+         */
+        public static final String UPDATE_USER_PROFILE_URL = CONTRA_SERVICE_URL + "/user/update";
+
+        /**
+         * URL Update Device.
+         */
+        public static final String UPDATE_USER_DEVICE_URL = CONTRA_SERVICE_URL + "/device/update";
+
+        /**
          * URL Get User Profile.
          */
         public static final String RETRIEVE_USER_PROFILE_URL = CONTRA_SERVICE_URL + "/user/find/{userID}";
 
         /**
-         * URL Update User.
+         * URL Get User Environment.
          */
-        public static final String UPDATE_USER_PROFILE_URL = CONTRA_SERVICE_URL + "/user/update";
+        public static final String RETRIEVE_USER_ENVIRONMENT_URL = CONTRA_SERVICE_URL + "/environment/find/{userID}";
     }
 
     public static final class MessagePassingCommands {

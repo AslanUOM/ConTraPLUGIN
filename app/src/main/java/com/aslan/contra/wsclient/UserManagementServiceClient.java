@@ -10,9 +10,7 @@ import com.aslan.contra.util.Utility;
 
 import org.springframework.http.HttpMethod;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Created by gobinath on 10/30/15.
@@ -36,6 +34,7 @@ public class UserManagementServiceClient<T> extends ServiceClient<T> {
         device.setToken(Utility.getDeviceToken(context));
         device.setWifiMAC(Utility.getDeviceWiFiMAC(context));
         device.setSensors(Utility.getDeviceSensors(context));
+        device.setBatteryLevel(Utility.getBatteryLevel(context));
 
         UserDevice userDevice = new UserDevice();
         userDevice.setUserID(phoneNumber);

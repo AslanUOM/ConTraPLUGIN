@@ -22,7 +22,6 @@ public class EnvironmentSensor implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mAmbientTemp;
     private Sensor mLight;
-    private Sensor mProximity;
     private Sensor mPressure;
     private Sensor mRelativeHumidity;
     private int sensorCount = 0;
@@ -48,10 +47,6 @@ public class EnvironmentSensor implements SensorEventListener {
                 environment.setIlluminance(event.values[0]);
                 sensorCount--;
                 mSensorManager.unregisterListener(this, mLight);
-                break;
-            case Sensor.TYPE_PROXIMITY:
-                Log.i(TAG, "Proximity: " + event.values[0]);
-                mSensorManager.unregisterListener(this, mProximity);
                 break;
             case Sensor.TYPE_PRESSURE:
                 Log.i(TAG, "Pressure: " + event.values[0]);
@@ -81,9 +76,6 @@ public class EnvironmentSensor implements SensorEventListener {
             case Sensor.TYPE_LIGHT:
                 Log.i(TAG, "Light: ");
                 break;
-            case Sensor.TYPE_PROXIMITY:
-                Log.i(TAG, "Proximity: ");
-                break;
             case Sensor.TYPE_PRESSURE:
                 Log.i(TAG, "Pressure: ");
                 break;
@@ -101,7 +93,6 @@ public class EnvironmentSensor implements SensorEventListener {
 
             mAmbientTemp = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
             mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-            mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
             mPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
             mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
         }
@@ -119,12 +110,6 @@ public class EnvironmentSensor implements SensorEventListener {
             sensorCount++;
         } else {
             Log.i(TAG, "Light not available");
-        }
-
-        if (mProximity != null) {
-            mSensorManager.registerListener(this, mProximity, mProximity.getMinDelay());
-        } else {
-            Log.i(TAG, "Proximity not available");
         }
 
         if (mPressure != null) {
@@ -146,7 +131,6 @@ public class EnvironmentSensor implements SensorEventListener {
         sensorCount = 0;
         mSensorManager.unregisterListener(this, mAmbientTemp);
         mSensorManager.unregisterListener(this, mLight);
-        mSensorManager.unregisterListener(this, mProximity);
         mSensorManager.unregisterListener(this, mPressure);
         mSensorManager.unregisterListener(this, mRelativeHumidity);
     }
