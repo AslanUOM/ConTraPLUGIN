@@ -172,7 +172,7 @@
                     android:layout_alignParentLeft="true"
                     android:gravity="top"
                     android:paddingLeft="51dp"
-                    android:text="Use devics's Wi-Fi and Bluetooth to scan and discover nearby devices/terminals"
+                    android:text="Use device's Wi-Fi and Bluetooth to scan and discover nearby devices/terminals"
                     android:textSize="15dp" />
             </LinearLayout>
         </LinearLayout>

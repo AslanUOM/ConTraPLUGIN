@@ -37,6 +37,7 @@ public class Constants {
     public static final long SPLASH_VISIBLE_TIME = 1000;
 
     public static final String FRIEND_FINDER_APP_ACTION_NAME = "aslan.app.RemoteMessagingService";
+    public static final String SMART_ASSISTANT_APP_ACTION_NAME = "aslan.app.SmartAssistant";
 
 
     //public static final String FIRST_RUN = "first_run";

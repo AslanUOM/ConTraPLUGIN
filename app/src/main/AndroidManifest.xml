@@ -114,7 +114,7 @@
             android:exported="true"
             android:process=":exported">
             <intent-filter>
-                <action android:name="aslan.plugin.RemoteMessagingService" />
+                <action android:name="aslan.plugin.ConTra" />
             </intent-filter>
         </service>
 
